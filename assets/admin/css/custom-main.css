@@ -1,0 +1,147 @@
+.parsley-errors-list{list-style:none;}
+.parsley-errors-list li{ color:#f00;}
+.category-img-class{ height:50px;}
+ input.seller_edit_mode[type="file"]{ display:none;}
+ input.seller_edit_mode[type="text"]{ display:none;}
+ a.seller_edit_mode{ display:none;}
+ .editable-seller-info tr td{vertical-align:middle !important;}
+ .editable-seller-info tr td input{ height:35px; border:1px solid #ccc; border-radius:3px; padding:0px 10px;}
+ .editable-seller-info tr td input[type="file"]{ border:none;}
+ .editable-seller-info tr td input.seller_edit_mode[type="file"] {
+    width: 120px !important;
+    height: 35px !important;
+    opacity: 0 !important;
+    overflow: hidden !important;
+    border:none; color:#fff; display:none;
+}
+div.file-input-seller.seller_edit_mode {
+    width: 120px;
+    height: 35px;
+      background: url(https://lh6.googleusercontent.com/-dqTIJRTqEAQ/UJaofTQm3hI/AAAAAAAABHo/w7ruR1SOIsA/s157/upload.png);
+    overflow: hidden; display:none; cursor:pointer; background-size:100%;
+}
+.enterPassword{height:35px; border:1px solid #ccc; width:100%; padding:5px 6px 6px 12px;}
+#confirmPasswordMsg{color:#f00;}
+.page-footer {position:fixed;}
+#sellerHistoryTable {height:200px; overflow-y:auto; padding:0px 1px;}
+#productImagesMsg{color:#f00;}
+#image_view > img {
+    border: 1px solid #ccc;
+    margin: 0 18px 19px;
+    padding: 5px;
+}
+.table-bordered1{ margin-bottom:0px;}
+#image_view > p{ vertical-align:top; margin-top:0px;  position: relative;
+    right: 37px;
+    top: -16px; display:inline-block;}
+#image_view{ padding:20px 5px 0px;  border: 1px solid #ccc;}
+.img-info {
+    margin: 10px 0;
+}
+
+#image_view  input[type="checkbox"]:not(:checked),
+#image_view  input[type="checkbox"]:checked {
+  position: absolute;
+  left: -9999px;
+}
+#image_view  input[type="checkbox"]:not(:checked) + label,
+#image_view  input[type="checkbox"]:checked + label {
+  position: relative;
+  padding-left: 25px;
+  cursor: pointer;
+}
+
+/* checkbox aspect */
+#image_view  input[type="checkbox"]:not(:checked) + label:before,
+#image_view  input[type="checkbox"]:checked + label:before {
+  content: '';
+  position: absolute;
+  left:0; top: 2px;
+  width: 17px; height: 17px;
+  border: 1px solid #dadadb;
+  background: #dadadb;
+  border-radius: 3px;
+
+}
+/* checked mark aspect */
+#image_view  input[type="checkbox"]:not(:checked) + label:after,
+#image_view  input[type="checkbox"]:checked + label:after {
+  content: '✔';
+  position: absolute;
+  top: 3px; left: 4px;
+  font-size: 18px;
+  line-height: 0.8;
+  color: #09ad7e;
+  transition: all .2s;
+}
+/* checked mark aspect changes */
+#image_view  input[type="checkbox"]:not(:checked) + label:after {
+  opacity: 0;
+  transform: scale(0);
+}
+#image_view  input[type="checkbox"]:checked + label:after {
+  opacity: 1;
+  transform: scale(1);
+}
+/* disabled checkbox */
+#image_view  input[type="checkbox"]:disabled:not(:checked) + label:before,
+#image_view  input[type="checkbox"]:disabled:checked + label:before {
+  box-shadow: none;
+  border-color: #bbb;
+  background-color: #ddd;
+}
+#image_view  input[type="checkbox"]:disabled:checked + label:after {
+  color: #999;
+}
+#image_view  input[type="checkbox"]:disabled + label {
+  color: #aaa;
+}
+/* accessibility */
+#image_view  input[type="checkbox"]:checked:focus + label:before,
+#image_view  input[type="checkbox"]:not(:checked):focus + label:before {
+
+}
+
+/* hover style just for information */
+#image_view  label:hover:before {
+
+}
+.uploadImaagebutton input[type="button"]{ width:200px; background:#1d79cb; height:40px; border:1px solid #1d79cb; border-radius:4px; color:#fff;}
+
+.order-details{ padding-top:15px; margin-bottom:25px;}
+.order-details h3{font:18px/18px "Open Sans",Arial,Helvetica,sans-serif; font-weight:600; color:#4a5258; margin-top:0px; text-transform:uppercase;}
+.older-product-img img{ height:120px;}
+.order-descraption h3{ margin:0px; font:14px/14px "Open Sans",Arial,Helvetica,sans-serif; font-weight:600; color:#4a5258; text-transform:uppercase; padding-bottom:15px;}
+.order-descraption ul{ list-style:none; padding:0px;}
+.order-descraption ul li{ padding-bottom:15px;}
+.order-descraption ul li span{ width:130px; display:inline-block; font:14px/14px "Open Sans",Arial,Helvetica,sans-serif; font-weight:600; color:#333d44; text-transform:capitalize; vertical-align:top;} 
+.order-descraption ul li small{ width:164px; display:inline-block; font:14px/14px "Open Sans",Arial,Helvetica,sans-serif; font-weight:400; color:#333d44; text-transform:capitalize;}
+.order-descraption ul li small h6{ margin:0px; font:14px/14px "Open Sans",Arial,Helvetica,sans-serif; font-weight:400; color:#333d44; padding-top:5px;} 
+.order-details{ border:1px solid #e4e5e6; min-height:170px;}
+.orderset-details.order-descraption ul li{
+   display: inline-block;
+    padding-bottom: 15px;
+    vertical-align: top;
+    width: 49%;
+}
+.order-person-detilas1{ min-height:262px;}
+.order-person-detilas ul{ list-style:none; padding:0px;}
+.order-person-detilas ul li{ font:14px/14px "Open Sans",Arial,Helvetica,sans-serif; font-weight:400; color:#333d44; padding-bottom:15px;}
+.order-person-detilas ul li span{ width:130px; display:inline-block; font:14px/14px "Open Sans",Arial,Helvetica,sans-serif; font-weight:600; color:#333d44; text-transform:capitalize; vertical-align:top;} 
+.order-person-detilas ul li small{ width:164px; display:inline-block; font:14px/14px "Open Sans",Arial,Helvetica,sans-serif; font-weight:400; color:#333d44; text-transform:capitalize;}
+.order-person-detilas h4{ margin:0px; font:14px/14px "Open Sans",Arial,Helvetica,sans-serif; font-weight:600; color:#4a5258; text-transform:uppercase; padding-bottom:15px;}
+.order-person-detilas h3{font:18px/18px "Open Sans",Arial,Helvetica,sans-serif; font-weight:600; color:#4a5258; margin-top:0px; text-transform:uppercase;}
+.order-person-detilas1{ padding:15px;  border:1px solid #e4e5e6;}
+.order-person-detilas2.order-descraption{  border: 1px solid #e4e5e6; padding:15px; margin-bottom:20px;}
+.order-person-detilas2.order-descraption ul li{ float:left; width:33%; padding-bottom:4px;}
+.order-person-detilas2.order-descraption ul li span{ width:140px;}
+.order-person-detilas2.order-descraption ul{ margin-top:15px;}
+.order-person-detilas2.order-descraption h3{ padding-bottom:0px; cursor:pointer;}
+#seller-order-serach-form{ padding:10px 0px;}
+#seller-order-serach-form > span {
+    display: inline-block;
+    width: 15%; padding:5px 12px; box-sizing:border-box; font-weight:bold; border:1px solid #ccc; margin:0 5px; border-radius:2px; text-align:left;
+}
+#seller-order-serach-form > span   input[type="radio"]{ float:left; margin:0px 7px 0 0px;
+}
+#seller-order-serach-form #date_range{ height:35px; position:relative; top:3px;}
