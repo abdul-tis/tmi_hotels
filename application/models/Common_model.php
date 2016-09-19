@@ -133,6 +133,20 @@ Class Common_model extends CI_Model {
 		$result = $this->db->get('designation')->result_array();
 		return $result;
 	}
+
+	/**
+	 * @Method		-: getHotelChain()
+	 * @Description	-: This function is used to fetch hotel chain
+	 * @Created on	-: 19-09-2016
+	 * @Return 		-: array()
+	 */
+
+	function getHotelChains()
+	{
+		$this->db->where('status','1');
+		$result = $this->db->get('hotel_chain')->result_array();
+		return $result;
+	}
 }
 
 ?>

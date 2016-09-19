@@ -58,12 +58,12 @@
                                     <thead>
 											<tr>
                                                 <th>Hotel Name</th>
-                                                <th>Hotel Type</th>
                                                 <th>Rating</th>
                                                 <th>City</th>
-                                                <th>Price </th>
+                                                <th>Price (Rs.)</th>
                                                 <th>Total Rooms</th>
                                                 <th>TMI Rooms</th>
+                                                <th>Hotel Type</th>
                                                 <th>Status</th>
                                                 <th class="sorting">Action</th>
 											</tr>
@@ -75,23 +75,23 @@
 											 $hotel_type     = getHotelTypeById($hotel['hotel_type']);
                                              if($hotel['star_rating'] == '1')
                                              {
-                                                $star_rating    = '*';
+                                                $star_rating    = '<img src="'.base_url().'assets/admin/img/1-stars.png">';
                                              }
                                              elseif($hotel['star_rating'] == '2')
                                              {
-                                                $star_rating    = '**';
+                                                $star_rating    = '<img src="'.base_url().'assets/admin/img/2-stars.png">';
                                              }
                                              elseif($hotel['star_rating'] == '3')
                                              {
-                                                $star_rating    = '***';
+                                                $star_rating    = '<img src="'.base_url().'assets/admin/img/3-stars.png">';
                                              }
                                              elseif($hotel['star_rating'] == '4')
                                              {
-                                                $star_rating    = '****';
+                                                $star_rating    = '<img src="'.base_url().'assets/admin/img/4-stars.png">';
                                              }
                                              elseif($hotel['star_rating'] == '5')
                                              {
-                                                $star_rating    = '*****';
+                                                $star_rating    = '<img src="'.base_url().'assets/admin/img/5-stars.png">';
                                              }
                                              else
                                              {
@@ -125,10 +125,7 @@
                                             <td>
 												<span class="view_mode<?php echo $hotel['hotel_id'];?>"><?php echo (!empty($hotel['hotel_name'])) ? $hotel['hotel_name'] : "N/A";?></span>
                                             </td>
-                                            <td>
-												<span class="view_mode<?php echo $hotel['hotel_id'];?>"><?php echo (!empty($hotel_type)) ? $hotel_type : "N/A";?></span>
-												
-											</td>
+                                            
                                             <td>
 												<span class="view_mode<?php echo $hotel['hotel_id'];?>"><?php echo $star_rating;?></span>
 											</td>
@@ -136,7 +133,7 @@
 												<span class="view_mode<?php echo $hotel['hotel_id'];?>"><?php echo (!empty($city)) ? $city : "N/A";?></span>
 											</td>
                                             <td>
-                                                <span class="view_mode<?php echo $hotel['hotel_id'];?>"><?php echo (!empty($hotel['base_currency'])) ? $hotel['base_currency'] : "";?> <?php echo (!empty($hotel['price'])) ? $hotel['price'] : "N/A";?></span>
+                                                <span class="view_mode<?php echo $hotel['hotel_id'];?>"><?php echo (!empty($hotel['price'])) ? $hotel['price'] : "N/A";?></span>
                                             </td>
 											<td>
 												<span class="view_mode<?php echo $hotel['hotel_id'];?>"><?php echo (!empty($hotel['no_of_rooms'])) ? $hotel['no_of_rooms'] : "N/A";?></span>
@@ -145,6 +142,10 @@
 											<td>
 												<span class="view_mode<?php echo $hotel['hotel_id'];?>"><?php echo (!empty($hotel['tmi_rooms'])) ? $hotel['tmi_rooms'] : "N/A";?></span>
 											</td>
+                                            <td>
+                                                <span class="view_mode<?php echo $hotel['hotel_id'];?>"><?php echo (!empty($hotel_type)) ? '<a href="javascript:void(0)" title="'.$hotel_type.'"> <img src="'.base_url().'assets/admin/img/property-type-icon.png"></a>' : "N/A";?></span>
+                                                
+                                            </td>
                                             <td>
                                                 <span class="view_mode<?php echo $hotel['hotel_id'];?>"><?php echo (!empty($hotel['hotel_status']) && $hotel['hotel_status'] == '1') ? "Active" : "Inactive";?></span>
                                             </td>

@@ -24,20 +24,7 @@
             </li>
 
         </ul>
-        <!-- <ul>
-            <li class="<?=(!empty($this->PageTitle) && $this->PageTitle=='User Sellers') ? 'open' : '';?>">
-                <a title="Users" href="#">
-                    <i class="fa fa-lg fa-fw fa-users"></i>
-                    <span class="menu-item-parent">User Management</span>
-                    <b class="collapse-sign"><em class="fa fa-minus-square-o"></em></b>
-                </a>
-                <ul style="<?=(!empty($this->PageTitle) && $this->PageTitle=='User Sellers') ? 'display: block' : 'display: none';?>">
-                    <li class="">
-                        <a title="Sellers" href="<?=base_url('users')?>">Sellers</a>
-                    </li>
-                </ul>
-            </li>
-        </ul> -->
+        
         <?php $url_seg = $this->uri->segment(2); ?>
         <ul>
             <li class="<?php echo (!empty($url_seg) && $url_seg=='hotels') ? 'open' : '';?>">
@@ -50,33 +37,34 @@
                     <li class="">
                         <a title="Hotels" href="<?=base_url('admin/hotels')?>">Hotel Info</a>
                     </li>
-                    <!-- <li class="">
-                        <a title="Hotels" href="<?=base_url('admin/hotels/hotelRooms')?>">Room Management</a>
-                    </li> -->
                 </ul>
             </li>
         </ul>
-       <!-- <ul>
-            <li class="<?=(!empty($this->PageTitle) && $this->PageTitle=='Product Category') ? 'open' : '';?>">
+        <?php 
+            $seg_setting     = $this->uri->segment(2); 
+            $seg_setting_new = $this->uri->segment(3); 
+        ?>
+        <ul>
+            <li class="<?php echo (!empty($seg_setting) && $seg_setting=='settings') ? 'open' : '';?>">
                 <a title="Product Categories" href="#">
-                    <i class="fa fa-lg fa-fw fa-location-arrow"></i>
-                    <span class="menu-item-parent">Product Category</span>
+                    <i class="fa fa-lg fa-fw fa-table"></i>
+                    <span class="menu-item-parent">Settings</span>
                     <b class="collapse-sign"><em class="fa fa-minus-square-o"></em></b>
                 </a>
-                <ul style="<?=(!empty($this->PageTitle) && $this->PageTitle=='Product Category') ? 'display: block' : 'display: none';?>">
-                    <li class="">
-                        <a title="categories" href="<?=base_url('category')?>">
-                           Category
+                <ul style="<?php echo (!empty($seg_setting) && $seg_setting=='settings') ? 'display: block' : 'display: none';?>">
+                    <li class="<?php echo (!empty($seg_setting_new) && $seg_setting_new=='amenities') ? 'active' : '';?>">
+                        <a title="amenities" href="<?php echo base_url('admin/settings/amenities')?>">
+                           Manage Amenities
                         </a>
                     </li>
-                    <li class="">
-                        <a title="Products" href="<?=base_url('products')?>">
-                           Products
+                    <li class="<?php echo (!empty($seg_setting_new) && $seg_setting_new=='hotelChains') ? 'active' : '';?>">
+                        <a title="hotel chains" href="<?php echo base_url('admin/settings/hotelChains')?>">
+                           Manage Hotel Chains
                         </a>
                     </li>
                 </ul>
             </li>
-        </ul> -->
+        </ul>
         
     </nav>
     <span class="minifyme" data-action="minifyMenu"> <i class="fa fa-arrow-circle-left hit"></i> </span>

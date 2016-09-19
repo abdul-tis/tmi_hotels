@@ -130,6 +130,7 @@
                                                                 <input type="text" placeholder="Price" required="" id="price" name="price" data-parsley-type="number" value="<?php echo (!empty($room['price']))?$room['price']:'';?>">
                                                             </label>
                                                         </section>
+                                                        <div class="row">
                                                         <section>
                                                             <label class="label">Period</label>
                                                             <div class="input">
@@ -151,6 +152,7 @@
                                                                 </div>
                                                             </div>
                                                         </section>
+                                                        </div>
                                                         <section>
                                                             <label class="label"></label>
                                                             <div class="input input-radio">
@@ -164,7 +166,7 @@
                                                                 ?>
                                                                     <label class="radio state-success">
                                                                         <input type="radio" <?php echo (!empty($room['rate_category']) && $room['rate_category'] == $rate_category['id'])?'checked':'';?> value="<?php echo $rate_category['id'];?>" name="rate_category" data-parsley-multiple="status" data-parsley-id="1815">
-                                                                        <i></i><?php echo $rate_category['category_type'];?>
+                                                                        <i></i><?php echo $rate_category['category_type'];?> (<?php echo $rate_category['meal_plan'];?>)
                                                                     </label><?php if($k=='1'){?><ul class="parsley-errors-list" id="parsley-id-multiple-status"></ul><?php }?>
                                                                 
                                                                 <?php 
@@ -240,20 +242,23 @@
                                                                 ?>
                                                                 <div>
                                                                   <h4><?php echo $amenity['service_name']; ?></h4>
-                                                                  <div class="padding-10">
+                                                                  <div>
+                                                                    <div class="row">
                                                                     <?php if(!empty($subServices)){
+                                                                            $i=1;
                                                                             foreach($subServices as $subService){
                                                                                 $room_amenities = explode(',', $room['room_amenities'])
                                                                     ?>
-                                                                    
-                                                                    <label class="input">
-                                                                        <div class="row">
-                                                                            <label class="checkbox">
-                                                                                <input type="checkbox" name="room_amenities[]" value="<?php echo $subService['id']?>" <?php echo (in_array($subService['id'], $room_amenities))?'checked':'';?>><i></i><?php echo $subService['service_name'];?>
-                                                                            </label>
-                                                                        </div>
-                                                                    
-                                                                    <?php }}?>
+                                                                    <div class="col col-3">
+                                                                        <label class="input">
+                                                                            <div class="row">
+                                                                                <label class="checkbox">
+                                                                                    <input type="checkbox" name="room_amenities[]" value="<?php echo $subService['id']?>" <?php echo (in_array($subService['id'], $room_amenities))?'checked':'';?>><i></i><?php echo $subService['service_name'];?>
+                                                                                </label>
+                                                                            </div>
+                                                                        </label>
+                                                                    </div>
+                                                                    <?php if($i%4==0) echo '</div><div class="row">';$i++;}}?>
                                                                   </div>
                                                                   
                                                                 </div>

@@ -72,6 +72,25 @@
                                                                     <input type="text" placeholder="Hotelname" id="hotel_name" name="hotel_name" data-parsley-length="[6, 100]" required="" value="<?php echo set_value('hotel_name')?>">
                                                                 </label>
 															</section>
+                                                            <section>
+                                                                <label class="label">Hotel Chain</label>
+                                                                <label class="select">
+                                                                    <select class="input-sm" name="hotel_chain" id="hotel_chain">
+                                                                        <option value="">Select Hotel Chain</option>
+                                                                        <?php 
+                                                                            if(!empty($hotel_chains))
+                                                                            {
+                                                                                foreach($hotel_chains as $hotel_chain)
+                                                                                {
+                                                                        ?>
+                                                                        <option value="<?php echo $hotel_chain['id'];?>"><?php echo $hotel_chain['name'];?></option>
+                                                                        <?php
+                                                                                }
+                                                                            }
+                                                                        ?>
+                                                                    </select> <i></i> 
+                                                                </label>
+                                                            </section>
 															<section>
 																<label class="label">Hotel Type</label>
 																<label class="select">
@@ -334,23 +353,25 @@
                                                                 ?>
                                                                 <div>
                                                                   <h4><?php echo $amenity['service_name']; ?></h4>
-                                                                  <div class="padding-10">
+                                                                  <div>
+                                                                    <div class="row">
                                                                     <?php if(!empty($subServices)){
+                                                                        $i=1;
                                                                             foreach($subServices as $subService){
 
-
                                                                     ?>
-                                                                    
-                                                                    <label class="input">
-                                                                        <div class="row">
-                                                                            <label class="checkbox">
-                                                                                <input type="checkbox" name="hotel_amenities[]" value="<?php echo $subService['id']?>"><i></i><?php echo $subService['service_name'];?>
-                                                                            </label>
-                                                                        </div>
-                                                                    
-                                                                    <?php }}?>
+                                                                    <div class="col col-3">
+                                                                        <label class="input">
+                                                                            
+                                                                                <label class="checkbox">
+                                                                                    <input type="checkbox" name="hotel_amenities[]" value="<?php echo $subService['id']?>"><i></i><?php echo $subService['service_name'];?>
+                                                                                </label>
+                                                                            
+                                                                        </label>
+                                                                    </div>
+                                                                    <?php if($i%4==0) echo '</div><div class="row">';$i++;}}?>
                                                                   </div>
-                                                                  
+                                                                  </div>
                                                                 </div>
                                                                 <?php 
                                                                         }
@@ -401,19 +422,19 @@
                                                                 <div class="col col-3">
                                                                     <label class="label">Name</label>
                                                                     <label class="input">
-                                                                        <input type="text" placeholder="Name" id="" name="contact_name[]" data-parsley-length="[1, 100]" required="" value="<?php echo set_value('contact_name')?>">
+                                                                        <input type="text" placeholder="Name" id="" name="contact_name[]" data-parsley-length="[1, 100]" required="" value="">
                                                                     </label>
                                                                 </div>
                                                                 <div class="col col-3">
                                                                     <label class="label">Email</label>
                                                                     <label class="input">
-                                                                        <input type="text" placeholder="Email" id="" name="contact_email[]" data-parsley-length="[6, 100]" required="" value="<?php echo set_value('contact_email')?>">
+                                                                        <input type="text" placeholder="Email" id="" name="contact_email[]" data-parsley-length="[6, 100]" required="" value="">
                                                                     </label>
                                                                 </div>
                                                                 <div class="col col-2">
                                                                     <label class="label">Phone</label>
                                                                     <label class="input">
-                                                                        <input type="text" placeholder="Phone" id="" name="contact_phone[]" data-parsley-length="[10, 10]" data-parsley-type="digits" required="" value="<?php echo set_value('contact_phone')?>">
+                                                                        <input type="text" placeholder="Phone" id="" name="contact_phone[]" data-parsley-length="[10, 10]" data-parsley-type="digits" required="" value="">
                                                                     </label>
                                                                 </div>
                                                                 <div class="col col-2"></div>
@@ -434,7 +455,7 @@
                                                             <section>
                                                                 <div class="input input-file uploadImaagebutton">
                                                                     <input type="button" name="" id="inputfile" value=" Upload Product Images"/>
-                                                                        <input type="file" multiple="" name="uploadedimages[]" id="hotelImages" required="" style="display:none;" >
+                                                                        <input type="file" multiple="" name="uploadedimages[]" id="hotelImages" style="display:none;" >
                                                                          
                                                                         <p class="img-info">Image type-JPEG|JPG|PNG</p>
                                                                         <span id="hotelImagesMsg"></span>
@@ -455,13 +476,13 @@
                                                         <section>
                                                             <label class="label">Meta Title</label>
                                                             <label class="input">
-                                                                <input type="text" placeholder="Meta Title" name="meta_title" id="meta_title" value="<?php echo set_value('meta_title')?>" required=""> 
+                                                                <input type="text" placeholder="Meta Title" name="meta_title" id="meta_title" value="<?php echo set_value('meta_title')?>"> 
                                                             </label>
                                                         </section>
                                                         <section>
                                                             <label class="label">Meta Description</label>
                                                             <label class="textarea">
-                                                                <textarea class="custom-scroll" rows="5" name="meta_description" id="meta_description" required=""><?php echo set_value('meta_description');?></textarea>
+                                                                <textarea class="custom-scroll" rows="5" name="meta_description" id="meta_description"><?php echo set_value('meta_description');?></textarea>
                                                             </label>
                                                         </section>  
                                                     </fieldset>

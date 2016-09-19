@@ -11,7 +11,7 @@ class Hotels extends CI_Controller {
             redirect('admin/auth/login', 'refresh');
         }
         $this->load->library('pagination');
-        $this->limit = 2;
+        $this->limit = 10;
     }
 
  /**
@@ -111,62 +111,64 @@ class Hotels extends CI_Controller {
 			{
 				$hotelImages 		= '';
 				$hotelPrimaryImage 	= '';
-				$files 				= $_FILES['uploadedimages'];
-				$errors 			= '';
-				$total_files 		= count($_FILES['uploadedimages']['tmp_name']);
-				for($i=0;$i<$total_files;$i++){
-					if($_FILES['uploadedimages']['error'][$i] != 0){
-					  $errors .= 'Couldn\'t upload file '.$_FILES['uploadedimages']['name'][$i];
-					}
-				}
+				if(!empty($_FILES['uploadedimages']['tmp_name'][0]))
+				{
+					$files 				= $_FILES['uploadedimages'];
+					$errors 			= '';
+					$total_files 		= count($_FILES['uploadedimages']['tmp_name']);
+					/*for($i=0;$i<$total_files;$i++){
+						if($_FILES['uploadedimages']['error'][$i] != 0){
+						  $errors .= 'Couldn\'t upload file '.$_FILES['uploadedimages']['name'][$i];
+						}
+					}*/
 
-				if(empty($errors)){
-					$this->load->library('upload');
-					$config['upload_path'] 	 = FCPATH . 'uploads/hotel/original/';
-					$config['allowed_types'] = 'gif|jpg|jpeg|png';
-					$config['max_width'] 	 = '650';
-					$config['max_height']    = '450';
-					for ($i = 0; $i < $total_files; $i++){
-						$_FILES['uploadedimage']['name'] 		= $files['name'][$i];
-						$_FILES['uploadedimage']['type'] 		= $files['type'][$i];
-						$_FILES['uploadedimage']['tmp_name'] 	= $files['tmp_name'][$i];
-						$_FILES['uploadedimage']['error'] 		= $files['error'][$i];
-						$_FILES['uploadedimage']['size'] 		= $files['size'][$i];
-						$this->upload->initialize($config);
-						if($this->upload->do_upload('uploadedimage')){
-							$uploads 		= $this->upload->data();
-							if($postData['primary']==$i){
-								$hotelPrimaryImage = $uploads['file_name'];
+					if(empty($errors)){
+						$this->load->library('upload');
+						$config['upload_path'] 	 = FCPATH . 'uploads/hotel/original/';
+						$config['allowed_types'] = 'gif|jpg|jpeg|png';
+						
+						for ($i = 0; $i < $total_files; $i++){
+							$_FILES['uploadedimage']['name'] 		= $files['name'][$i];
+							$_FILES['uploadedimage']['type'] 		= $files['type'][$i];
+							$_FILES['uploadedimage']['tmp_name'] 	= $files['tmp_name'][$i];
+							$_FILES['uploadedimage']['error'] 		= $files['error'][$i];
+							$_FILES['uploadedimage']['size'] 		= $files['size'][$i];
+							$this->upload->initialize($config);
+							if($this->upload->do_upload('uploadedimage')){
+								$uploads 		= $this->upload->data();
+								if($postData['primary']==$i){
+									$hotelPrimaryImage = $uploads['file_name'];
+								}
+								$hotelImages[$i] = $uploads['file_name'];
+								// resize image to medium size 
+								$config2['image_library'] 	= 'gd2';
+								$config2['source_image'] 	= FCPATH . 'uploads/hotel/original/'.$uploads['file_name'];
+								$config2['new_image'] 		= FCPATH . 'uploads/hotel/medium/';
+								$config2['maintain_ratio'] 	= TRUE;
+								$config2['width']         	= 308;
+								$config2['height']       	= 204;
+
+								$this->load->library('image_lib', $config2);
+
+								$this->image_lib->resize();
+								$this->image_lib->clear();
+								// resize image to thumbnail
+								$config3['image_library'] 	= 'gd2';
+								$config3['source_image'] 	= FCPATH . 'uploads/hotel/original/'.$uploads['file_name'];
+								$config3['new_image'] 		= FCPATH . 'uploads/hotel/thumbnail/';
+								$config3['create_thumb'] 	= TRUE;
+								$config3['maintain_ratio'] 	= TRUE;
+								$config3['width']         	= 90;
+								$config3['height']       	= 60;
+
+								$this->load->library('image_lib', $config3);
+
+								$this->image_lib->resize();
+								$this->image_lib->clear();
+								
+							}else{
+								$errors .= $this->upload->display_errors();
 							}
-							$hotelImages[$i] = $uploads['file_name'];
-							// resize image to medium size 
-							$config2['image_library'] 	= 'gd2';
-							$config2['source_image'] 	= FCPATH . 'uploads/hotel/original/'.$uploads['file_name'];
-							$config2['new_image'] 		= FCPATH . 'uploads/hotel/medium/';
-							$config2['maintain_ratio'] 	= TRUE;
-							$config2['width']         	= 308;
-							$config2['height']       	= 204;
-
-							$this->load->library('image_lib', $config2);
-
-							$this->image_lib->resize();
-							$this->image_lib->clear();
-							// resize image to thumbnail
-							$config3['image_library'] 	= 'gd2';
-							$config3['source_image'] 	= FCPATH . 'uploads/hotel/original/'.$uploads['file_name'];
-							$config3['new_image'] 		= FCPATH . 'uploads/hotel/thumbnail/';
-							$config3['create_thumb'] 	= TRUE;
-							$config3['maintain_ratio'] 	= TRUE;
-							$config3['width']         	= 90;
-							$config3['height']       	= 60;
-
-							$this->load->library('image_lib', $config3);
-
-							$this->image_lib->resize();
-							$this->image_lib->clear();
-							
-						}else{
-							$errors .= $this->upload->display_errors();
 						}
 					}
 				}
@@ -176,6 +178,7 @@ class Hotels extends CI_Controller {
 						$location 					= array();
 
 						$basic_info['hotel_name'] 	= $postData['hotel_name'];
+						$basic_info['hotel_chain'] 	= $postData['hotel_chain'];
 						$basic_info['hotel_type'] 	= $postData['hotel_type'];
 						$basic_info['star_rating'] 	= $postData['star_rating'];
 						$basic_info['base_currency']= $postData['base_currency'];
@@ -236,6 +239,7 @@ class Hotels extends CI_Controller {
 		$data['hotel_types'] 	= $this->Common_model->getHotelTypes();
 		$data['amenities'] 		= $this->Common_model->getAmenities($type=1);
 		$data['designations'] 	= $this->Common_model->getDesignation();
+		$data['hotel_chains']    = $this->Common_model->getHotelChains();
         $this->template->load('admin/base', 'admin/hotels/addhotel', $data);
 	}
 
@@ -304,11 +308,11 @@ class Hotels extends CI_Controller {
 					$files 			= $_FILES['uploadedimages'];
 
 					$total_files 	= count($_FILES['uploadedimages']['tmp_name']);
-					for($i=0;$i<$total_files;$i++){
+					/*for($i=0;$i<$total_files;$i++){
 						if($_FILES['uploadedimages']['error'][$i] != 0 ){
 						  $errors .= 'Couldn\'t upload file '.$_FILES['uploadedimages']['name'][$i];
 						}
-					}
+					}*/
 
 					if(empty($errors)){
 						$this->load->library('upload');
@@ -367,6 +371,7 @@ class Hotels extends CI_Controller {
 						$basic_info 				= array();
 						$location 					= array();
 						$basic_info['hotel_name'] 	= $postData['hotel_name'];
+						$basic_info['hotel_chain'] 	= $postData['hotel_chain'];
 						$basic_info['hotel_type'] 	= $postData['hotel_type'];
 						$basic_info['star_rating'] 	= $postData['star_rating'];
 						$basic_info['base_currency']= $postData['base_currency'];
@@ -441,6 +446,7 @@ class Hotels extends CI_Controller {
 		$data['hotel_types'] 	= $this->Common_model->getHotelTypes();
 		$data['amenities'] 		= $this->Common_model->getAmenities($type=1);
 		$data['designations'] 	= $this->Common_model->getDesignation();
+		$data['hotel_chains']    = $this->Common_model->getHotelChains();
         $this->template->load('admin/base', 'admin/hotels/edithotel', $data);
 	}
 
@@ -524,7 +530,7 @@ class Hotels extends CI_Controller {
 	 * @Description	-: This function used to display rooms of hotel
 	 * @Created		-: 07-09-2016
 	 */  
-	public function hotelRooms($hotel_id) 
+	public function hotelRooms($hotel_id,$offset=0) 
 	{
 		if(empty($hotel_id) && !is_numeric($hotel_id))
 		{
@@ -541,11 +547,47 @@ class Hotels extends CI_Controller {
 		$query = $this->db->get('hotel');
 		if($query->num_rows() > 0)
 		{
-			$rooms  = $this->Hotel_model->getHotelRooms($hotel_id);
-			if($rooms)
-			{
-				$data['rooms'] 		= $rooms;
+			$totalRow 					= $this->Hotel_model->getHotelRooms($hotel_id);
+			
+			$config 					= array();
+			$data['totalRecords'] 		= $totalRow;
+			$data['limit'] 				= $this->limit;
+			$config["base_url"] 		= base_url('admin/hotels/hotelRooms/'.$hotel_id);
+			$config["total_rows"] 		= $totalRow;
+			$config["per_page"] 		= $this->limit;
+			$config['uri_segment'] 		= 5;
+			$config['use_page_numbers'] = TRUE;
+			$config['num_links'] 		= $totalRow;
+			$config['cur_tag_open'] 	= '<li class="table-red paginate_button active" ><a>';
+			$config['cur_tag_close'] 	= '</a></li>';
+			$config['num_tag_open'] 	= '<li class="paginate_button" >';
+			$config['num_tag_close'] 	= '</li>';
+			$config['full_tag_open'] 	= '<li class="paginate_button">';
+			$config['full_tag_close'] 	= '</li>';
+			$config['next_tag_open'] 	= '<li class="paginate_button next">';
+			$config['prev_tag_open'] 	= '<li class="paginate_button previous">';
+			$config['next_tag_close'] 	= '</li>';
+			$config['prev_tag_close'] 	= '</li>';
+			$config['num_tag_open'] 	= '<li class="paginate_button">';
+			$config['num_tag_close'] 	= '</li>';
+			$config['last_tag_close'] 	= '<li class="paginate_button next">';
+			$config['last_tag_close'] 	= '</li>';
+			$config['next_link'] 		= 'Next';
+			$config['prev_link'] 		= 'Previous';
+			$this->pagination->initialize($config);
+			if($offset > 1){
+				$page 	= ($offset - 1) * $this->limit;
 			}
+			else{
+				 $page 	= $offset;
+			}
+			$data['recordsFrom'] 	= $page;
+			$str_links 				= $this->pagination->create_links();
+			$data["links"] 			= $str_links;
+			$page 					= (empty($page)) ? 'P' : $page;
+
+			$data['rooms']  = $this->Hotel_model->getHotelRooms($hotel_id,$page);
+			
 		}
 		else
 		{
@@ -572,8 +614,8 @@ class Hotels extends CI_Controller {
 		$data = array(
             'title' => 'Hotels',
             'list_heading' => 'Add Hotel Room',
-            'breadcrum' => '<li><a href="'.base_url('admin/hotels').'">Hotels</a></li>
-            <li><a href="'.base_url('admin/hotels/addHotel').'">Add Hotel Room</a></li>',
+            'breadcrum' => '<li><a href="'.base_url('admin/hotels/hotelRooms/'.$hotel_id).'">Hotel Room</a></li>
+            <li><a href="'.base_url('admin/hotels/addHotel').'">Add Hotel Rooms</a></li>',
         );
         $data['hotel_id'] 	= $hotel_id;
         $postData = $this->input->post();
@@ -595,102 +637,111 @@ class Hotels extends CI_Controller {
 			if($this->form_validation->run()==true){
 				$lobbyImages 		= '';
 				$lobbyPrimaryImage 	= '';
-				$files 			= $_FILES['uploadedlobbyimages'];
-				$errors 		= '';
-				$total_files 	= count($_FILES['uploadedlobbyimages']['tmp_name']);
-				for($i=0;$i<$total_files;$i++){
-					if($_FILES['uploadedlobbyimages']['error'][$i] != 0){
-					  $errors .= 'Couldn\'t upload file '.$_FILES['uploadedlobbyimages']['name'][$i];
-					}
-				}
+				if(!empty($_FILES['uploadedlobbyimages']['tmp_name'][0]))
+				{
+					$files 			= $_FILES['uploadedlobbyimages'];
+					$errors 		= '';
+					$total_files 	= count($_FILES['uploadedlobbyimages']['tmp_name']);
+					/*for($i=0;$i<$total_files;$i++){
+						if($_FILES['uploadedlobbyimages']['error'][$i] != 0){
+						  $errors .= 'Couldn\'t upload file '.$_FILES['uploadedlobbyimages']['name'][$i];
+						}
+					}*/
 
-				if(empty($errors)){
-					$this->load->library('upload');
-					$config['upload_path'] = FCPATH . 'uploads/room/lobby/';
-					$config['allowed_types'] = 'gif|jpg|jpeg|png';
-					for ($i = 0; $i < $total_files; $i++){
-						$_FILES['uploadedlobbyimages']['name'] 		= $files['name'][$i];
-						$_FILES['uploadedlobbyimages']['type'] 		= $files['type'][$i];
-						$_FILES['uploadedlobbyimages']['tmp_name'] 	= $files['tmp_name'][$i];
-						$_FILES['uploadedlobbyimages']['error'] 	= $files['error'][$i];
-						$_FILES['uploadedlobbyimages']['size'] 		= $files['size'][$i];
-						$this->upload->initialize($config);
-						if($this->upload->do_upload('uploadedlobbyimages')){
-							$uploads 		= $this->upload->data();
-							if($postData['primary']==$i){
-								$lobbyPrimaryImage = $uploads['file_name'];
+					if(empty($errors)){
+						$this->load->library('upload');
+						$config['upload_path'] = FCPATH . 'uploads/room/lobby/';
+						$config['allowed_types'] = 'gif|jpg|jpeg|png';
+						for ($i = 0; $i < $total_files; $i++){
+							$_FILES['uploadedlobbyimages']['name'] 		= $files['name'][$i];
+							$_FILES['uploadedlobbyimages']['type'] 		= $files['type'][$i];
+							$_FILES['uploadedlobbyimages']['tmp_name'] 	= $files['tmp_name'][$i];
+							$_FILES['uploadedlobbyimages']['error'] 	= $files['error'][$i];
+							$_FILES['uploadedlobbyimages']['size'] 		= $files['size'][$i];
+							$this->upload->initialize($config);
+							if($this->upload->do_upload('uploadedlobbyimages')){
+								$uploads 		= $this->upload->data();
+								if($postData['primary']==$i){
+									$lobbyPrimaryImage = $uploads['file_name'];
+								}
+								$lobbyImages[$i] = $uploads['file_name'];
+							}else{
+								$errors .= $this->upload->display_errors();
 							}
-							$lobbyImages[$i] = $uploads['file_name'];
-						}else{
-							$errors .= $this->upload->display_errors();
 						}
 					}
 				}
 				//lounge images
 				$loungeImages 			= '';
 				$loungePrimaryImage 	= '';
-				$files2 				= $_FILES['uploadedloungeimages'];
-				
-				$total_files2 			= count($_FILES['uploadedloungeimages']['tmp_name']);
-				for($i=0;$i<$total_files2;$i++){
-					if($_FILES['uploadedloungeimages']['error'][$i] != 0){
-					  $errors .= 'Couldn\'t upload file '.$_FILES['uploadedloungeimages']['name'][$i];
-					}
-				}
+				if(!empty($_FILES['uploadedloungeimages']['tmp_name'][0]))
+				{
+					$files2 				= $_FILES['uploadedloungeimages'];
+					
+					$total_files2 			= count($_FILES['uploadedloungeimages']['tmp_name']);
+					/*for($i=0;$i<$total_files2;$i++){
+						if($_FILES['uploadedloungeimages']['error'][$i] != 0){
+						  $errors .= 'Couldn\'t upload file '.$_FILES['uploadedloungeimages']['name'][$i];
+						}
+					}*/
 
-				if(empty($errors)){
-					$this->load->library('upload');
-					$config2['upload_path'] = FCPATH . 'uploads/room/lounge/';
-					$config2['allowed_types'] = 'gif|jpg|jpeg|png';
-					for ($i = 0; $i < $total_files2; $i++){
-						$_FILES['uploadedloungeimages']['name'] 		= $files2['name'][$i];
-						$_FILES['uploadedloungeimages']['type'] 		= $files2['type'][$i];
-						$_FILES['uploadedloungeimages']['tmp_name'] 	= $files2['tmp_name'][$i];
-						$_FILES['uploadedloungeimages']['error'] 		= $files2['error'][$i];
-						$_FILES['uploadedloungeimages']['size'] 		= $files2['size'][$i];
-						$this->upload->initialize($config2);
-						if($this->upload->do_upload('uploadedloungeimages')){
-							$uploads2 		= $this->upload->data();
-							if($postData['primary2']==$i){
-								$loungePrimaryImage = $uploads2['file_name'];
+					if(empty($errors)){
+						$this->load->library('upload');
+						$config2['upload_path'] = FCPATH . 'uploads/room/lounge/';
+						$config2['allowed_types'] = 'gif|jpg|jpeg|png';
+						for ($i = 0; $i < $total_files2; $i++){
+							$_FILES['uploadedloungeimages']['name'] 		= $files2['name'][$i];
+							$_FILES['uploadedloungeimages']['type'] 		= $files2['type'][$i];
+							$_FILES['uploadedloungeimages']['tmp_name'] 	= $files2['tmp_name'][$i];
+							$_FILES['uploadedloungeimages']['error'] 		= $files2['error'][$i];
+							$_FILES['uploadedloungeimages']['size'] 		= $files2['size'][$i];
+							$this->upload->initialize($config2);
+							if($this->upload->do_upload('uploadedloungeimages')){
+								$uploads2 		= $this->upload->data();
+								if($postData['primary2']==$i){
+									$loungePrimaryImage = $uploads2['file_name'];
+								}
+								$loungeImages[$i] = $uploads2['file_name'];
+							}else{
+								$errors .= $this->upload->display_errors();
 							}
-							$loungeImages[$i] = $uploads2['file_name'];
-						}else{
-							$errors .= $this->upload->display_errors();
 						}
 					}
 				}
 				// reception images
 				$receptionImages 			= '';
 				$receptionPrimaryImage 		= '';
-				$files3 					= $_FILES['uploadedreceptionimages'];
-				
-				$total_files3 				= count($_FILES['uploadedreceptionimages']['tmp_name']);
-				for($i=0;$i<$total_files3;$i++){
-					if($_FILES['uploadedreceptionimages']['error'][$i] != 0){
-					  $errors .= 'Couldn\'t upload file '.$_FILES['uploadedreceptionimages']['name'][$i];
-					}
-				}
+				if(!empty($_FILES['uploadedreceptionimages']['tmp_name'][0]))
+				{
+					$files3 					= $_FILES['uploadedreceptionimages'];
+					
+					$total_files3 				= count($_FILES['uploadedreceptionimages']['tmp_name']);
+					/*for($i=0;$i<$total_files3;$i++){
+						if($_FILES['uploadedreceptionimages']['error'][$i] != 0){
+						  $errors .= 'Couldn\'t upload file '.$_FILES['uploadedreceptionimages']['name'][$i];
+						}
+					}*/
 
-				if(empty($errors)){
-					$this->load->library('upload');
-					$config3['upload_path'] = FCPATH . 'uploads/room/reception/';
-					$config3['allowed_types'] = 'gif|jpg|jpeg|png';
-					for ($i = 0; $i < $total_files3; $i++){
-						$_FILES['uploadedreceptionimages']['name'] 		= $files3['name'][$i];
-						$_FILES['uploadedreceptionimages']['type'] 		= $files3['type'][$i];
-						$_FILES['uploadedreceptionimages']['tmp_name'] 	= $files3['tmp_name'][$i];
-						$_FILES['uploadedreceptionimages']['error'] 	= $files3['error'][$i];
-						$_FILES['uploadedreceptionimages']['size'] 		= $files3['size'][$i];
-						$this->upload->initialize($config3);
-						if($this->upload->do_upload('uploadedreceptionimages')){
-							$uploads3 		= $this->upload->data();
-							if($postData['primary3']==$i){
-								$receptionPrimaryImage = $uploads3['file_name'];
+					if(empty($errors)){
+						$this->load->library('upload');
+						$config3['upload_path'] = FCPATH . 'uploads/room/reception/';
+						$config3['allowed_types'] = 'gif|jpg|jpeg|png';
+						for ($i = 0; $i < $total_files3; $i++){
+							$_FILES['uploadedreceptionimages']['name'] 		= $files3['name'][$i];
+							$_FILES['uploadedreceptionimages']['type'] 		= $files3['type'][$i];
+							$_FILES['uploadedreceptionimages']['tmp_name'] 	= $files3['tmp_name'][$i];
+							$_FILES['uploadedreceptionimages']['error'] 	= $files3['error'][$i];
+							$_FILES['uploadedreceptionimages']['size'] 		= $files3['size'][$i];
+							$this->upload->initialize($config3);
+							if($this->upload->do_upload('uploadedreceptionimages')){
+								$uploads3 		= $this->upload->data();
+								if($postData['primary3']==$i){
+									$receptionPrimaryImage = $uploads3['file_name'];
+								}
+								$receptionImages[$i] = $uploads3['file_name'];
+							}else{
+								$errors .= $this->upload->display_errors();
 							}
-							$receptionImages[$i] = $uploads3['file_name'];
-						}else{
-							$errors .= $this->upload->display_errors();
 						}
 					}
 				}
@@ -761,7 +812,7 @@ class Hotels extends CI_Controller {
 		$data = array(
 			'title' => 'Hotels',
 			'list_heading' => 'Edit Hotel Room',
-			'breadcrum' => '<li><a href="'.base_url('admin/hotels').'">Hotels</a></li>
+			'breadcrum' => '<li><a href="'.base_url('admin/hotels/hotelRooms/'.$hotel_id).'">Hotel Rooms</a></li>
 			<li><a href="">Edit Hotel Room</a></li>',
 		);
 

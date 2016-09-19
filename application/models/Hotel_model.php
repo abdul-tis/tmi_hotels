@@ -117,12 +117,20 @@ Class Hotel_model extends CI_Model {
 	 * @Return 		-: array()
 	 */
 
-	function getHotelRooms($hotel_id)
+	function getHotelRooms($hotel_id,$start=NULL)
 	{
-		$this->db->select('r.*,rg.lobby_primary_image');
+		$this->db->select('r.*,rg.lobby_primary_image,rc.category_type,rc.meal_plan');
 		$this->db->join('room_gallery as rg','r.type_id=rg.room_id','left');
+		$this->db->join('rate_categories as rc','rc.id=r.rate_category');
 		$this->db->where('r.hotel_id',$hotel_id);
-		$result = $this->db->get('room_info as r')->result_array();
+		if(!empty($start)){
+			$start		= ($start=='P') ? 0 : $start;
+			$result 	= $this->db->limit($this->limit,$start)->get('room_info as r')->result_array();;
+		}
+		else{
+			$result = $this->db->get('room_info as r')->num_rows();
+		}
+		
 		return $result;
 
 	}

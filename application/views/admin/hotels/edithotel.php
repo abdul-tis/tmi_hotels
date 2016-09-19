@@ -73,6 +73,25 @@
                                                                 </label>
                                                             </section>
                                                             <section>
+                                                                <label class="label">Hotel Chain</label>
+                                                                <label class="select">
+                                                                    <select class="input-sm" name="hotel_chain" id="hotel_chain">
+                                                                        <option value="">Select Hotel Chain</option>
+                                                                        <?php 
+                                                                            if(!empty($hotel_chains))
+                                                                            {
+                                                                                foreach($hotel_chains as $hotel_chain)
+                                                                                {
+                                                                        ?>
+                                                                        <option value="<?php echo $hotel_chain['id'];?>" <?php echo (!empty($hotel['hotel_chain']) && $hotel['hotel_chain'] == $hotel_chain['id'])?'selected':'';?>><?php echo $hotel_chain['name'];?></option>
+                                                                        <?php
+                                                                                }
+                                                                            }
+                                                                        ?>
+                                                                    </select> <i></i> 
+                                                                </label>
+                                                            </section>
+                                                            <section>
                                                                 <label class="label">Hotel Type</label>
                                                                 <label class="select">
                                                                     <select class="input-sm" name="hotel_type" id="hotel_type" required="">
@@ -298,22 +317,25 @@
                                                                 ?>
                                                                 <div>
                                                                   <h4><?php echo $amenity['service_name']; ?></h4>
-                                                                  <div class="padding-10">
+                                                                  <div>
+                                                                    <div class="row">
                                                                     <?php if(!empty($subServices)){
+                                                                        $i=1;
                                                                             foreach($subServices as $subService){
                                                                                 $hotel_amenities = explode(',', $hotel['hotel_amenities'])
                                                                     ?>
-                                                                    
-                                                                    <label class="input">
-                                                                        <div class="row">
-                                                                            <label class="checkbox">
-                                                                                <input type="checkbox" name="hotel_amenities[]" value="<?php echo $subService['id']?>" <?php echo (in_array($subService['id'], $hotel_amenities))?'checked':'';?>><i></i><?php echo $subService['service_name'];?>
-                                                                            </label>
-                                                                        </div>
-                                                                    
-                                                                    <?php }}?>
+                                                                    <div class="col col-3">
+                                                                        <label class="input">
+                                                                            <div class="row">
+                                                                                <label class="checkbox">
+                                                                                    <input type="checkbox" name="hotel_amenities[]" value="<?php echo $subService['id']?>" <?php echo (in_array($subService['id'], $hotel_amenities))?'checked':'';?>><i></i><?php echo $subService['service_name'];?>
+                                                                                </label>
+                                                                            </div>
+                                                                        </label>
+                                                                    </div>
+                                                                    <?php if($i%4==0) echo '</div><div class="row">';$i++;}}?>
                                                                   </div>
-                                                                  
+                                                                  </div>
                                                                 </div>
                                                                 <?php 
                                                                         }
@@ -489,13 +511,13 @@
                                                         <section>
                                                             <label class="label">Meta Title</label>
                                                             <label class="input">
-                                                                <input type="text" placeholder="Meta Title" name="meta_title" id="meta_title" value="<?php echo (!empty($hotel['meta_title']))?$hotel['meta_title']:'';?>" required=""> 
+                                                                <input type="text" placeholder="Meta Title" name="meta_title" id="meta_title" value="<?php echo (!empty($hotel['meta_title']))?$hotel['meta_title']:'';?>"> 
                                                             </label>
                                                         </section>
                                                         <section>
                                                             <label class="label">Meta Description</label>
                                                             <label class="textarea">
-                                                                <textarea class="custom-scroll" rows="5" name="meta_description" id="meta_description" required=""><?php echo (!empty($hotel['meta_description']))?$hotel['meta_description']:'';?></textarea>
+                                                                <textarea class="custom-scroll" rows="5" name="meta_description" id="meta_description"><?php echo (!empty($hotel['meta_description']))?$hotel['meta_description']:'';?></textarea>
                                                             </label>
                                                         </section>  
                                                     </fieldset>

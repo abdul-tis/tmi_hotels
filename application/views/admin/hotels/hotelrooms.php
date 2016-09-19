@@ -43,9 +43,10 @@
                                                 <th>Image</th>
                                                 <th>Room Type</th>
                                                 <th>Price (Rs)</th>
-                                                <th>Adults</th>
-                                                <th>Child</th>
+                                                <th>Max Person</th>
                                                 <th>Extra Beds</th>
+                                                <th>Period</th>
+                                                
                                                 <th class="sorting">Action</th>
 											</tr>
                                     </thead>
@@ -80,27 +81,51 @@
 												<span class="view_mode<?php echo $room['type_id'];?>"><?php echo (!empty($room_type)) ? $room_type : "N/A";?></span>
 											</td>
                                             <td>
-												<span class="view_mode<?php echo $room['type_id'];?>"><?php echo (!empty($room['price'])) ? $room['price'] : "N/A";?></span>
+												<span class="view_mode<?php echo $room['type_id'];?>"><?php echo (!empty($room['price'])) ? $room['price'].' with <a href="javascript:void(0)" title="'.$room['category_type'].'">'.$room['meal_plan'].'</a>' : "N/A";?></span>
 											</td>
 											<td>
-												<span class="view_mode<?php echo $room['type_id'];?>"><?php echo (!empty($room['adults'])) ? $room['adults'] : "N/A";?></span>
+												<span class="view_mode<?php echo $room['type_id'];?>"><strong>Adults :</strong> <?php echo (!empty($room['adults'])) ? $room['adults'] : "N/A";?> <br/><strong>Children :</strong> <?php echo (!empty($room['children'])) ? $room['children'] : "N/A";?></span>
+											</td>
+											<td>
+												<span class="view_mode<?php echo $room['type_id'];?>"><strong>Bed:</strong> <?php echo (!empty($room['extra_beds'])) ? $room['extra_beds'].' <br/><strong>Charge:</strong>(Rs.'.$room['extra_bed_charge'].' / bed)' : "N/A";?></span>
 											</td>
                                             <td>
-                                                <span class="view_mode<?php echo $room['type_id'];?>"><?php echo (!empty($room['children'])) ? $room['children'] : "N/A";?></span>
+                                                <span class="view_mode<?php echo $room['type_id'];?>"><?php echo (!empty($room['period_from']) && !empty($room['period_to'])) ? date('m/d/Y',strtotime($room['period_from'])).' - '.date('m/d/Y',strtotime($room['period_to'])) : "N/A";?></span>
                                             </td>
-											<td>
-												<span class="view_mode<?php echo $room['type_id'];?>"><?php echo (!empty($room['extra_beds'])) ? $room['extra_beds'] : "N/A";?></span>
-											</td>
+                                            
 											<td>
 												<a class="btn btn-success commonBtn" data-type ="edit" data-row-id="<?php echo 'room_'.$room['type_id'];?>" data-id="<?php echo $room['type_id'];?>" href="<?php echo base_url('admin/hotels/editHotelRoom/'.$hotel_id.'/'.$room['type_id'])?>">Edit</a>
 												<a class="delete btn btn-sm btn-danger" data-target="#confirm-delete" data-toggle="modal" data-record-title="<?php echo $room['room_type'];?>" data-type="delete" data-record-id="<?php echo $room['type_id'];?>" data-remove-row="<?php echo 'room_'.$room['type_id'];?>" href="javascript:void(0)" >Delete</a>
 											</td>
 											</form>
                                         </tr>
-                                        <?php } }?>
+                                        <?php } } else {?>
+                                        <tr>
+                                            <td colspan="7" align="center">
+                                                <span>No Records Found</span>
+                                            </td>
+                                        </tr>
+                                        <?php }?>
                                     </tbody>
                                 </table>
-
+                                <div class="dt-toolbar-footer">
+                                    <div class="col-sm-6 col-xs-6 hidden-xs">
+                                        <div class="dataTables_info" id="dt_basic_info" role="status" aria-live="polite">Showing 
+                                        <span class="txt-color-darken" id="num_from"><?=$recordsFrom;?></span> to <span class="txt-color-darken" id="num_to"><?=($totalRecords < $limit ) ? $totalRecords : $limit;?></span>
+                                        of <span class="text-primary" id="total_page"><?=$totalRecords;?></span> entries
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-xs-6 col-sm-6">
+                                        <div class="dataTables_paginate paging_simple_numbers" id="dt_basic_paginate">
+                                            <ul class="pagination pagination-sm">
+                                            <?php
+                                                echo $links;
+                                            ?>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <!-- end widget content -->
 
@@ -143,13 +168,13 @@
 <script src="<?php echo base_url(); ?>assets/admin/js/dateformat.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
-        $('#dt_basic').dataTable({
+        /*$('#dt_basic').dataTable({
             "sDom": "<'dt-toolbar'<'col-xs-12 col-sm-6'f><'col-sm-6 col-xs-12 hidden-xs'l>r>" +
                     "t" +
                     "<'dt-toolbar-footer'<'col-sm-6 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-6'p>>",
             "autoWidth": true,
 
-        });
+        });*/
 
         $('#confirm-delete').on('click', '.btn-ok', function (e) {
             var $modalDiv = $(e.delegateTarget);

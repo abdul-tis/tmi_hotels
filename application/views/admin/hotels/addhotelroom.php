@@ -118,6 +118,7 @@
                                                                     <input type="text" placeholder="Price" required="" id="price" name="price" data-parsley-type="number" value="<?php echo set_value('price')?>">
                                                                 </label>
                                                             </section>
+                                                            <div class="row">
                                                             <section>
                                                                 <label class="label">Period</label>
                                                                 <div class="input">
@@ -139,7 +140,7 @@
                                                                     </div>
                                                                 </div>
                                                             </section>
-
+                                                            </div>
                                                             <section> 
                                                                 <label class="label"></label>
                                                                 <div class="input input-radio">
@@ -154,7 +155,7 @@
                                                                     
                                                                         <label class="radio state-success">
                                                                             <input type="radio" <?php echo $i==2?'checked':'';?> value="<?php echo $rate_category['id'];?>" name="rate_category" data-parsley-multiple="status" data-parsley-id="1815">
-                                                                            <i></i><?php echo $rate_category['category_type'];?>
+                                                                            <i></i><?php echo $rate_category['category_type'];?> (<?php echo $rate_category['meal_plan'];?>)
                                                                         </label><?php if($i==1){?><ul class="parsley-errors-list" id="parsley-id-multiple-status"></ul><?php }?>
                                                                     
                                                                     <?php 
@@ -209,59 +210,6 @@
                                                         </fieldset>
                                                     </div>
                                                     
-                                                     <!-- <div class="col-lg-6 col-sm-6">
-                                                        <fieldset>
-                                                            <section>
-                                                                <label class="label">Hotel Phone</label>
-                                                                <label class="input"> 
-                                                                    <input type="text" placeholder="Hotel Phone" name="hotel_phone" data-parsley-length="[10, 10]" data-parsley-type="digits" required=""  value="<?php echo set_value('hotel_phone')?>">
-                                                                </label>
-                                                            </section>
-                                                            <section>
-                                                                <label class="label">Hotel Mobile</label>
-                                                                <label class="input">
-                                                                    <input type="text" placeholder="Hotel Mobile" id="hotel_mobile" name="hotel_mobile" data-parsley-length="[10, 10]" data-parsley-type="digits" required="" value="<?php echo set_value('hotel_mobile')?>">
-                                                                </label>
-                                                            </section>
-                                                            <section>
-                                                                <label class="label">Email List</label>
-                                                                <label class="textarea">
-                                                                    <textarea class="custom-scroll" rows="5" name="email_list" id="email_list" required=""><?php echo set_value('email_list');?></textarea>
-                                                                    <span>seprate two emails with comma","</span>
-                                                                </label>
-                                                            </section>
-															<section>
-                                                                <label class="label">Checkin Time</label>
-                                                                <label class="input">
-                                                                    <input class="timepicker" type="text" placeholder="Checkin Time" name="checkin_time" id="checkin_time" required="" data-time-format="H:i:s" value="<?php echo set_value('checkin_time')?>"> 
-                                                                </label>
-                                                            </section>
-                                                            <section>
-                                                                <label class="label">Checkout Time</label>
-                                                                <label class="input">
-                                                                    <input class="timepicker" type="text" class="hasTimepicker" placeholder="Checkout Time" name="checkout_time" id="checkout_time" required="" data-time-format="H:i:s" value="<?php echo set_value('checkout_time')?>"> 
-                                                                </label>
-                                                            </section>
-                                                            
-                                                            <section>
-                                                                <label class="label">Status</label>
-                                                                <div class="input input-radio">
-                                                                    <div class="col col-3">
-																		<label class="radio state-success">
-																			<input type="radio" checked="" value="1" name="hotel_status" data-parsley-multiple="status" data-parsley-id="1815">
-																			<i></i>Enable
-																		</label><ul class="parsley-errors-list" id="parsley-id-multiple-status"></ul>
-																		</div>
-																		<div class="col col-3">
-																		<label class="radio state-error">
-																			<input type="radio" value="0" name="hotel_status" data-parsley-multiple="status" data-parsley-id="1815">
-																			<i></i>Disable
-																		</label>
-																	</div>
-                                                                </div>
-                                                            </section> 
-                                                           </fieldset>
-													</div> -->
                                             </article>
                                         </div>
                                     </div>
@@ -284,21 +232,24 @@
                                                                 ?>
                                                                 <div>
                                                                   <h4><?php echo $amenity['service_name']; ?></h4>
-                                                                  <div class="padding-10">
+                                                                  <div>
+                                                                    <div class="row">
                                                                     <?php if(!empty($subServices)){
+                                                                        $i=1;
                                                                             foreach($subServices as $subService){
                                                                     ?>
-                                                                    
-                                                                    <label class="input">
-                                                                        <div class="row">
-                                                                            <label class="checkbox">
-                                                                                <input type="checkbox" name="room_amenities[]" value="<?php echo $subService['id']?>"><i></i><?php echo $subService['service_name'];?>
-                                                                            </label>
-                                                                        </div>
-                                                                    </label>
-                                                                    <?php }}?>
+                                                                    <div class="col col-3">
+                                                                        <label class="input">
+                                                                            
+                                                                                <label class="checkbox">
+                                                                                    <input type="checkbox" name="room_amenities[]" value="<?php echo $subService['id']?>"><i></i><?php echo $subService['service_name'];?>
+                                                                                </label>
+                                                                            
+                                                                        </label>
+                                                                    </div>
+                                                                    <?php if($i%4==0) echo '</div><div class="row">';$i++;}}?>
                                                                   </div>
-                                                                  
+                                                                  </div>
                                                                 </div>
                                                                 <?php 
                                                                         }
