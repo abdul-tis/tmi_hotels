@@ -54,7 +54,7 @@
                                     </div>
                                     
                                 </div>
-                                <table id="dt_basic" class="table table-striped table-bordered table-hover editable-seller-info" width="100%">
+                                <table class="table table-striped table-bordered table-hover editable-seller-info" width="100%">
                                     <thead>
 											<tr>
                                                 <th>Hotel Name</th>
@@ -133,7 +133,7 @@
 												<span class="view_mode<?php echo $hotel['hotel_id'];?>"><?php echo (!empty($city)) ? $city : "N/A";?></span>
 											</td>
                                             <td>
-                                                <span class="view_mode<?php echo $hotel['hotel_id'];?>"><?php echo (!empty($hotel['price'])) ? $hotel['price'] : "N/A";?></span>
+                                                <span class="view_mode<?php echo $hotel['hotel_id'];?>"><?php echo (!empty($hotel['price'])) ? '<a href="javascript:void(0)" data-toggle="tooltip" title="Click to view prices" class="price_details" id="'.$hotel['hotel_id'].'">'.$hotel['price'].'</a>' : "N/A";?></span>
                                             </td>
 											<td>
 												<span class="view_mode<?php echo $hotel['hotel_id'];?>"><?php echo (!empty($hotel['no_of_rooms'])) ? $hotel['no_of_rooms'] : "N/A";?></span>
@@ -223,6 +223,33 @@
     </div>
 </div>
 
+<div class="modal fade" id="mymodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="myModalLabel">Price Details</h4>
+            </div>
+            <div class="modal-body">
+                <table class="table table-hover" width="100%">
+                    <thead>
+                        <tr>
+                            <th>Room Type</th>
+                            <th>Price (Rs)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="price_data">
+                        
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="<?php echo base_url(); ?>assets/admin/js/plugin/datatables/jquery.dataTables.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/admin/js/plugin/datatables/dataTables.bootstrap.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/admin/js/dateformat.js"></script>
@@ -246,9 +273,13 @@
                     "t" +
                     "<'dt-toolbar-footer'<'col-sm-6 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-6'p>>",
             "autoWidth": true,
+            "columnDefs": [{
+            "defaultContent": "-",
+            "targets": "_all"
+          }]
 
-        });*/
-
+        });
+*/
         $('#confirm-delete').on('click', '.btn-ok', function (e) {
             var $modalDiv = $(e.delegateTarget);
             var id = $(this).data('recordId');
@@ -269,6 +300,8 @@
             $('.btn-ok', this).data('recordId', data.recordId);
             $('.btn-ok', this).data('removeRow', data.removeRow);
         });
+
+        $('[data-toggle="tooltip"]').tooltip();
 
         var page_number     = 0;
         var total_page      = null;
@@ -440,11 +473,28 @@
                     }
 
                 });
-                /*$.post('<?=base_url('orders/getAjaxSellerOrders');?>',{'daterange':daterange,'sellerId':sellerId},function (){
-            
-                });*/
+                
             }
         }
+
+        $('.price_details').click(function(){
+            var hotel_id    = $(this).attr('id');
+            
+            if(hotel_id != ''){
+                $('#price_data').html('<tr><td colspan="2"><img src="<?php echo base_url('assets/admin/img/ajax-loader-image.gif');?>"></td></tr>');
+                $('#mymodal').modal('show');
+                $.ajax({
+                    url : '<?php echo base_url('admin/hotels/getPricesByHotel');?>',
+                    type : 'post',
+                    data : {'hotel_id':hotel_id},
+                    success:function(data){
+                        $('#price_data').html(data);
+                        
+                        $('[data-toggle="tooltip"]').tooltip();
+                    }
+                });
+            }
+        });
 
     })
 

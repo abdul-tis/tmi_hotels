@@ -81,7 +81,7 @@
 												<span class="view_mode<?php echo $room['type_id'];?>"><?php echo (!empty($room_type)) ? $room_type : "N/A";?></span>
 											</td>
                                             <td>
-												<span class="view_mode<?php echo $room['type_id'];?>"><?php echo (!empty($room['price'])) ? $room['price'].' with <a href="javascript:void(0)" title="'.$room['category_type'].'">'.$room['meal_plan'].'</a>' : "N/A";?></span>
+												<span class="view_mode<?php echo $room['type_id'];?>"><?php echo (!empty($room['price'])) ? $room['price'].' with <a href="javascript:void(0)" data-toggle="tooltip" title="'.$room['category_type'].'">'.$room['meal_plan'].'</a>' : "N/A";?></span>
 											</td>
 											<td>
 												<span class="view_mode<?php echo $room['type_id'];?>"><strong>Adults :</strong> <?php echo (!empty($room['adults'])) ? $room['adults'] : "N/A";?> <br/><strong>Children :</strong> <?php echo (!empty($room['children'])) ? $room['children'] : "N/A";?></span>
@@ -95,6 +95,7 @@
                                             
 											<td>
 												<a class="btn btn-success commonBtn" data-type ="edit" data-row-id="<?php echo 'room_'.$room['type_id'];?>" data-id="<?php echo $room['type_id'];?>" href="<?php echo base_url('admin/hotels/editHotelRoom/'.$hotel_id.'/'.$room['type_id'])?>">Edit</a>
+                                                <!-- <a class="btn btn-success commonBtn" data-type ="edit" data-row-id="<?php echo 'room_'.$room['type_id'];?>" data-id="<?php echo $room['type_id'];?>" href="<?php echo base_url('admin/hotels/availability/'.$room['type_id'])?>">Availability</a> -->
 												<a class="delete btn btn-sm btn-danger" data-target="#confirm-delete" data-toggle="modal" data-record-title="<?php echo $room['room_type'];?>" data-type="delete" data-record-id="<?php echo $room['type_id'];?>" data-remove-row="<?php echo 'room_'.$room['type_id'];?>" href="javascript:void(0)" >Delete</a>
 											</td>
 											</form>
@@ -197,6 +198,7 @@
             $('.btn-ok', this).data('removeRow', data.removeRow);
         });
 
+        $('[data-toggle="tooltip"]').tooltip();
     })
 
 </script>

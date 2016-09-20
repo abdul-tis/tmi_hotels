@@ -147,6 +147,30 @@ Class Common_model extends CI_Model {
 		$result = $this->db->get('hotel_chain')->result_array();
 		return $result;
 	}
+
+	function getRoomDetailsByHotel($hotel_id)
+	{
+		$this->db->select('r.price,rc.meal_plan,rc.category_type,rt.room_type');
+		$this->db->join('room_type as rt','r.room_type=rt.id');
+		$this->db->join('rate_categories as rc','r.rate_category=rc.id');
+		$this->db->where('r.hotel_id',$hotel_id);
+		$result = $this->db->get('room_info as r')->result_array();
+		return $result;
+	}
+
+
+	/**
+	 * @Method		-: getHotelCategories()
+	 * @Description	-: This function is used to fetch hotel categories
+	 * @Created on	-: 20-09-2016
+	 * @Return 		-: array()
+	 */
+	function getHotelCategories()
+	{
+		$this->db->where('status','1');
+		$result = $this->db->get('hotel_categories')->result_array();
+		return $result;
+	}
 }
 
 ?>

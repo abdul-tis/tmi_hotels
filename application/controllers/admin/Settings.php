@@ -116,7 +116,6 @@ class Settings extends CI_Controller {
 	 * @Description	-: This function used to edit amenity
 	 * @Created		-: 19-09-2016
 	*/ 
-
 	public function editAmenity($id){
 
 		if(empty($id) && !is_numeric($id)){
@@ -162,7 +161,7 @@ class Settings extends CI_Controller {
 
 				if(empty($errors)){
 					 try{
-							$update = $this->Setting_model->saveAminity($id,$postData);
+							$update = $this->Setting_model->saveAminity($postData,$id);
 							if($update){
 								setMessage(' Aminity updated successfully','success');
 								redirect('admin/settings/amenities');
@@ -216,6 +215,110 @@ class Settings extends CI_Controller {
 
 		$data['hotel_chains']  = $this->Setting_model->getHotelChains();
 		$this->template->load('admin/base', 'admin/settings/hotelchains', $data);
+	}
+
+	/**
+	 * @Method		-: addAmenity()
+	 * @Description	-: This function used to save amenity
+	 * @Created		-: 19-09-2016
+	*/ 
+
+	public function addHotelChain(){
+		$data = array(
+			'title' => 'Hotel Chain',
+			'list_heading' => 'Hotel Chain',
+			'breadcrum' => '<li><a href="'.base_url('admin/settings/hotelChains').'">Hotel Chain</a></li>',
+		);
+
+		$postData = $this->input->post();
+        if($postData){
+        	$this->form_validation->set_rules('name', 'Chain Name', 'trim|required',array('required' => 'You must provide a %s.'));
+
+			if($this->form_validation->run()==true){
+			 try{
+					$insert = $this->Setting_model->saveHotelChain($postData);
+					if($insert){
+						setMessage(' Hotel Chain added successfully','success');
+						redirect('admin/settings/hotelChains');
+					}
+				}catch(Exception $ex){
+					load_message('error',' Hotel chain is not inserted! '.$ex->getMessage());
+				}
+				
+
+			}else{
+				setMessage(' '.Validation_errors(),'warning');
+			}
+    	}
+
+		$this->template->load('admin/base', 'admin/settings/addhotelchain', $data);
+	}
+
+	/**
+	 * @Method		-: editHoteChain()
+	 * @Description	-: This function used to edit hotel chain
+	 * @Created		-: 20-09-2016
+	*/ 
+	public function editHotelChain($id){
+
+		if(empty($id) && !is_numeric($id)){
+			redirect('admin/settings/hotelChains');
+		}
+		$data = array(
+			'title' => 'Hotel Chains',
+			'list_heading' => 'Edit Hotel Chain',
+			'breadcrum' => '<li><a href="'.base_url('admin/settings/hotelChains').'">Hotel Chain</a></li>',
+		);
+
+		$hotel_chain 	= $this->Setting_model->getHotelChainById($id);
+
+		if($hotel_chain){
+			$data['hotel_chain'] 	= $hotel_chain;
+		}else{
+			redirect('admin/settings/hotelChains');
+		}
+
+		$postData = $this->input->post();
+        if($postData){
+        	$this->form_validation->set_rules('name', 'Chain Name', 'trim|required',array('required' => 'You must provide a %s.'));
+
+			if($this->form_validation->run()==true){
+				
+				 try{
+						$update = $this->Setting_model->saveHotelChain($postData,$id);
+						if($update){
+							setMessage(' Hotel Chain updated successfully','success');
+							redirect('admin/settings/hotelChains');
+						}
+					}catch(Exception $ex){
+						load_message('error',' Hotel Chain is not inserted! '.$ex->getMessage());
+					}
+				
+			}else{
+				setMessage(' '.Validation_errors(),'warning');
+			}
+    	}
+
+		$this->template->load('admin/base', 'admin/settings/edithotelchain', $data);
+	}
+
+	/**
+	 * @Method		-: deleteHotelChain()
+	 * @Description	-: This function is used to remove hotel chain
+	 * @Created		-: 19-09-2016
+	 */ 
+	public function deleteHotelChain(){
+		$id 	= $this->input->post('id');
+		try{
+			$delete = $this->Setting_model->deleteHotelChain($id); 
+			if($delete){
+				echo "TRUE";
+			}
+
+		}catch(Exception $ex){
+			log_message('error','Hotel did not remove'.$ex->getMessage());
+			echo "FALSE";
+		}
 	}
 }
 

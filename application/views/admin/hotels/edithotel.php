@@ -111,6 +111,27 @@
                                                                 </label>
                                                             </section>
                                                             <section>
+                                                                <label class="label">Hotel Category</label>
+                                                                <label class="select select-multiple">
+                                                                    <select class="custom-scroll" name="hotel_category[]" id="hotel_category" multiple="">
+                                                                        <?php 
+                                                                            if(!empty($hotel_categories))
+                                                                            {
+                                                                                foreach($hotel_categories as $category)
+                                                                                {
+                                                                                    $hotel_category = explode(',',$hotel['hotel_category']);
+                                                                        ?>
+                                                                        <option value="<?php echo $category['id'];?>" <?php echo (in_array($category['id'], $hotel_category))?'selected':'';?>><?php echo $category['hotel_category'];?></option>
+
+                                                                        <?php
+                                                                                }
+                                                                            }
+                                                                        ?>
+                                                                    </select> <i></i>
+                                                                    <span>Note: hold down the ctrl button to select multiple options. </span> 
+                                                                </label>
+                                                            </section>
+                                                            <section>
                                                                 <label class="label">Star Rating</label>
                                                                 <label class="select">
                                                                     <select class="input-sm" name="star_rating" id="star_rating" required="">

@@ -176,10 +176,13 @@ class Hotels extends CI_Controller {
 					try{
 						$basic_info 				= array();
 						$location 					= array();
-
+						
 						$basic_info['hotel_name'] 	= $postData['hotel_name'];
 						$basic_info['hotel_chain'] 	= $postData['hotel_chain'];
 						$basic_info['hotel_type'] 	= $postData['hotel_type'];
+						if(!empty($postData['hotel_category'])){
+							$basic_info['hotel_category']= implode(',',$postData['hotel_category']);
+						}
 						$basic_info['star_rating'] 	= $postData['star_rating'];
 						$basic_info['base_currency']= $postData['base_currency'];
 						$basic_info['no_of_rooms'] 	= $postData['no_of_rooms'];
@@ -240,6 +243,7 @@ class Hotels extends CI_Controller {
 		$data['amenities'] 		= $this->Common_model->getAmenities($type=1);
 		$data['designations'] 	= $this->Common_model->getDesignation();
 		$data['hotel_chains']    = $this->Common_model->getHotelChains();
+		$data['hotel_categories'] = $this->Common_model->getHotelCategories();
         $this->template->load('admin/base', 'admin/hotels/addhotel', $data);
 	}
 
@@ -368,11 +372,15 @@ class Hotels extends CI_Controller {
 				}
 				if(empty($errors)){
 					try{
+						
 						$basic_info 				= array();
 						$location 					= array();
 						$basic_info['hotel_name'] 	= $postData['hotel_name'];
 						$basic_info['hotel_chain'] 	= $postData['hotel_chain'];
 						$basic_info['hotel_type'] 	= $postData['hotel_type'];
+						if(!empty($postData['hotel_category'])){
+							$basic_info['hotel_category']= implode(',',$postData['hotel_category']);
+						}
 						$basic_info['star_rating'] 	= $postData['star_rating'];
 						$basic_info['base_currency']= $postData['base_currency'];
 						$basic_info['no_of_rooms'] 	= $postData['no_of_rooms'];
@@ -447,6 +455,7 @@ class Hotels extends CI_Controller {
 		$data['amenities'] 		= $this->Common_model->getAmenities($type=1);
 		$data['designations'] 	= $this->Common_model->getDesignation();
 		$data['hotel_chains']    = $this->Common_model->getHotelChains();
+		$data['hotel_categories'] = $this->Common_model->getHotelCategories();
         $this->template->load('admin/base', 'admin/hotels/edithotel', $data);
 	}
 
@@ -1194,7 +1203,44 @@ class Hotels extends CI_Controller {
 		$data['links']  = $links;
 		$data['hotels'] = $html;
 		echo json_encode($data);
-	 } 
+	 }
+
+	public function getPricesByHotel(){
+		$hotel_id 	= $this->input->post('hotel_id');
+
+		$room_types = $this->Common_model->getRoomDetailsByHotel($hotel_id);
+		echo $this->db->last_query();
+		$html 		= '';
+		if(!empty($room_types)){
+			foreach($room_types as $room_type){
+				$html .= '<tr>';
+				$html .= '<td>'.$room_type['room_type'].'</td>';
+				$html .= '<td>'.$room_type['price'].' with <a href="javascript:void(0)" data-toggle="tooltip" title="'.$room_type['category_type'].'">'.$room_type['meal_plan'].'</td>';
+				$html .= '</tr>';
+			}
+		}else{
+			$html .= '<tr>';
+			$html .= '<td colspan="2">No room type available for this hotel</td>';
+			$html .= '</tr>';
+		}
+
+		echo $html;
+		die;
+	}
+
+	public function availability($id){
+		if((empty($id) && !is_numeric($id)))
+		{
+			redirect('admin/hotels/hotelRooms/'.$hotel_id);
+		}
+
+		$data = array(
+			'title' => 'Hotels',
+			'list_heading' => 'Edit Hotel Room',
+			'breadcrum' => '<li><a href="'.base_url('admin/hotels/hotelRooms/'.$hotel_id).'">Hotel Rooms</a></li>
+			<li><a href="">Edit Hotel Room</a></li>',
+		);
+	} 
 
 
 }

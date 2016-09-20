@@ -19,7 +19,7 @@
             <li class="">
                 <a title="Dashboard" href="<?php echo base_url('admin/dashboard')?>">
                     <i class="fa fa-lg fa-fw fa-home"></i><span class="menu-item-parent">Dashboard </span>
-                    <b class="collapse-sign"><em class="fa fa-minus-square-o"></em></b>
+                    
                 </a>
             </li>
 
@@ -31,7 +31,6 @@
                 <a title="Hotels" href="#">
                     <i class="fa fa-lg fa-fw fa-table"></i>
                     <span class="menu-item-parent">Hotel Management</span>
-                    <b class="collapse-sign"><em class="fa fa-minus-square-o"></em></b>
                 </a>
                 <ul style="<?php echo (!empty($url_seg) && $url_seg=='hotels') ? 'display:block' : '';?>">
                     <li class="">
@@ -49,7 +48,6 @@
                 <a title="Product Categories" href="#">
                     <i class="fa fa-lg fa-fw fa-table"></i>
                     <span class="menu-item-parent">Settings</span>
-                    <b class="collapse-sign"><em class="fa fa-minus-square-o"></em></b>
                 </a>
                 <ul style="<?php echo (!empty($seg_setting) && $seg_setting=='settings') ? 'display: block' : 'display: none';?>">
                     <li class="<?php echo (!empty($seg_setting_new) && $seg_setting_new=='amenities') ? 'active' : '';?>">

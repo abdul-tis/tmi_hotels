@@ -26,7 +26,7 @@
                                     </a>
                                 </li>
                             </ul>
-                            <form class="smart-form" id="editAmenityForm"  method="post" data-parsley-validate="" enctype="multipart/form-data" action="<?php echo base_url('admin/settings/addAmenity'); ?>">
+                            <form class="smart-form" id="editAmenityForm"  method="post" data-parsley-validate="" enctype="multipart/form-data" action="<?php echo base_url('admin/settings/editAmenity/'.$amenity['id']); ?>">
                                 <div class="tab-content padding-10">
                                     <div id="tab1" class="tab-pane active">
                                         <div class="row">

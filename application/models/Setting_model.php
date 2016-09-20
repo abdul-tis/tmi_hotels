@@ -45,12 +45,16 @@ Class Setting_model extends CI_Model {
 	 * @Created on	-: 19-09-2016
 	 * @Return 		-: array()
 	 */
-
-	function saveAminity($data){
-		if(!empty($data)){
+	function saveAminity($data,$id=null){
+		if(!empty($id)){
+			$this->db->where('id',$id);
+			$result = $this->db->update('services',$data);
+		}else{
 			$this->db->insert('services',$data);
-			return $this->db->insert_id();
+			$result = $this->db->insert_id();
 		}
+
+		return $result;
 	}
 
 	/**
@@ -59,7 +63,6 @@ Class Setting_model extends CI_Model {
 	 * @Created on	-: 19-09-2016
 	 * @Return 		-: array()
 	 */
-
 	function getAminityById($id){
 		$this->db->where('id',$id);
 		$result = $this->db->get('services')->row_array();
@@ -72,7 +75,6 @@ Class Setting_model extends CI_Model {
 	 * @Created on	-: 19-09-2016
 	 * @Return 		-: array()
 	 */
-
 	function deleteAmenity($id){
 		$this->db->where('id',$id);
 		$result = $this->db->delete('services');
@@ -85,9 +87,51 @@ Class Setting_model extends CI_Model {
 	 * @Created on	-: 19-09-2016
 	 * @Return 		-: array()
 	 */
-
 	function getHotelChains(){
 		$result = $this->db->get('hotel_chain')->result_array();
+		return $result;
+	}
+
+	/**
+	 * @Method		-: saveHotelChain()
+	 * @Description	-: This function is used to save Hotel Chain
+	 * @Created on	-: 20-09-2016
+	 * @Return 		-: array()
+	 */
+
+	function saveHotelChain($data,$id=null){
+		if(!empty($id)){
+			$this->db->where('id',$id);
+			$result = $this->db->update('hotel_chain',$data);
+		}else{
+			$this->db->insert('hotel_chain',$data);
+			$result = $this->db->insert_id();
+		}
+
+		return $result;
+	}
+
+	/**
+	 * @Method		-: getHotelChainById()
+	 * @Description	-: This function is used to get hotel chain details
+	 * @Created on	-: 20-09-2016
+	 * @Return 		-: array()
+	 */
+	function getHotelChainById($id){
+		$this->db->where('id',$id);
+		$result = $this->db->get('hotel_chain')->row_array();
+		return $result;
+	}
+
+	/**
+	 * @Method		-: deleteHotelChain()
+	 * @Description	-: This function is used to delete hotel chain
+	 * @Created on	-: 20-09-2016
+	 * @Return 		-: array()
+	 */
+	function deleteHotelChain($id){
+		$this->db->where('id',$id);
+		$result = $this->db->delete('hotel_chain');
 		return $result;
 	}
 }
