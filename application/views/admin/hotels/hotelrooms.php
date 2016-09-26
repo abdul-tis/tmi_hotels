@@ -46,7 +46,7 @@
                                                 <th>Max Person</th>
                                                 <th>Extra Beds</th>
                                                 <th>Period</th>
-                                                
+                                                <th></th>
                                                 <th class="sorting">Action</th>
 											</tr>
                                     </thead>
@@ -92,10 +92,12 @@
                                             <td>
                                                 <span class="view_mode<?php echo $room['type_id'];?>"><?php echo (!empty($room['period_from']) && !empty($room['period_to'])) ? date('m/d/Y',strtotime($room['period_from'])).' - '.date('m/d/Y',strtotime($room['period_to'])) : "N/A";?></span>
                                             </td>
+                                            <td>
+                                                <a class="btn btn-success commonBtn" data-type ="availability" data-row-id="<?php echo 'room_'.$room['type_id'];?>" data-id="<?php echo $room['type_id'];?>" href="<?php echo base_url('admin/hotels/roomAvailability/'.$room['hotel_id'].'/'.$room['type_id'])?>">Availability</a>
+                                            </td>
                                             
 											<td>
 												<a class="btn btn-success commonBtn" data-type ="edit" data-row-id="<?php echo 'room_'.$room['type_id'];?>" data-id="<?php echo $room['type_id'];?>" href="<?php echo base_url('admin/hotels/editHotelRoom/'.$hotel_id.'/'.$room['type_id'])?>">Edit</a>
-                                                <!-- <a class="btn btn-success commonBtn" data-type ="edit" data-row-id="<?php echo 'room_'.$room['type_id'];?>" data-id="<?php echo $room['type_id'];?>" href="<?php echo base_url('admin/hotels/availability/'.$room['type_id'])?>">Availability</a> -->
 												<a class="delete btn btn-sm btn-danger" data-target="#confirm-delete" data-toggle="modal" data-record-title="<?php echo $room['room_type'];?>" data-type="delete" data-record-id="<?php echo $room['type_id'];?>" data-remove-row="<?php echo 'room_'.$room['type_id'];?>" href="javascript:void(0)" >Delete</a>
 											</td>
 											</form>

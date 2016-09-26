@@ -9,7 +9,7 @@
 		<div class="m-b-10">
            <div class="pull-left">
                <h3 class="pull-left">
-                   <strong>Edit Hotel Chain</strong>
+                   <strong>Add Type</strong>
                </h3>
            </div>
        </div>
@@ -21,12 +21,12 @@
                         <div class="tabbable">
                             <ul class="nav nav-tabs bordered">
                                 <li class="active">
-                                    <a data-placement="top" rel="tooltip" data-toggle="tab" href="#tab1" data-original-title="" title="Hotel Chain" aria-expanded="false">
+                                    <a data-placement="top" rel="tooltip" data-toggle="tab" href="#tab1" data-original-title="" title="Hotel type" aria-expanded="false">
                                         Basic Information
                                     </a>
                                 </li>
                             </ul>
-                            <form class="smart-form" id="editHotelChainForm"  method="post" data-parsley-validate="" enctype="multipart/form-data" action="<?php echo base_url('admin/settings/editHotelChain/'.$hotel_chain['id']); ?>">
+                            <form class="smart-form" id="addHotelTypeForm"  method="post" data-parsley-validate="" enctype="multipart/form-data" action="<?php echo base_url('admin/settings/addHotelType'); ?>">
                                 <div class="tab-content padding-10">
                                     <div id="tab1" class="tab-pane active">
                                         <div class="row">
@@ -36,7 +36,7 @@
                                                             <section>
                                                                 <label class="label">Name</label>
                                                                 <label class="input"> 
-                                                                    <input type="text" placeholder="Name" required="" id="name" name="name" value="<?php echo (!empty($hotel_chain['name']))?$hotel_chain['name']:'';?>">
+                                                                    <input type="text" placeholder="Name" required="" id="hotel_type" name="hotel_type" value="<?php echo set_value('hotel_type')?>">
                                                                 </label>
                                                             </section>
                                                             <section>
@@ -44,13 +44,13 @@
                                                                 <div class="input input-radio">
                                                                     <div class="col col-3">
                                                                         <label class="radio state-success">
-                                                                            <input type="radio" <?php echo (!empty($hotel_chain['status']) && $hotel_chain['status']=='1')?'checked':'';?> value="1" name="status" data-parsley-multiple="status" data-parsley-id="1815">
+                                                                            <input type="radio" checked="" value="1" name="status" data-parsley-multiple="status" data-parsley-id="1815">
                                                                             <i></i>Enable
                                                                         </label><ul class="parsley-errors-list" id="parsley-id-multiple-status"></ul>
                                                                         </div>
                                                                         <div class="col col-3">
                                                                         <label class="radio state-error">
-                                                                            <input type="radio" <?php echo ($hotel_chain['status'] !='' && $hotel_chain['status']=='0')?'checked':'';?> value="0" name="status" data-parsley-multiple="status" data-parsley-id="1815">
+                                                                            <input type="radio" value="0" name="status" data-parsley-multiple="status" data-parsley-id="1815">
                                                                             <i></i>Disable
                                                                         </label>
                                                                     </div>
@@ -85,7 +85,7 @@
 <script type="text/javascript">
         //****** Checking All tab validation ******//
 		$(document).ready(function () {
-			var instance = $('#editHotelChainForm').parsley();
+			var instance = $('#addHotelTypeForm').parsley();
 			$('.frm-submit').click(function(){
 				if(instance.isValid() === false){
 				/*   display a messge to show users there is some more errors in form  */

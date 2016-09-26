@@ -635,6 +635,8 @@ class Hotels extends CI_Controller {
 			$this->form_validation->set_rules('adults', 'Max Adults', 'trim|numeric|required',array('required' => 'You must provide a %s.'));
 			$this->form_validation->set_rules('children', 'Max Children ', 'trim|numeric|required',array('required' => 'You must provide a %s.'));
 			$this->form_validation->set_rules('extra_beds', 'Extra Beds', 'trim|required',array('required' => 'You must provide a %s.'));
+			$this->form_validation->set_rules('no_of_rooms', 'Number of Rooms', 'trim|required',array('required' => 'You must provide a %s.'));
+			$this->form_validation->set_rules('tmi_rooms', 'Number of TMI Rooms', 'trim|required',array('required' => 'You must provide a %s.'));
 			$this->form_validation->set_rules('beds', 'Beds', 'trim|required',array('required' => 'You must provide a %s.'));
 			$this->form_validation->set_rules('price', 'Price', 'trim|numeric|required',array('required' => 'You must provide a %s.'));
 			$this->form_validation->set_rules('period_from', 'Period From', 'trim|required',array('required' => 'You must provide a %s.'));
@@ -762,6 +764,8 @@ class Hotels extends CI_Controller {
 						$room_info['adults'] 			= $postData['adults'];
 						$room_info['children']			= $postData['children'];
 						$room_info['extra_beds'] 		= $postData['extra_beds'];
+						$room_info['no_of_rooms'] 		= $postData['no_of_rooms'];
+						$room_info['tmi_rooms'] 		= $postData['tmi_rooms'];
 						$room_info['beds'] 				= $postData['beds'];
 						$room_info['price'] 			= $postData['price'];
 						$from_date 						= $postData['period_from'];
@@ -852,6 +856,8 @@ class Hotels extends CI_Controller {
 			$this->form_validation->set_rules('adults', 'Max Adults', 'trim|numeric|required',array('required' => 'You must provide a %s.'));
 			$this->form_validation->set_rules('children', 'Max Children ', 'trim|numeric|required',array('required' => 'You must provide a %s.'));
 			$this->form_validation->set_rules('extra_beds', 'Extra Beds', 'trim|required',array('required' => 'You must provide a %s.'));
+			$this->form_validation->set_rules('no_of_rooms', 'Number of Rooms', 'trim|required',array('required' => 'You must provide a %s.'));
+			$this->form_validation->set_rules('tmi_rooms', 'Number of TMI Rooms', 'trim|required',array('required' => 'You must provide a %s.'));
 			$this->form_validation->set_rules('beds', 'Beds', 'trim|required',array('required' => 'You must provide a %s.'));
 			$this->form_validation->set_rules('price', 'Price', 'trim|numeric|required',array('required' => 'You must provide a %s.'));
 			$this->form_validation->set_rules('period_from', 'Period From', 'trim|required',array('required' => 'You must provide a %s.'));
@@ -987,6 +993,8 @@ class Hotels extends CI_Controller {
 						$room_info['adults'] 			= $postData['adults'];
 						$room_info['children']			= $postData['children'];
 						$room_info['extra_beds'] 		= $postData['extra_beds'];
+						$room_info['no_of_rooms'] 		= $postData['no_of_rooms'];
+						$room_info['tmi_rooms'] 		= $postData['tmi_rooms'];
 						$room_info['beds'] 				= $postData['beds'];
 						$room_info['price'] 			= $postData['price'];
 						$from_date 						= $postData['period_from'];
@@ -1228,19 +1236,149 @@ class Hotels extends CI_Controller {
 		die;
 	}
 
-	public function availability($id){
+	public function roomAvailability($hotel_id,$id){
 		if((empty($id) && !is_numeric($id)))
 		{
 			redirect('admin/hotels/hotelRooms/'.$hotel_id);
 		}
 
 		$data = array(
-			'title' => 'Hotels',
-			'list_heading' => 'Edit Hotel Room',
+			'title' => 'Rooms Availability',
+			'list_heading' => 'Rooms Availability',
 			'breadcrum' => '<li><a href="'.base_url('admin/hotels/hotelRooms/'.$hotel_id).'">Hotel Rooms</a></li>
-			<li><a href="">Edit Hotel Room</a></li>',
+			<li><a href="javascript:void(0)">Rooms Availability</a></li>',
 		);
+
+		$data['room_details'] = $this->Common_model->getRoomDetailsByHotel($hotel_id);
+
+		$this->template->load('admin/base', 'admin/hotels/availability', $data);
 	} 
+
+	public function getRoomAvailabilityData(){
+		$hotel_id 		= $this->input->post('hotel_id');
+		$id 	 		= $this->input->post('id');
+		$month 			= $this->input->post('month');
+		$year 			= $this->input->post('year');
+		$this->load->library('calendar');
+		
+		$room 					= $this->Common_model->getRoomDetailsById($hotel_id,$id);
+
+		$details                = array();
+        $room_type              = getRoomTypeById($room['room_type']);
+        $days_in_month          = $this->calendar->get_total_days($month,$year);
+        $temp       = array();
+        $available  	= 0;
+        $booked_rooms 	= 0;
+        $blocked_rooms 	= 0;
+        for($i=1;$i<=$days_in_month;$i++){
+        	$fromDate 			 = date('Y-m-d',strtotime($year.'-'.$month.'-'.$i));
+        	$toDate 			 = date('Y-m-d',strtotime($year.'-'.$month.'-'.$i));
+        	$reserved 			 = $this->Common_model->getReservedRoom($id,$fromDate,$toDate);
+        	
+        	if(!empty($reserved)){
+        		$total_booked    = $reserved['booked_rooms']+$reserved['blocked_rooms'];
+        		$available  	 = $room['no_of_rooms']-$total_booked; 
+        		$booked_rooms    = $reserved['booked_rooms'];
+        		$blocked_rooms   = $reserved['blocked_rooms'];
+        	}
+        	else
+        	{
+        		$available  	 = $room['no_of_rooms'];
+        		$booked_rooms 	 = 0;
+        		$blocked_rooms 	 = 0;
+        	}
+            $temp['title']       = $room['room_type']."\n"."Booked Rooms: ".(int)$booked_rooms."\n"."Blocked Rooms: ".(int)$blocked_rooms;
+            $temp['start']       = $year.','.$month.','.$i;
+            $temp['end']         = $year.','.$month.','.$i;
+            $temp['allDay']      = true;
+            $temp['description'] = '<b>Available</b> - '.$available;
+            
+
+            array_push($details,$temp);
+        }
+
+        echo json_encode($details);
+        exit;
+	}
+
+	public function reserveRoom(){
+		if($this->input->post('type') == 'edit'){
+		$hotel_id 		= $this->input->post('hotel_id');
+		$id 	 		= $this->input->post('id');
+		$from_date 		= $this->input->post('from_date');
+		$to_date 		= $this->input->post('to_date');
+		$no_of_rooms	= $this->input->post('no_of_rooms');
+
+		$room 			= $this->Common_model->getRoomDetailsById($hotel_id,$id);
+		if(!empty($room)){
+				$reserved 			 = $this->Common_model->getReservedRoom($id,$from_date,$to_date);
+				if(!empty($reserved)){
+					$admin_availability  = $room['no_of_rooms']-$reserved['booked_rooms'];
+					$total_available  = $room['no_of_rooms']-$reserved['booked_rooms']-$reserved['blocked_rooms'];
+				}else{
+					$admin_availability = $room['no_of_rooms'];
+					$total_available  = $room['no_of_rooms'];
+				}
+
+				if($no_of_rooms <= $admin_availability){
+					$data['blocked_rooms'] = $admin_availability - $no_of_rooms;
+					$data['room_type']    = $id;
+					$data['from_date'] 	   = $from_date;
+					$data['to_date'] 	   = $to_date;
+					$data['user_id'] 	   = $this->ion_auth->get_user_id();
+					$result 	= $this->Hotel_model->saveBookingData($data);
+					if($result){
+						echo json_encode(array('status'=>'success','rooms'=>$no_of_rooms));
+						exit;
+					}
+				}else{
+					echo json_encode(array('status'=>'failed','rooms'=>$total_available,'capacity'=>$admin_availability));
+					exit;
+				}
+			}
+
+		}
+		if($this->input->post('type') == 'search'){
+			$hotel_id 		= $this->input->post('hotel_id');
+			$id 	 		= $this->input->post('id');
+			$from_date 		= $this->input->post('from_date');
+			$to_date 		= $this->input->post('to_date');
+			$no_of_rooms	= $this->input->post('no_of_rooms');
+			$reserve_type   = $this->input->post('reserve_type');
+
+			$room 			= $this->Common_model->getRoomDetailsById($hotel_id,$id);
+			if(!empty($room)){
+					$reserved 			 = $this->Common_model->getReservedRoom($id,$from_date,$to_date);
+
+					if(!empty($reserved)){
+						$admin_availability  = $room['no_of_rooms']-$reserved['booked_rooms'];
+						$total_available  = $room['no_of_rooms']-$reserved['booked_rooms']-$reserved['blocked_rooms'];
+					}else{
+						$admin_availability = $room['no_of_rooms'];
+						$total_available  = $room['no_of_rooms'];
+					}
+					
+					if($no_of_rooms <= $total_available){
+						$data['blocked_rooms'] = $no_of_rooms;
+						$data['room_type']     = $id;
+						$data['from_date'] 	   = $from_date;
+						$data['to_date'] 	   = $to_date;
+						$data['user_id'] 	   = $this->ion_auth->get_user_id();
+						$data['reserve_type']  = $reserve_type;
+						$result 	= $this->Hotel_model->saveBookingData($data);
+						if($result){
+							echo json_encode(array('status'=>'success','rooms'=>$no_of_rooms));
+							exit;
+						}
+					}else{
+						echo json_encode(array('status'=>'failed','rooms'=>$total_available,'capacity'=>$admin_availability));
+						exit;
+					}
+				}
+
+		}
+		
+	}
 
 
 }

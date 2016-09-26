@@ -239,5 +239,33 @@
 			return false;
 		}
 	}
+
+	function getTotalRoomsByHotel($hotel_id){
+		if(empty($hotel_id) || !is_numeric($hotel_id)){
+			return false;
+		}
+		$CI = & get_instance();
+		try{
+			$rooms = $CI->db->select('sum(no_of_rooms) as total_rooms,sum(tmi_rooms) as total_tmi_rooms')->where('hotel_id',$hotel_id)->get('room_info')->row_array();
+			if($rooms){
+				return $rooms;
+			}
+		}catch(Exception $ex){
+			log_message('error',' We are not getting product name correct '.$ex->getMessage());
+			return false;
+		}
+	}
+
+	function getRoleTitle($id) {
+	    $CI = & get_instance();
+	    $CI->db->select('name');
+	    $CI->db->where('id', $id);
+	    $query = $CI->db->get('groups');
+	    if ($query->num_rows() > 0) {
+	        $row = $query->row_array();
+	        return $row['name'];
+	    }
+	    return false;
+	}
 	
 	

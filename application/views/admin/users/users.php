@@ -1,14 +1,15 @@
 <link href="<?php echo base_url(); ?>assets/admin/css/custom-main.css" rel="stylesheet">
-<?php $this->load->view('themes/admin/breadcrumb'); ?>
-    <div id="content">
-        <div class="m-b-10">
+
+<?php $this->load->view('themes/admin/breadcrumb');	?>
+	<div id="content">
+		<div class="m-b-10">
            <div class="pull-left">
                <h3 class="pull-left">
-                   <strong>Hotel Types</strong>
+                   <strong>Users List</strong>
                </h3>
            </div>
            <div class="pull-right">
-               <a href="<?php echo base_url('admin/settings/addHotelType');?>" class="btn btn-primary"><i class="fa fa-plus"></i>Add Hotel Type</a>
+               <a href="<?php echo base_url('admin/users/addUser');?>" class="btn btn-primary"><i class="fa fa-plus"></i>Add User</a>
            </div>
        </div>
         <!-- widget grid -->
@@ -25,7 +26,7 @@
                         
                         <header>
                             <span class="widget-icon"> <i class="fa fa-table"></i> </span>
-                            <h2><?=$list_heading?></h2>
+                            <h2><?php echo $list_heading?></h2>
                         </header>
 
                         <!-- widget div-->
@@ -36,44 +37,53 @@
 
                             <!-- widget content -->
                             <div class="widget-body no-padding">
-
-                                <table id="dt_basic" class="table table-striped table-bordered table-hover editable-seller-info" width="100%">
+                                <table class="table table-striped table-bordered table-hover editable-seller-info" width="100%">
                                     <thead>
-                                            <tr>
-                                                <th>Name</th>
+											<tr>
+                                                <th>First Name</th>
+                                                <th>Last Name</th>
+                                                <th>Email</th>
+                                                <th>Groups</th>
                                                 <th>Status</th>
                                                 <th class="sorting">Action</th>
-                                            </tr>
+											</tr>
                                     </thead>
                                     <tbody>
-                                        <?php
-                                          if (!empty($hotel_types)) {
-                                             foreach ($hotel_types as $hotel_type) {
-                                                if($hotel_type['status'] == '1'){
-                                                    $status   = 'Active';
-                                                }else{
-                                                    $status   = 'Inactive';
-                                                }
-
-                                        ?>
-                                        <tr id="<?php echo $hotel_type['id'];?>" >
-                                            <form class="editForm<?php echo $hotel_type['id'];?>" enctype="multipart/form-data">
+										<?php
+                                          if (!empty($users)) {
+                                             foreach ($users as $user) {
+										?>
+                                        <tr id="<?php echo $user['id'];?>" >
+											<form class="editForm<?php echo $user['id'];?>" enctype="multipart/form-data">
                                             <td>
-                                                <span class="view_mode<?php echo $hotel_type['id'];?>"><?php echo (!empty($hotel_type['hotel_type'])) ? $hotel_type['hotel_type'] : "N/A";?></span>
+												<span class="view_mode<?php echo $user['id'];?>"><?php echo (!empty($user['first_name'])) ? $user['first_name'] : "N/A";?></span>
                                             </td>
+                                            
+											<td>
+												<span class="view_mode<?php echo $user['id'];?>"><?php echo (!empty($user['last_name'])) ? $user['last_name'] : "N/A";?></span>
+											</td>
+                                            
+											<td>
+												<span class="view_mode<?php echo $user['id'];?>"><?php echo (!empty($user['email'])) ? $user['email'] : "N/A";?></span>
+											</td>
+                                            
                                             <td>
-                                                <span class="view_mode<?php echo $hotel_type['id'];?>"><?php echo (!empty($status)) ? $status : "N/A";?></span>
+                                                <?php foreach ($user['groups'] as $group):?>
+                                                    <?php echo anchor("admin/users/edit_group/".$group['id'], htmlspecialchars($group['name'],ENT_QUOTES,'UTF-8')) ;?><br />
+                                                <?php endforeach?>
+                                                </span>
                                             </td>
-                                            <td>
-                                                <a class="btn btn-success commonBtn" data-type ="edit" data-row-id="<?php echo 'type_'.$hotel_type['id'];?>" data-id="<?php echo $hotel_type['id'];?>" href="<?php echo base_url('admin/settings/editHotelType/'.$hotel_type['id'])?>">Edit</a>
-                                                <a class="delete btn btn-sm btn-danger" data-target="#confirm-delete" data-toggle="modal" data-record-title="<?php echo $hotel_type['hotel_type'];?>" data-type="delete" data-record-id="<?php echo $hotel_type['id'];?>" data-remove-row="<?php echo 'type_'.$hotel_type['id'];?>" href="javascript:void(0)" >Delete</a>
-                                            </td>
-                                            </form>
+                                            <td><?php echo ($user['active']) ? anchor("admin/users/deactivate/".$user['id'], 'Active') : anchor("admin/users/activate/". $user['id'], 'Inactive');?></td>
+											<td>
+												<a class="btn btn-success commonBtn" data-type ="edit" data-row-id="<?php echo 'user_'.$user['id'];?>" data-id="<?php echo $user['id'];?>" href="<?php echo base_url('admin/users/editUser/'.$user['id'])?>">Edit</a>
+                                                
+												<a class="delete btn btn-sm btn-danger" data-target="#confirm-delete" data-toggle="modal" data-record-title="<?php echo $user['first_name'].' '.$user['last_name'];?>" data-type="delete" data-record-id="<?php echo $user['id'];?>" data-remove-row="<?php echo 'user_'.$user['id'];?>" href="javascript:void(0)" >Delete</a>
+											</td>
+											</form>
                                         </tr>
                                         <?php } }?>
                                     </tbody>
                                 </table>
-
                             </div>
                             <!-- end widget content -->
 
@@ -121,6 +131,10 @@
                     "t" +
                     "<'dt-toolbar-footer'<'col-sm-6 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-6'p>>",
             "autoWidth": true,
+            "columnDefs": [{
+            "defaultContent": "-",
+            "targets": "_all"
+          }]
 
         });
 
@@ -128,16 +142,10 @@
             var $modalDiv = $(e.delegateTarget);
             var id = $(this).data('recordId');
             var rowId = $(this).data('removeRow');
-            var msg = 'Selected product successfully removed!';
-            $.post("<?=base_url('admin/settings/deleteHotelType')?>",{'id':id}, function (response){
-                if(response){
-                    bootstrap_alert.success(msg);
-                    $('#confirm-delete').modal('hide');
-                    $('#'+id).remove();
-                }
-            })
+            var msg = 'Selected user successfully removed!';
+            window.location.href = "<?php echo base_url('admin/users/deleteUser/')?>"+id;
         });
-
+        
         $('#confirm-delete').on('show.bs.modal', function (e) {
             var data = $(e.relatedTarget).data();
             $('.title', this).text(data.recordTitle);
@@ -145,6 +153,7 @@
             $('.btn-ok', this).data('removeRow', data.removeRow);
         });
 
-    });
+        $('[data-toggle="tooltip"]').tooltip();
+    })
 
 </script>

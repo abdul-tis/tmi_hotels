@@ -231,7 +231,7 @@
                                                                         </div>
                                                                         <div class="col col-3">
                                                                         <label class="radio state-error">
-                                                                            <input type="radio" <?php echo (!empty($hotel['hotel_status']) && $hotel['hotel_status'] == '0')?'checked':'';?> value="0" name="hotel_status" data-parsley-multiple="status" data-parsley-id="1815">
+                                                                            <input type="radio" <?php echo ($hotel['hotel_status'] !='' && $hotel['hotel_status'] == '0')?'checked':'';?> value="0" name="hotel_status" data-parsley-multiple="status" data-parsley-id="1815">
                                                                             <i></i>Disable
                                                                         </label>
                                                                     </div>

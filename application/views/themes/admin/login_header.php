@@ -1,6 +1,6 @@
 <header id="header">
     <div id="logo-group">
-        <span id="logo">E-Commerce Web App [Admin] </span>
+        <span id="logo">TMI Hotels [Admin] </span>
     </div>
     <!-- pulled right: nav area -->
     <div class="pull-right">

@@ -43,6 +43,7 @@
                                         <?php 
                                             if(!empty($hotel_types)){
                                                 foreach($hotel_types as $hotel_type){
+
                                         ?>
                                             <option value="<?php echo $hotel_type['id']?>"><?php echo $hotel_type['hotel_type'];?></option>
                                         <?php }}?>    
@@ -73,6 +74,11 @@
                                           if (!empty($hotels)) {
                                              foreach ($hotels as $hotel) {
 											 $hotel_type     = getHotelTypeById($hotel['hotel_type']);
+                                             $noRooms        = getTotalRoomsByHotel($hotel['hotel_id']);
+                                             if(!empty($noRooms)){
+                                                $total_rooms       =  $noRooms['total_rooms'];
+                                                $total_tmi_rooms   =  $noRooms['total_tmi_rooms'];
+                                             }
                                              if($hotel['star_rating'] == '1')
                                              {
                                                 $star_rating    = '<img src="'.base_url().'assets/admin/img/1-stars.png">';
@@ -136,11 +142,11 @@
                                                 <span class="view_mode<?php echo $hotel['hotel_id'];?>"><?php echo (!empty($hotel['price'])) ? '<a href="javascript:void(0)" data-toggle="tooltip" title="Click to view prices" class="price_details" id="'.$hotel['hotel_id'].'">'.$hotel['price'].'</a>' : "N/A";?></span>
                                             </td>
 											<td>
-												<span class="view_mode<?php echo $hotel['hotel_id'];?>"><?php echo (!empty($hotel['no_of_rooms'])) ? $hotel['no_of_rooms'] : "N/A";?></span>
+												<span class="view_mode<?php echo $hotel['hotel_id'];?>"><?php echo (!empty($total_rooms)) ? $total_rooms : "N/A";?></span>
 											</td>
                                             
 											<td>
-												<span class="view_mode<?php echo $hotel['hotel_id'];?>"><?php echo (!empty($hotel['tmi_rooms'])) ? $hotel['tmi_rooms'] : "N/A";?></span>
+												<span class="view_mode<?php echo $hotel['hotel_id'];?>"><?php echo (!empty($total_tmi_rooms)) ? $total_tmi_rooms : "N/A";?></span>
 											</td>
                                             <td>
                                                 <span class="view_mode<?php echo $hotel['hotel_id'];?>"><?php echo (!empty($hotel_type)) ? '<a href="javascript:void(0)" title="'.$hotel_type.'"> <img src="'.base_url().'assets/admin/img/property-type-icon.png"></a>' : "N/A";?></span>

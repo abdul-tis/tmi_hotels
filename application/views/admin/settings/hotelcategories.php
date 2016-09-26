@@ -1,14 +1,14 @@
 <link href="<?php echo base_url(); ?>assets/admin/css/custom-main.css" rel="stylesheet">
-<?php $this->load->view('themes/admin/breadcrumb'); ?>
-    <div id="content">
-        <div class="m-b-10">
+<?php $this->load->view('themes/admin/breadcrumb');	?>
+	<div id="content">
+		<div class="m-b-10">
            <div class="pull-left">
                <h3 class="pull-left">
-                   <strong>Hotel Types</strong>
+                   <strong>Hotel Categories</strong>
                </h3>
            </div>
            <div class="pull-right">
-               <a href="<?php echo base_url('admin/settings/addHotelType');?>" class="btn btn-primary"><i class="fa fa-plus"></i>Add Hotel Type</a>
+               <a href="<?php echo base_url('admin/settings/addHotelCategory');?>" class="btn btn-primary"><i class="fa fa-plus"></i>Add Hotel Category</a>
            </div>
        </div>
         <!-- widget grid -->
@@ -39,36 +39,36 @@
 
                                 <table id="dt_basic" class="table table-striped table-bordered table-hover editable-seller-info" width="100%">
                                     <thead>
-                                            <tr>
+											<tr>
                                                 <th>Name</th>
                                                 <th>Status</th>
                                                 <th class="sorting">Action</th>
-                                            </tr>
+											</tr>
                                     </thead>
                                     <tbody>
-                                        <?php
-                                          if (!empty($hotel_types)) {
-                                             foreach ($hotel_types as $hotel_type) {
-                                                if($hotel_type['status'] == '1'){
+										<?php
+                                          if (!empty($hotel_categories)) {
+                                             foreach ($hotel_categories as $hotel_category) {
+												if($hotel_category['status'] == '1'){
                                                     $status   = 'Active';
                                                 }else{
                                                     $status   = 'Inactive';
                                                 }
 
-                                        ?>
-                                        <tr id="<?php echo $hotel_type['id'];?>" >
-                                            <form class="editForm<?php echo $hotel_type['id'];?>" enctype="multipart/form-data">
+										?>
+                                        <tr id="<?php echo $hotel_category['id'];?>" >
+											<form class="editForm<?php echo $hotel_category['id'];?>" enctype="multipart/form-data">
                                             <td>
-                                                <span class="view_mode<?php echo $hotel_type['id'];?>"><?php echo (!empty($hotel_type['hotel_type'])) ? $hotel_type['hotel_type'] : "N/A";?></span>
-                                            </td>
+												<span class="view_mode<?php echo $hotel_category['id'];?>"><?php echo (!empty($hotel_category['hotel_category'])) ? $hotel_category['hotel_category'] : "N/A";?></span>
+											</td>
                                             <td>
-                                                <span class="view_mode<?php echo $hotel_type['id'];?>"><?php echo (!empty($status)) ? $status : "N/A";?></span>
+                                                <span class="view_mode<?php echo $hotel_category['id'];?>"><?php echo (!empty($status)) ? $status : "N/A";?></span>
                                             </td>
-                                            <td>
-                                                <a class="btn btn-success commonBtn" data-type ="edit" data-row-id="<?php echo 'type_'.$hotel_type['id'];?>" data-id="<?php echo $hotel_type['id'];?>" href="<?php echo base_url('admin/settings/editHotelType/'.$hotel_type['id'])?>">Edit</a>
-                                                <a class="delete btn btn-sm btn-danger" data-target="#confirm-delete" data-toggle="modal" data-record-title="<?php echo $hotel_type['hotel_type'];?>" data-type="delete" data-record-id="<?php echo $hotel_type['id'];?>" data-remove-row="<?php echo 'type_'.$hotel_type['id'];?>" href="javascript:void(0)" >Delete</a>
-                                            </td>
-                                            </form>
+											<td>
+												<a class="btn btn-success commonBtn" data-type ="edit" data-row-id="<?php echo 'category_'.$hotel_category['id'];?>" data-id="<?php echo $hotel_category['id'];?>" href="<?php echo base_url('admin/settings/editHotelCategory/'.$hotel_category['id'])?>">Edit</a>
+                                                <a class="delete btn btn-sm btn-danger" data-target="#confirm-delete" data-toggle="modal" data-record-title="<?php echo $hotel_category['hotel_category'];?>" data-type="delete" data-record-id="<?php echo $hotel_category['id'];?>" data-remove-row="<?php echo 'category_'.$hotel_category['id'];?>" href="javascript:void(0)" >Delete</a>
+											</td>
+											</form>
                                         </tr>
                                         <?php } }?>
                                     </tbody>
@@ -129,7 +129,7 @@
             var id = $(this).data('recordId');
             var rowId = $(this).data('removeRow');
             var msg = 'Selected product successfully removed!';
-            $.post("<?=base_url('admin/settings/deleteHotelType')?>",{'id':id}, function (response){
+            $.post("<?=base_url('admin/settings/deleteHotelCategory')?>",{'id':id}, function (response){
                 if(response){
                     bootstrap_alert.success(msg);
                     $('#confirm-delete').modal('hide');

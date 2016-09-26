@@ -150,7 +150,7 @@ Class Common_model extends CI_Model {
 
 	function getRoomDetailsByHotel($hotel_id)
 	{
-		$this->db->select('r.price,rc.meal_plan,rc.category_type,rt.room_type');
+		$this->db->select('r.type_id,r.price,rc.meal_plan,rc.category_type,rt.room_type');
 		$this->db->join('room_type as rt','r.room_type=rt.id');
 		$this->db->join('rate_categories as rc','r.rate_category=rc.id');
 		$this->db->where('r.hotel_id',$hotel_id);
@@ -169,6 +169,31 @@ Class Common_model extends CI_Model {
 	{
 		$this->db->where('status','1');
 		$result = $this->db->get('hotel_categories')->result_array();
+		return $result;
+	}
+
+	function getRoomDetailsById($hotel_id,$id)
+	{
+		$this->db->select('r.*,rt.room_type');
+		$this->db->join('room_type as rt','r.room_type=rt.id');
+		$this->db->where('r.type_id',$id);
+		$this->db->where('r.hotel_id',$hotel_id);
+		$result = $this->db->get('room_info as r')->row_array();
+		return $result;
+	}
+
+	function getReservedRoom($id,$fromDate,$toDate){
+		$query = $this->db->query("select sum(booked_rooms) as booked_rooms,sum(blocked_rooms) as blocked_rooms 
+									from reservation where
+									room_type='".$id."'
+									AND ('".$toDate."' between from_date and to_date 
+            						OR to_date between  '".$fromDate."'  and  '".$toDate."'  
+            						OR  '".$fromDate."' between from_date and to_date 
+            						OR from_date between '".$fromDate."'  and '".$toDate."')
+            						");
+		
+		$result = $query->row_array();
+		//echo $this->db->last_query();
 		return $result;
 	}
 }

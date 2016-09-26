@@ -100,6 +100,18 @@
                                                                 </label>
                                                             </section>
                                                             <section>
+                                                                <label class="label">Number of Rooms</label>
+                                                                <label class="input"> 
+                                                                    <input type="text" placeholder="Number of Rooms" required="" id="no_of_rooms" name="no_of_rooms" data-parsley-min="1" data-parsley-type="digits" value="<?php echo set_value('no_of_rooms')?>">
+                                                                </label>
+                                                            </section>
+                                                            <section>
+                                                                <label class="label">Number of TMI Rooms</label>
+                                                                <label class="input"> 
+                                                                    <input type="text" placeholder="Number of TMI Rooms" required="" id="tmi_rooms" name="tmi_rooms" data-parsley-min="1" data-parsley-type="digits" value="<?php echo set_value('tmi_rooms')?>">
+                                                                </label>
+                                                            </section>
+                                                            <section>
                                                                 <label class="label">Beds</label>
                                                                 <label class="select">
                                                                     <select class="input-sm country" name="beds" id="beds">

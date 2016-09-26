@@ -279,6 +279,26 @@ Class Hotel_model extends CI_Model {
 			return false;
 		}
 	}
+
+	/**
+	 * @Method		-: saveBookingData()
+	 * @Description	-: This function is used to save hotel contact details
+	 * @Created on	-: 17-09-2016
+	 */
+	function saveBookingData($data){
+		$this->db->where('from_date',$data['from_date']);
+		$this->db->where('to_date',$data['to_date']);
+		$this->db->where('room_type',$data['room_type']);
+		$res = $this->db->get('reservation')->row_array();
+		if(count($res)>0){
+			$this->db->where('id',$res['id']);
+			$result = $this->db->update('reservation',$data);
+		}else{
+			$result = $this->db->insert('reservation',$data);
+		}
+
+		return $result;
+	}
 }
 
 ?>

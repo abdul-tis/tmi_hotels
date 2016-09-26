@@ -27,6 +27,19 @@
         
         <?php $url_seg = $this->uri->segment(2); ?>
         <ul>
+            <li class="<?php echo (!empty($url_seg) && $url_seg=='users') ? 'open' : '';?>">
+                <a title="Users" href="#">
+                    <i class="fa fa-lg fa-fw fa-table"></i>
+                    <span class="menu-item-parent">User Management</span>
+                </a>
+                <ul style="<?php echo (!empty($url_seg) && $url_seg=='users') ? 'display:block' : '';?>">
+                    <li class="">
+                        <a title="Hotels" href="<?=base_url('admin/users')?>">Users</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        <ul>
             <li class="<?php echo (!empty($url_seg) && $url_seg=='hotels') ? 'open' : '';?>">
                 <a title="Hotels" href="#">
                     <i class="fa fa-lg fa-fw fa-table"></i>
@@ -58,6 +71,26 @@
                     <li class="<?php echo (!empty($seg_setting_new) && $seg_setting_new=='hotelChains') ? 'active' : '';?>">
                         <a title="hotel chains" href="<?php echo base_url('admin/settings/hotelChains')?>">
                            Manage Hotel Chains
+                        </a>
+                    </li>
+                    <li class="<?php echo (!empty($seg_setting_new) && $seg_setting_new=='hotelCategories') ? 'active' : '';?>">
+                        <a title="hotel categories" href="<?php echo base_url('admin/settings/hotelCategories')?>">
+                           Manage Hotel Categories
+                        </a>
+                    </li>
+                    <li class="<?php echo (!empty($seg_setting_new) && $seg_setting_new=='hotelTypes') ? 'active' : '';?>">
+                        <a title="hotel types" href="<?php echo base_url('admin/settings/hotelTypes')?>">
+                           Manage Hotel Types
+                        </a>
+                    </li>
+                    <li class="<?php echo (!empty($seg_setting_new) && $seg_setting_new=='roomTypes') ? 'active' : '';?>">
+                        <a title="room types" href="<?php echo base_url('admin/settings/roomTypes')?>">
+                           Manage Room Types
+                        </a>
+                    </li>
+                    <li class="<?php echo (!empty($seg_setting_new) && $seg_setting_new=='rateCategories') ? 'active' : '';?>">
+                        <a title="Rate Categories" href="<?php echo base_url('admin/settings/rateCategories')?>">
+                           Manage Rate Categories
                         </a>
                     </li>
                 </ul>

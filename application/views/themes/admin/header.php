@@ -1,7 +1,7 @@
 <header id="header">
     <div id="logo-group">
 
-        <span id="logo"> E-Commerce Web App [Admin]
+        <span id="logo"> TMI Hotels [Admin]
             <!--<img src="<?php //echo base_url(); ?>assets/admin/img/logo.png" alt="SmartAdmin">--> 
         </span>
         
