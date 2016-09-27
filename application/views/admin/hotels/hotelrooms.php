@@ -185,10 +185,15 @@
             var rowId = $(this).data('removeRow');
             var msg = 'Selected product successfully removed!';
             $.post("<?=base_url('admin/hotels/deleteHotelRoom')?>",{'room_id':id}, function (response){
-                if(response){
+                if(response == 'TRUE'){
                     bootstrap_alert.success(msg);
                     $('#confirm-delete').modal('hide');
                     $('#'+id).remove();
+                }
+                else
+                {
+                    bootstrap_alert.warning('Permission is not allowed for this page or internal server error');
+                    $('#confirm-delete').modal('hide');
                 }
             })
         });

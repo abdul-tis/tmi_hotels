@@ -8,6 +8,7 @@ class Settings extends CI_Controller {
         $this->load->model('Setting_model');
         $this->load->model('Common_model');
         $this->load->library('form_validation');
+        $this->load->library('admin');
         if (!$this->ion_auth->logged_in()) {
             redirect('admin/auth/login', 'refresh');
         }

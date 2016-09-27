@@ -31,6 +31,9 @@ $config['tables']['users']           = 'users';
 $config['tables']['groups']          = 'groups';
 $config['tables']['users_groups']    = 'users_groups';
 $config['tables']['login_attempts']  = 'login_attempts';
+$config['tables']['acl_controllers']  = 'acl_system_controllers';
+$config['tables']['acl_controller_methods']  = 'acl_system_controller_methods';
+$config['tables']['access_levels_acl_resource']  = 'access_levels_acl';
 
 /*
  | Users table column and Group table column you want to join WITH.
@@ -84,10 +87,10 @@ $config['salt_prefix']    = version_compare(PHP_VERSION, '5.3.7', '<') ? '$2a$' 
  */
 $config['site_title']                 = "Example.com";       // Site Title, example.com
 $config['admin_email']                = "admin@example.com"; // Admin Email, admin@example.com
-$config['default_group']              = 'seller';           // Default group, use name
+$config['default_group']              = 'members';           // Default group, use name
 $config['admin_group']                = 'admin';             // Default administrators group, use name
 $config['identity']                   = 'email';             // You can use any unique column in your table as identity column. The values in this column, alongside password, will be used for login purposes
-$config['min_password_length']        = 8;                   // Minimum Required Length of Password
+$config['min_password_length']        = 6;                   // Minimum Required Length of Password
 $config['max_password_length']        = 20;                  // Maximum Allowed Length of Password
 $config['email_activation']           = FALSE;               // Email Activation for registration
 $config['manual_activation']          = FALSE;               // Manual Activation for registration

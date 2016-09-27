@@ -26,6 +26,7 @@
         </ul>
         
         <?php $url_seg = $this->uri->segment(2); ?>
+        <?php if(checkAccess($this->admin->accessLabelId,'users','view')){ ?>
         <ul>
             <li class="<?php echo (!empty($url_seg) && $url_seg=='users') ? 'open' : '';?>">
                 <a title="Users" href="#">
@@ -39,6 +40,7 @@
                 </ul>
             </li>
         </ul>
+        <?php } if(checkAccess($this->admin->accessLabelId,'hotels','view')){?>
         <ul>
             <li class="<?php echo (!empty($url_seg) && $url_seg=='hotels') ? 'open' : '';?>">
                 <a title="Hotels" href="#">
@@ -52,6 +54,7 @@
                 </ul>
             </li>
         </ul>
+        <?php }?>
         <?php 
             $seg_setting     = $this->uri->segment(2); 
             $seg_setting_new = $this->uri->segment(3); 

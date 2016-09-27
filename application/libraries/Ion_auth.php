@@ -539,4 +539,58 @@ class Ion_auth
 		return $check_all;
 	}
 
+	/**
+	 * check_authentication
+	 * @return bool
+	 **/
+	
+	public function check_authentication($groupId,$class,$method=false)
+	{
+		$this->ion_auth_model->trigger_events('is_admin');
+		$admin_group = $this->config->item('admin_group', 'ion_auth');
+		if($this->in_group($admin_group, $groupId))
+		{
+			return true;
+		}
+		//elseif($class=='users' && $method=='view')
+		//{
+				//return true;
+		//}
+		else{
+			$acl_controller_id=false;
+			$acl_sys_method_id=0;
+			if(!empty($class))
+			{			
+			
+			// check if class is in acl list
+			$acl_controller_id=$this->ion_auth_model->isClassinAclList($class);
+			
+			if($acl_controller_id && $method && !empty($method))
+			{
+			// check if methos is in acl list
+			//if($method=='index')
+			//{
+				//$acl_sys_method_id=0;
+			//}
+			//else{
+			$acl_sys_method_id=$this->ion_auth_model->isMethodAclList($acl_controller_id,$method);
+			//}
+			}
+			// check user group  have accesss to perticular methos and class
+			if($groupId && $acl_controller_id)
+			{	
+			$isaccess=$this->ion_auth_model->isAclaccess($groupId,$acl_controller_id,$acl_sys_method_id);	
+			if($isaccess)
+			{
+				return true;
+			}
+			else{
+				return false;
+			}
+			}
+			}
+		}
+		return true;
+	}
+
 }

@@ -10,8 +10,13 @@ class Hotels extends CI_Controller {
         if (!$this->ion_auth->logged_in()) {
             redirect('admin/auth/login', 'refresh');
         }
-        $this->load->library('pagination');
+        $this->load->library(array('pagination','admin'));
         $this->limit = 10;
+        if(!checkAccess($this->admin->accessLabelId,'hotels','view'))	
+		{
+    		setMessage($this->admin->accessDenidMessage,'warning');
+    		redirect('admin/dashboard', 'refresh');	
+		}	
     }
 
  /**
@@ -78,6 +83,11 @@ class Hotels extends CI_Controller {
  */  
 	public function addHotel()
 	{
+		if(!checkAccess($this->admin->accessLabelId,'hotels','add'))	
+		{
+    		setMessage($this->admin->accessDenidMessage,'warning');
+    		redirect('admin/dashboard', 'refresh');	
+		}	
 		$data = array(
             'title' => 'Hotels',
             'list_heading' => 'Add Hotel',
@@ -256,6 +266,12 @@ class Hotels extends CI_Controller {
 
 	public function editHotel($id)
 	{
+		if(!checkAccess($this->admin->accessLabelId,'hotels','edit'))	
+		{
+    		setMessage($this->admin->accessDenidMessage,'warning');
+    		redirect('admin/dashboard', 'refresh');	
+		}	
+
 		if(empty($id) && !is_numeric($id))
 		{
 			redirect('admin/hotels/');
@@ -466,6 +482,12 @@ class Hotels extends CI_Controller {
 	 */ 
 	public function deleteHotel()
 	{
+		if(!checkAccess($this->admin->accessLabelId,'hotels','delete'))	
+		{
+    		echo "FALSE";
+    		exit;
+		}	
+
 		$hotel_id 	= $this->input->post('hotel_id');
 		try{
 			$delete = $this->Hotel_model->deleteHotel($hotel_id); 
@@ -541,6 +563,12 @@ class Hotels extends CI_Controller {
 	 */  
 	public function hotelRooms($hotel_id,$offset=0) 
 	{
+		if(!checkAccess($this->admin->accessLabelId,'hotels','view rooms'))	
+		{
+    		setMessage($this->admin->accessDenidMessage,'warning');
+    		redirect('admin/dashboard', 'refresh');	
+		}	
+
 		if(empty($hotel_id) && !is_numeric($hotel_id))
 		{
 			redirect('admin/hotels');
@@ -615,6 +643,12 @@ class Hotels extends CI_Controller {
 	 */  
 	public function addHotelRoom($hotel_id)
 	{
+		if(!checkAccess($this->admin->accessLabelId,'hotels','add room'))	
+		{
+    		setMessage($this->admin->accessDenidMessage,'warning');
+    		redirect('admin/dashboard', 'refresh');	
+		}
+
 		if(empty($hotel_id) && !is_numeric($hotel_id))
 		{
 			redirect('admin/hotels');
@@ -817,6 +851,12 @@ class Hotels extends CI_Controller {
 
 	public function editHotelRoom($hotel_id,$id)
 	{
+		if(!checkAccess($this->admin->accessLabelId,'hotels','edit rooms'))	
+		{
+    		setMessage($this->admin->accessDenidMessage,'warning');
+    		redirect('admin/dashboard', 'refresh');	
+		}
+
 		if((empty($hotel_id) && !is_numeric($hotel_id)) && (empty($id) && !is_numeric($id)))
 		{
 			redirect('admin/hotels/hotelRooms/'.$hotel_id);
@@ -1072,6 +1112,12 @@ class Hotels extends CI_Controller {
 	 */ 
 	public function deleteHotelRoom()
 	{
+		if(!checkAccess($this->admin->accessLabelId,'hotels','delete rooms'))	
+		{
+			log_message('error','You have not a permission to remove hotel room'.$ex->getMessage());
+    		echo "FALSE";
+    		exit;
+		}
 		$room_id 	= $this->input->post('room_id');
 		try{
 			$delete = $this->Hotel_model->deleteHotelRoom($room_id); 
@@ -1237,6 +1283,12 @@ class Hotels extends CI_Controller {
 	}
 
 	public function roomAvailability($hotel_id,$id){
+		if(!checkAccess($this->admin->accessLabelId,'hotels','view calendar'))	
+		{
+    		setMessage($this->admin->accessDenidMessage,'warning');
+    		redirect('admin/dashboard', 'refresh');	
+		}
+
 		if((empty($id) && !is_numeric($id)))
 		{
 			redirect('admin/hotels/hotelRooms/'.$hotel_id);

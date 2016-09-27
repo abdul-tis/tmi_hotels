@@ -961,7 +961,7 @@ class Ion_auth_model extends CI_Model
 		$this->trigger_events('extra_where');
 		$query = $this->db->select('users.'.$this->identity_column . ', users.email, users.id, users.password, users.active,users.last_login')
 		                  ->where('users.'.$this->identity_column, $identity)
-		                  ->join('users_groups','users_groups.user_id=users.id AND users_groups.group_id=1')
+		                  ->join('users_groups','users_groups.user_id=users.id')
 		                  ->limit(1)
 		                  ->get($this->tables['users']);
 		if($this->is_time_locked_out($identity))
@@ -1013,7 +1013,7 @@ class Ion_auth_model extends CI_Model
 
 		$this->trigger_events('post_login_unsuccessful');
 		$this->set_error('login_unsuccessful');
-
+		
 		return FALSE;
 	}
 
@@ -2332,5 +2332,181 @@ class Ion_auth_model extends CI_Model
 		$this->set_error('login_unsuccessful');
 
 		return FALSE;
+	}
+
+	/**
+	 * acl controller list
+	 *
+	 * @return object
+	 * @author ms
+	 **/
+	public function acl_controllers($class_name = NULL)
+	{
+		//$this->trigger_events('group');
+		
+		$this->db->select('id,class_name,title');
+		                
+		if (isset($class_name))
+		{
+			$this->db->where($this->tables['acl_controllers'].'.class_name', $class_name);
+		}
+		$this->db->order_by('class_name', 'asc');
+		
+		$query =  $this->db->get($this->tables['acl_controllers']);
+		if ($query->num_rows() > 0)
+		{
+        return $query->result(); 
+		}
+		else{
+			return false;
+		}
+
+	}
+	
+	
+	/**
+	 * acl controller method list
+	 *
+	 * @return list
+	 * @author ms
+	 **/
+	public function acl_controller_methods($cId=NULL,$method_name = NULL)
+	{
+		//$this->trigger_events('group');
+		
+		$this->db->select('id,class_method_name,title');
+		                
+		if (isset($method_name))
+		{
+			$this->db->where($this->tables['acl_controller_methods'].'.class_method_name', $method_name);
+		}
+		
+		if (isset($cId))
+		{
+			$this->db->where($this->tables['acl_controller_methods'].'.acl_controller_id', $cId);
+		}		
+		
+		$this->db->order_by('class_method_name', 'asc');
+		
+		$query =  $this->db->get($this->tables['acl_controller_methods']);
+		if ($query->num_rows() > 0)
+		{
+        return $query->result(); 
+		}
+		else{
+			return false;
+		}
+
+	}
+	
+	
+	
+		/**
+	 * acl controller  list for a role
+	 *
+	 * @return list
+	 * @author ms
+	 **/
+	public function roleAssignedACLResource($rId,$acl_sys_controller_id=NULL,$acl_sys_method_id=NULL)
+	{
+		$this->db->select('acl_sys_controller_id,acl_sys_method_id');
+		                
+		if (isset($acl_sys_controller_id))
+		{
+			$this->db->where($this->tables['access_levels_acl_resource'].'.acl_sys_controller_id', $acl_sys_controller_id);
+		}
+		
+		if (isset($acl_sys_method_id))
+		{
+			$this->db->where($this->tables['access_levels_acl_resource'].'.acl_sys_method_id', $acl_sys_method_id);
+		}
+		
+		if (isset($rId))
+		{
+			$this->db->where($this->tables['access_levels_acl_resource'].'.access_level_id', $rId);
+		}		
+
+		$query =  $this->db->get($this->tables['access_levels_acl_resource']);
+		if ($query->num_rows() > 0)
+		{
+        return $query->result(); 
+		}
+		else{
+			return false;
+		}
+
+	}
+	
+	function addRoleAclInfo($data,$access_level_id)
+	{
+		$this->db->delete($this->tables['access_levels_acl_resource'], array('access_level_id' => $access_level_id));// delete old assigned  values
+
+		if($this->db->insert_batch($this->tables['access_levels_acl_resource'], $data))
+        {
+			return true;
+		}
+		return false;
+		
+	}
+	
+	function removeRoleAclInfo($access_level_id)
+	{
+		$this->db->delete($this->tables['access_levels_acl_resource'], array('access_level_id' => $access_level_id));// delete old assigned  values
+		return true;
+	}
+	    
+  function isClassinAclList($class_name)
+    {
+		$this->db->select('id');// return acl_controller_id
+		$this->db->where("class_name", $class_name);		
+        $query = $this->db->get('acl_system_controllers');
+        if ($query->num_rows() > 0)
+		{
+        $row = $query->row(); 
+        return $row->id;
+		}
+		else{
+			return false;
+		}
+	}
+	
+ function isMethodAclList($acl_controller_id,$method)
+    {
+		$this->db->select('id');// return acl_sys_method_id
+		$this->db->where("acl_controller_id", $acl_controller_id);	
+		//$this->db->where("class_method_name", $method);		
+		$this->db->where("title", $method);			
+        $query = $this->db->get('acl_system_controller_methods');
+        if ($query->num_rows() > 0)
+		{
+        $row = $query->row(); 
+        return $row->id;
+		}
+		else{
+			return false;
+		}
+	}
+	
+	
+	
+	function isAclaccess($access_level_id,$acl_controller_id,$acl_sys_method_id=0)
+    {
+		//$access_level_id is group id
+		$this->db->select('id');// return acl_sys_method_id
+		$this->db->where("access_level_id", $access_level_id);	
+		$this->db->where("acl_sys_controller_id", $acl_controller_id);
+		//if($acl_sys_method_id > 0)
+		$this->db->where("acl_sys_method_id", $acl_sys_method_id);		
+        $query = $this->db->get('access_levels_acl');
+		//echo $this->db->last_query();
+		//exit();
+        if ($query->num_rows() > 0)
+		{
+        $row = $query->row(); 
+        return $row->id;
+		}
+		else{
+			return false;
+		}
 	}
 }

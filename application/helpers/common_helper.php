@@ -256,6 +256,18 @@
 		}
 	}
 
+	function getRoles() {
+	    $CI = & get_instance();
+	    $CI->db->select('id,name');
+	    $CI->db->order_by('name', 'asc');
+	    $query = $CI->db->get('groups');
+	    if ($query->num_rows() > 0) {
+	        return $query->result_array();
+	    } else {
+	        return false;
+	    }
+	}
+
 	function getRoleTitle($id) {
 	    $CI = & get_instance();
 	    $CI->db->select('name');
@@ -266,6 +278,98 @@
 	        return $row['name'];
 	    }
 	    return false;
+	}
+
+	function getAccessLevelOptions()
+	{
+		$CI =& get_instance();	
+		$tables  = $CI->config->item('tables', 'ion_auth');
+		$aclevel_options =array('0'  => 'Select');	
+		$CI->db->select('id,name,description'); 
+		$CI->db->order_by('name','asc'); 
+	    $query = $CI->db->get($tables['groups']); 
+	        if ($query->num_rows() > 0)
+			{
+	        $levels=$query->result(); 
+				foreach($levels as $aclevel)
+				{
+				$aclevel_options[$aclevel->id]=$aclevel->name;
+				}
+			}
+		return $aclevel_options;
+	}
+
+
+	function getAccessLevelTitle($id)
+	{
+		$CI =& get_instance();	
+		$tables  = $CI->config->item('tables', 'ion_auth');
+		$CI->db->select('name,description'); 
+		$CI->db->where('id',$id); 
+	    $query = $CI->db->get($tables['groups']); 
+		if ($query->num_rows() > 0)
+			{
+	        $row = $query->row(); 
+	        return $row->name;
+			}
+		return false;       
+		
+	}
+
+	function acl_controller_methods($cId=NULL,$method_name = NULL)
+	{
+		$CI =& get_instance();	
+		$tables  = $CI->config->item('tables', 'ion_auth');
+		
+		$CI->db->select('id,class_method_name,title');
+		                
+		if (isset($method_name))
+		{
+			$CI->db->where($tables['acl_controller_methods'].'.class_method_name', $method_name);
+		}
+		
+		if (isset($cId))
+		{
+			$CI->db->where($tables['acl_controller_methods'].'.acl_controller_id', $cId);
+		}		
+		
+		$CI->db->order_by('class_method_name', 'asc');
+		
+		$query =  $CI->db->get($tables['acl_controller_methods']);
+		if ($query->num_rows() > 0)
+		{
+        return $query->result(); 
+		}
+		else{
+			return false;
+		}
+
+	}
+	
+
+	function checkInAssignedACLResource($idval,$assignedACLResource,$accessType='controller')
+	{
+		if($assignedACLResource && count($assignedACLResource)>0){
+			foreach($assignedACLResource as $res){
+				if($accessType=='method'){
+					if($idval==$res->acl_sys_method_id){
+						return true;
+					}	
+				}
+				else{
+					if($idval==$res->acl_sys_controller_id){
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	function checkAccess($accessLabelId,$curentControler,$controlerMethod)
+	{
+		$CI =& get_instance();
+		return $CI->ion_auth->check_authentication($accessLabelId,$curentControler,$controlerMethod);
 	}
 	
 	

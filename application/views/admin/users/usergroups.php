@@ -5,14 +5,10 @@
 		<div class="m-b-10">
            <div class="pull-left">
                <h3 class="pull-left">
-                   <strong>Users List</strong>
+                   <strong>Groups List</strong>
                </h3>
            </div>
-           <div class="pull-right">
-               <a href="<?php echo base_url('admin/users/addUser');?>" class="btn btn-primary"><i class="fa fa-plus"></i>Add User</a>
-               <a href="<?php echo base_url('admin/users/addGroup');?>" class="btn btn-primary"><i class="fa fa-plus"></i>Add Group</a>
-               <a href="<?php echo base_url('admin/users/userGroups');?>" class="btn btn-primary"><i class="fa fa-plus"></i>View Access Level</a>
-           </div>
+           
        </div>
         <!-- widget grid -->
         <section id="widget-grid" class="">
@@ -42,46 +38,26 @@
                                 <table class="table table-striped table-bordered table-hover editable-seller-info" width="100%">
                                     <thead>
 											<tr>
-                                                <th>First Name</th>
-                                                <th>Last Name</th>
-                                                <th>Email</th>
-                                                <th>Groups</th>
-                                                <th>Status</th>
+                                                <th>Group</th>
                                                 <th class="sorting">Action</th>
 											</tr>
                                     </thead>
                                     <tbody>
 										<?php
-                                          if (!empty($users)) {
-                                             foreach ($users as $user) {
+                                          if (!empty($groups)) {
+                                             foreach ($groups as $group) {
 										?>
-                                        <tr id="<?php echo $user['id'];?>" >
-											<form class="editForm<?php echo $user['id'];?>" enctype="multipart/form-data">
+                                        <tr id="<?php echo $group->id;?>" >
                                             <td>
-												<span class="view_mode<?php echo $user['id'];?>"><?php echo (!empty($user['first_name'])) ? $user['first_name'] : "N/A";?></span>
+												<span class="view_mode<?php echo $group->id;?>"><?php echo (!empty($group->name)) ? $group->name : "N/A";?></span>
                                             </td>
-                                            
 											<td>
-												<span class="view_mode<?php echo $user['id'];?>"><?php echo (!empty($user['last_name'])) ? $user['last_name'] : "N/A";?></span>
+                                                <?php if($group->id!=1){?>
+												<a class="btn btn-success commonBtn" data-type ="edit" data-row-id="<?php echo 'group_'.$group->id;?>" data-id="<?php echo $group->id;?>" href="<?php echo base_url('admin/users/editUserGroup/'.$group->id)?>">Edit
+                                                </a>
+                                                <?php }?>
 											</td>
-                                            
-											<td>
-												<span class="view_mode<?php echo $user['id'];?>"><?php echo (!empty($user['email'])) ? $user['email'] : "N/A";?></span>
-											</td>
-                                            
-                                            <td>
-                                                <?php foreach ($user['groups'] as $group):?>
-                                                    <?php echo anchor("admin/users/editGroup/".$group['id'], htmlspecialchars($group['name'],ENT_QUOTES,'UTF-8')) ;?><br />
-                                                <?php endforeach?>
-                                                </span>
-                                            </td>
-                                            <td><?php echo ($user['active']) ? anchor("admin/users/deactivate/".$user['id'], 'Active') : anchor("admin/users/activate/". $user['id'], 'Inactive');?></td>
-											<td>
-												<a class="btn btn-success commonBtn" data-type ="edit" data-row-id="<?php echo 'user_'.$user['id'];?>" data-id="<?php echo $user['id'];?>" href="<?php echo base_url('admin/users/editUser/'.$user['id'])?>">Edit</a>
-                                                
-												<a class="delete btn btn-sm btn-danger" data-target="#confirm-delete" data-toggle="modal" data-record-title="<?php echo $user['first_name'].' '.$user['last_name'];?>" data-type="delete" data-record-id="<?php echo $user['id'];?>" data-remove-row="<?php echo 'user_'.$user['id'];?>" href="javascript:void(0)" >Delete</a>
-											</td>
-											</form>
+											
                                         </tr>
                                         <?php } }?>
                                     </tbody>

@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Sep 17, 2016 at 06:59 PM
+-- Generation Time: Sep 27, 2016 at 07:10 PM
 -- Server version: 5.7.13-0ubuntu0.16.04.2
 -- PHP Version: 7.0.8-0ubuntu0.16.04.2
 
@@ -19,6 +19,107 @@ SET time_zone = "+00:00";
 --
 -- Database: `tmi_hotels`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `access_levels`
+--
+
+CREATE TABLE `access_levels` (
+  `id` mediumint(8) UNSIGNED NOT NULL COMMENT 'access level id  used  for defining access restriction, used as foreign key  in tables access_levels_acl ,user_authorization and role',
+  `name` varchar(20) NOT NULL COMMENT 'access level  defined in this field  like  high, low etc..',
+  `description` varchar(100) DEFAULT NULL COMMENT 'description of the access level  for explanation'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `access_levels_acl`
+--
+
+CREATE TABLE `access_levels_acl` (
+  `id` int(11) NOT NULL COMMENT 'auto incremented record id of the table.',
+  `access_level_id` int(11) NOT NULL COMMENT 'it holds id from table "groups" for which  access permission need to defined ',
+  `acl_sys_controller_id` int(11) NOT NULL COMMENT 'it holds id from table "acl_system_controllers", to specify the access for that particular section ',
+  `acl_sys_method_id` int(11) NOT NULL COMMENT 'it holds id from table "acl_system_controller_methods", to specify the access permission to a sub section like  add , view , edit  '
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `access_levels_acl`
+--
+
+INSERT INTO `access_levels_acl` (`id`, `access_level_id`, `acl_sys_controller_id`, `acl_sys_method_id`) VALUES
+(20, 3, 3, 4),
+(21, 3, 3, 12),
+(22, 3, 3, 7),
+(23, 3, 3, 13),
+(24, 3, 2, 14),
+(25, 4, 3, 4),
+(26, 4, 3, 12),
+(27, 4, 3, 5),
+(28, 4, 3, 6),
+(29, 4, 3, 7),
+(30, 4, 3, 13),
+(31, 4, 3, 8),
+(32, 4, 3, 9),
+(33, 4, 3, 10),
+(34, 4, 2, 14);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `acl_system_controllers`
+--
+
+CREATE TABLE `acl_system_controllers` (
+  `id` int(11) NOT NULL COMMENT 'unique record number, used in  access_levels_acl table  to define the access for a section',
+  `class_name` varchar(200) NOT NULL COMMENT 'controller class name,  for which section ACL access needs to be defined.',
+  `title` varchar(300) DEFAULT NULL COMMENT 'custom title for the  controller class to display'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `acl_system_controllers`
+--
+
+INSERT INTO `acl_system_controllers` (`id`, `class_name`, `title`) VALUES
+(1, 'users', 'Users'),
+(2, 'settings', 'Settings'),
+(3, 'hotels', 'Hotels');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `acl_system_controller_methods`
+--
+
+CREATE TABLE `acl_system_controller_methods` (
+  `id` int(11) NOT NULL COMMENT 'this field value is auto incremented and it should be unique, and used in  access_level_acl  table ',
+  `acl_controller_id` int(11) NOT NULL COMMENT 'it holds id from acl_system_controllers table,to define  for which section/controller the  subsection is associated',
+  `class_method_name` varchar(300) NOT NULL COMMENT ' ACL sub section/controller method  name for which  permission is required like view, edit etc.',
+  `title` varchar(100) NOT NULL COMMENT 'short name to compare the access  for example "view" to  give  view access',
+  `description` varchar(300) DEFAULT NULL COMMENT 'extra description for the controller method'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `acl_system_controller_methods`
+--
+
+INSERT INTO `acl_system_controller_methods` (`id`, `acl_controller_id`, `class_method_name`, `title`, `description`) VALUES
+(1, 1, 'index', 'view', 'view all user list'),
+(2, 1, 'editUser', 'edit', 'edit user details'),
+(3, 1, 'deleteUser', 'delete', 'delete user'),
+(4, 3, 'index', 'view', 'view hotel list'),
+(5, 3, 'editHotel', 'edit', 'edit hotel details'),
+(6, 3, 'deleteHotel', 'delete', 'delete hotel'),
+(7, 3, 'hotelRooms', 'view rooms', 'view hotel rooms'),
+(8, 3, 'editHotelRoom', 'edit rooms', 'edit hotel room'),
+(9, 3, 'deleteHotelRoom', 'delete rooms', 'delete hotel room'),
+(10, 3, 'roomAvailability', 'view calendar', 'view room availability calendar'),
+(11, 1, 'addUser', 'add', 'add user'),
+(12, 3, 'addHotel', 'add', 'add hotel'),
+(13, 3, 'addHotelRoom', 'add room', 'add hotel room'),
+(14, 2, 'index', 'view', 'view settings');
 
 -- --------------------------------------------------------
 
@@ -8372,7 +8473,9 @@ CREATE TABLE `groups` (
 
 INSERT INTO `groups` (`id`, `name`, `description`) VALUES
 (1, 'admin', 'Administrator'),
-(2, 'members', 'General User');
+(2, 'members', 'General User'),
+(3, 'operators', 'operators'),
+(4, 'Agents', 'Agents');
 
 -- --------------------------------------------------------
 
@@ -8384,7 +8487,9 @@ CREATE TABLE `hotel` (
   `hotel_id` bigint(20) NOT NULL,
   `hotel_name` varchar(255) NOT NULL,
   `slug` varchar(255) NOT NULL,
+  `hotel_chain` int(11) NOT NULL,
   `hotel_type` varchar(255) NOT NULL,
+  `hotel_category` varchar(255) NOT NULL,
   `star_rating` int(11) NOT NULL,
   `base_currency` varchar(10) NOT NULL,
   `no_of_rooms` int(11) NOT NULL,
@@ -8412,9 +8517,54 @@ CREATE TABLE `hotel` (
 -- Dumping data for table `hotel`
 --
 
-INSERT INTO `hotel` (`hotel_id`, `hotel_name`, `slug`, `hotel_type`, `star_rating`, `base_currency`, `no_of_rooms`, `tmi_rooms`, `country`, `state`, `city`, `hotel_phone`, `hotel_mobile`, `email_list`, `checkin_time`, `checkout_time`, `hotel_amenities`, `owner_commision`, `contact_type`, `contact_name`, `contact_email`, `contact_phone`, `meta_title`, `meta_description`, `hotel_status`) VALUES
-(2, 'Hotel The JK', 'hotel-the-jk', '1', 3, 'INR', 20, 10, '100', '549', '1593', '1234567890', '9999999999', 'abdul.quadir@tisindiasupport.com,abdul@gmail.com', '11:00 AM', '1:00 PM', '9,10,11', '0.00', 'sales', 'amarendra', 'amar@gmail.com', '9999999999', 'satyam hotel', 'djkfkdl kgjfhg', '1'),
-(5, 'Satyam', 'satyam', '2', 4, 'INR', 20, 10, '100', '549', '1593', '1234567890', '9999999999', 'asa@gmail.com,ssas@gmail.com', '11:00 AM', '1:00 PM', '1,2', '6.50', '', '', '', '', 'satyam hotel', 'fdf sdfdsf fgf', '1');
+INSERT INTO `hotel` (`hotel_id`, `hotel_name`, `slug`, `hotel_chain`, `hotel_type`, `hotel_category`, `star_rating`, `base_currency`, `no_of_rooms`, `tmi_rooms`, `country`, `state`, `city`, `hotel_phone`, `hotel_mobile`, `email_list`, `checkin_time`, `checkout_time`, `hotel_amenities`, `owner_commision`, `contact_type`, `contact_name`, `contact_email`, `contact_phone`, `meta_title`, `meta_description`, `hotel_status`) VALUES
+(2, 'Hotel The JK', 'hotel-the-jk', 3, '1', '3,6', 3, 'INR', 20, 10, '100', '549', '1593', '1234567890', '9999999999', 'abdul.quadir@tisindiasupport.com,abdul@gmail.com', '11:00 AM', '1:00 PM', '9,10,11', '0.00', 'sales', 'amarendra', 'amar@gmail.com', '9999999999', 'satyam hotel', 'djkfkdl kgjfhg', '0'),
+(5, 'Satyam', 'satyam', 0, '2', '0', 4, 'INR', 20, 10, '100', '549', '1593', '1234567890', '9999999999', 'asa@gmail.com,ssas@gmail.com', '11:00 AM', '1:00 PM', '1,2', '6.50', '', '', '', '', 'satyam hotel', 'fdf sdfdsf fgf', '1');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `hotel_categories`
+--
+
+CREATE TABLE `hotel_categories` (
+  `id` int(11) NOT NULL,
+  `hotel_category` varchar(50) NOT NULL,
+  `status` enum('0','1') NOT NULL COMMENT '0->inactive,1->active'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `hotel_categories`
+--
+
+INSERT INTO `hotel_categories` (`id`, `hotel_category`, `status`) VALUES
+(3, 'Business Hotel', '1'),
+(4, 'Spa Hotel', '1'),
+(6, 'Suit Hotel', '1'),
+(7, 'Heritage Hotel', '1');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `hotel_chain`
+--
+
+CREATE TABLE `hotel_chain` (
+  `id` int(11) NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `status` enum('0','1') NOT NULL COMMENT '0->inactive,1->active'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `hotel_chain`
+--
+
+INSERT INTO `hotel_chain` (`id`, `name`, `status`) VALUES
+(1, 'Taj Hotels Resorts & Places', '1'),
+(3, 'Star Group of Hotels', '1'),
+(4, 'ITC', '1'),
+(5, 'The Park', '1'),
+(6, 'Spree Hotels', '0');
 
 -- --------------------------------------------------------
 
@@ -8437,9 +8587,9 @@ CREATE TABLE `hotel_contact_details` (
 --
 
 INSERT INTO `hotel_contact_details` (`id`, `hotel_id`, `designation`, `name`, `email`, `phone`, `created_on`) VALUES
-(3, 2, 1, 'Abdul', 'abdul@gmail.com', '9999999999', '0000-00-00 00:00:00'),
-(4, 2, 2, 'Amar', 'amar@gmail.com', '9999999999', '0000-00-00 00:00:00'),
-(5, 2, 1, 'Jeevan', 'jeevan@gmail.com', '9999999999', '0000-00-00 00:00:00');
+(21, 2, 1, 'Abdul', 'abdul@gmail.com', '9999999999', '0000-00-00 00:00:00'),
+(22, 2, 2, 'Amar', 'amar@gmail.com', '9999999999', '0000-00-00 00:00:00'),
+(23, 2, 1, 'Jeevan', 'jeevan@gmail.com', '9999999999', '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -8567,6 +8717,35 @@ INSERT INTO `rate_categories` (`id`, `category_type`, `meal_plan`, `status`) VAL
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `reservation`
+--
+
+CREATE TABLE `reservation` (
+  `id` bigint(20) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `room_type` int(11) NOT NULL,
+  `booked_rooms` int(11) NOT NULL,
+  `blocked_rooms` int(11) NOT NULL,
+  `from_date` date NOT NULL,
+  `to_date` date NOT NULL,
+  `reserve_type` enum('0','1') NOT NULL COMMENT '0->not available,1->blocked by admin'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `reservation`
+--
+
+INSERT INTO `reservation` (`id`, `user_id`, `room_type`, `booked_rooms`, `blocked_rooms`, `from_date`, `to_date`, `reserve_type`) VALUES
+(1, 1, 3, 2, 0, '2016-09-01', '2016-09-01', '0'),
+(2, 1, 3, 0, 0, '2016-09-23', '2016-09-23', '0'),
+(3, 1, 1, 0, 0, '2016-09-22', '2016-09-30', '1'),
+(4, 1, 1, 0, 0, '2016-09-01', '2016-09-01', '0'),
+(5, 1, 3, 0, 4, '2016-09-22', '2016-09-30', '1'),
+(6, 1, 3, 0, 0, '2016-09-28', '2016-09-30', '1');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `room_gallery`
 --
 
@@ -8574,12 +8753,12 @@ CREATE TABLE `room_gallery` (
   `id` bigint(20) NOT NULL,
   `hotel_id` bigint(20) NOT NULL,
   `room_id` bigint(20) NOT NULL,
-  `lobby_primary_image` varchar(255) NOT NULL,
-  `lobby_images` text NOT NULL,
-  `lounge_primary_image` varchar(255) NOT NULL,
-  `lounge_images` text NOT NULL,
-  `reception_primary_image` varchar(255) NOT NULL,
-  `reception_images` text NOT NULL,
+  `lobby_primary_image` varchar(255) DEFAULT NULL,
+  `lobby_images` text,
+  `lounge_primary_image` varchar(255) DEFAULT NULL,
+  `lounge_images` text,
+  `reception_primary_image` varchar(255) DEFAULT NULL,
+  `reception_images` text,
   `created_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -8604,6 +8783,8 @@ CREATE TABLE `room_info` (
   `adults` varchar(20) NOT NULL,
   `children` varchar(20) NOT NULL,
   `extra_beds` varchar(20) NOT NULL,
+  `no_of_rooms` int(11) NOT NULL,
+  `tmi_rooms` int(11) NOT NULL,
   `beds` varchar(10) NOT NULL,
   `rate_category` int(11) NOT NULL,
   `price` float NOT NULL COMMENT 'per night',
@@ -8620,9 +8801,9 @@ CREATE TABLE `room_info` (
 -- Dumping data for table `room_info`
 --
 
-INSERT INTO `room_info` (`type_id`, `hotel_id`, `room_type`, `adults`, `children`, `extra_beds`, `beds`, `rate_category`, `price`, `period_from`, `period_to`, `extra_bed_charge`, `cancellation_type`, `room_amenities`, `cancellation_rule`, `status`) VALUES
-(1, 2, 1, '2', '1', '1', '2', 2, 1500, '0000-00-00', '0000-00-00', 300, '', '4,7,8', 1, '1'),
-(3, 5, 2, '2', '1', '1', '3', 2, 2000, '2016-09-16', '2016-10-31', 500, '', '3,4,7', 2, '1');
+INSERT INTO `room_info` (`type_id`, `hotel_id`, `room_type`, `adults`, `children`, `extra_beds`, `no_of_rooms`, `tmi_rooms`, `beds`, `rate_category`, `price`, `period_from`, `period_to`, `extra_bed_charge`, `cancellation_type`, `room_amenities`, `cancellation_rule`, `status`) VALUES
+(1, 2, 1, '2', '1', '1', 10, 5, '2', 2, 1500, '1970-01-01', '1970-01-01', 300, '', '4,7', 1, '1'),
+(3, 5, 2, '2', '1', '1', 10, 5, '3', 2, 2000, '2016-09-16', '2016-10-31', 500, '', '3,4,7', 2, '1');
 
 -- --------------------------------------------------------
 
@@ -8657,6 +8838,7 @@ CREATE TABLE `services` (
   `parent_id` int(11) NOT NULL,
   `service_name` varchar(255) NOT NULL,
   `type` tinyint(4) NOT NULL COMMENT '1->hotel amenities,2->room ameneties',
+  `amenity_icon` varchar(255) DEFAULT NULL,
   `complimentary` enum('0','1') NOT NULL COMMENT '0->no,1->yes'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -8664,18 +8846,24 @@ CREATE TABLE `services` (
 -- Dumping data for table `services`
 --
 
-INSERT INTO `services` (`id`, `parent_id`, `service_name`, `type`, `complimentary`) VALUES
-(1, 0, 'Water Amenities', 1, '0'),
-(2, 0, 'Internet', 1, '0'),
-(3, 13, 'TV', 2, '0'),
-(4, 13, 'Cable Tv', 2, '0'),
-(7, 13, 'Air Conditioning', 2, '0'),
-(8, 13, 'Washer/Dryer', 2, '0'),
-(9, 1, 'Swimming Pool', 1, '0'),
-(10, 1, 'Whirlpool Bath', 1, '0'),
-(11, 2, 'Internet Access-surcharge', 1, '0'),
-(12, 2, 'Internet/Fax(Reception area only)', 1, '0'),
-(13, 0, 'Room Services', 2, '0');
+INSERT INTO `services` (`id`, `parent_id`, `service_name`, `type`, `amenity_icon`, `complimentary`) VALUES
+(1, 0, 'Water Amenities', 1, NULL, '0'),
+(2, 0, 'Internet', 1, NULL, '0'),
+(3, 13, 'TV', 2, NULL, '0'),
+(4, 13, 'Cable Tv', 2, NULL, '0'),
+(7, 13, 'Air Conditioning', 2, NULL, '1'),
+(9, 1, 'Swimming Pool', 1, NULL, '0'),
+(10, 1, 'Whirlpool Bath', 1, NULL, '0'),
+(11, 2, 'Internet Access-surcharge', 1, NULL, '0'),
+(12, 2, 'Internet/Fax(Reception area only)', 1, NULL, '0'),
+(13, 0, 'Room Services', 2, NULL, '0'),
+(14, 0, 'Wine/Dine', 1, NULL, '1'),
+(15, 14, 'Specially Restaurent', 1, NULL, '1'),
+(16, 14, 'Multicuisine Restaurent', 1, NULL, '1'),
+(17, 14, 'Multicuisine Restaurent', 1, 'restaurant-cutlery-circular-symbol-of-a-spoon-and-a-fork-in-a-circle.svg', '1'),
+(18, 0, 'Wine/Dine', 1, 'food.svg', '1'),
+(19, 13, 'TV', 2, NULL, '0'),
+(20, 14, 'Multicuisine Restaurent', 1, NULL, '1');
 
 -- --------------------------------------------------------
 
@@ -11036,7 +11224,8 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `ip_address`, `username`, `password`, `salt`, `email`, `activation_code`, `forgotten_password_code`, `forgotten_password_time`, `remember_code`, `created_on`, `last_login`, `active`, `first_name`, `last_name`, `company`, `phone`) VALUES
-(1, '127.0.0.1', 'administrator', '$2a$07$SeBknntpZror9uyftVopmu61qg0ms8Qv1yV6FG.kQOSM.9QhmTo36', '', 'admin@admin.com', '', NULL, NULL, 'JFlj.ZnrVbPjrKiNrXu.J.', 1268889823, 1474113448, 1, 'Admin', 'istrator', 'ADMIN', '0');
+(1, '127.0.0.1', 'administrator', '$2a$07$SeBknntpZror9uyftVopmu61qg0ms8Qv1yV6FG.kQOSM.9QhmTo36', '', 'admin@admin.com', NULL, NULL, NULL, 'YZJrf87e5EGe4AWLiEo9Q.', 1268889823, 1474982061, 1, 'Admin', 'istrator', 'ADMIN', '0'),
+(2, '127.0.0.1', NULL, '$2y$08$/vn14L5Ou23OWMe.hXUM1umg5Gpl7cca5zUCItVhCWhwjh7lRNkr6', NULL, 'mark@gmail.com', NULL, NULL, NULL, 'YCB0isWVkyAKh2C6nHQFoe', 1474963689, 1474982790, 1, 'Mark', 'Ramos', 'Mark Company', '9999999999');
 
 -- --------------------------------------------------------
 
@@ -11056,11 +11245,42 @@ CREATE TABLE `users_groups` (
 
 INSERT INTO `users_groups` (`id`, `user_id`, `group_id`) VALUES
 (1, 1, 1),
-(2, 1, 2);
+(2, 1, 2),
+(3, 1, 3),
+(4, 2, 3);
 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `access_levels`
+--
+ALTER TABLE `access_levels`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `access_levels_acl`
+--
+ALTER TABLE `access_levels_acl`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `access_level_id` (`access_level_id`),
+  ADD KEY `acl_sys_controller_id` (`acl_sys_controller_id`);
+
+--
+-- Indexes for table `acl_system_controllers`
+--
+ALTER TABLE `acl_system_controllers`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `class_name` (`class_name`);
+
+--
+-- Indexes for table `acl_system_controller_methods`
+--
+ALTER TABLE `acl_system_controller_methods`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `acl_controller_id` (`acl_controller_id`),
+  ADD KEY `class_method_name` (`class_method_name`);
 
 --
 -- Indexes for table `campaigns`
@@ -11125,6 +11345,18 @@ ALTER TABLE `hotel`
   ADD PRIMARY KEY (`hotel_id`);
 
 --
+-- Indexes for table `hotel_categories`
+--
+ALTER TABLE `hotel_categories`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `hotel_chain`
+--
+ALTER TABLE `hotel_chain`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `hotel_contact_details`
 --
 ALTER TABLE `hotel_contact_details`
@@ -11167,6 +11399,12 @@ ALTER TABLE `login_attempts`
 -- Indexes for table `rate_categories`
 --
 ALTER TABLE `rate_categories`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `reservation`
+--
+ALTER TABLE `reservation`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -11222,6 +11460,26 @@ ALTER TABLE `users_groups`
 --
 
 --
+-- AUTO_INCREMENT for table `access_levels`
+--
+ALTER TABLE `access_levels`
+  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'access level id  used  for defining access restriction, used as foreign key  in tables access_levels_acl ,user_authorization and role';
+--
+-- AUTO_INCREMENT for table `access_levels_acl`
+--
+ALTER TABLE `access_levels_acl`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'auto incremented record id of the table.', AUTO_INCREMENT=35;
+--
+-- AUTO_INCREMENT for table `acl_system_controllers`
+--
+ALTER TABLE `acl_system_controllers`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'unique record number, used in  access_levels_acl table  to define the access for a section', AUTO_INCREMENT=4;
+--
+-- AUTO_INCREMENT for table `acl_system_controller_methods`
+--
+ALTER TABLE `acl_system_controller_methods`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'this field value is auto incremented and it should be unique, and used in  access_level_acl  table ', AUTO_INCREMENT=15;
+--
 -- AUTO_INCREMENT for table `campaigns`
 --
 ALTER TABLE `campaigns`
@@ -11260,17 +11518,27 @@ ALTER TABLE `designation`
 -- AUTO_INCREMENT for table `groups`
 --
 ALTER TABLE `groups`
-  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 --
 -- AUTO_INCREMENT for table `hotel`
 --
 ALTER TABLE `hotel`
   MODIFY `hotel_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 --
+-- AUTO_INCREMENT for table `hotel_categories`
+--
+ALTER TABLE `hotel_categories`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+--
+-- AUTO_INCREMENT for table `hotel_chain`
+--
+ALTER TABLE `hotel_chain`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+--
 -- AUTO_INCREMENT for table `hotel_contact_details`
 --
 ALTER TABLE `hotel_contact_details`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 --
 -- AUTO_INCREMENT for table `hotel_gallery`
 --
@@ -11302,6 +11570,11 @@ ALTER TABLE `login_attempts`
 ALTER TABLE `rate_categories`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 --
+-- AUTO_INCREMENT for table `reservation`
+--
+ALTER TABLE `reservation`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+--
 -- AUTO_INCREMENT for table `room_gallery`
 --
 ALTER TABLE `room_gallery`
@@ -11320,7 +11593,7 @@ ALTER TABLE `room_type`
 -- AUTO_INCREMENT for table `services`
 --
 ALTER TABLE `services`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 --
 -- AUTO_INCREMENT for table `state`
 --
@@ -11330,12 +11603,12 @@ ALTER TABLE `state`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 --
 -- AUTO_INCREMENT for table `users_groups`
 --
 ALTER TABLE `users_groups`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 --
 -- Constraints for dumped tables
 --

@@ -10,7 +10,8 @@ class Users extends CI_Controller {
         if (!$this->ion_auth->logged_in()) {
             redirect('admin/auth/login', 'refresh');
         }
-        $this->load->library('pagination');
+        $this->load->library(array('pagination','admin'));
+        
         $this->limit = 10;
         $this->user_id = $this->ion_auth->user()->row()->id;
     }
@@ -31,10 +32,11 @@ class Users extends CI_Controller {
             redirect('admin/auth/login', 'refresh');
         } elseif (!$this->ion_auth->is_admin()) { // remove this elseif if you want to enable this for non-admins
             // redirect them to the home page because they must be an administrator to view this
-            return show_error('You must be an administrator to view this page.');
+            return setMessage('You must be an administrator to view this page.','warning');
+            redirect('admin/dashboard', 'refresh');
         } else {
             // set the flash data error message if there is one
-            $data['message'] = (validation_errors()) ? validation_errors() : $this->session->flashdata('message');
+            setMessage(validation_errors() ? validation_errors() : $this->session->flashdata('message'),'warning');
 
             //list the users
             $data['users'] = $this->ion_auth->users()->result_array();
@@ -99,15 +101,15 @@ class Users extends CI_Controller {
         if ($this->form_validation->run() == true && $this->ion_auth->register($identity, $password, $email, $additional_data,$group_ids)) {
             // check to see if we are creating the user
             // redirect them back to the admin page
-            $this->session->set_flashdata('message', $this->ion_auth->messages());
+            setMessage($this->ion_auth->messages(),'success');
             redirect("admin/users", 'refresh');
         } else {
             // display the create user form
             // set the flash data error message if there is one
             //setMessage(' '.Validation_errors(),'warning');
-            setMessage(validation_errors() ? validation_errors() : ($this->ion_auth->errors() ? $this->ion_auth->errors() : $this->session->flashdata('message')));
+            setMessage(validation_errors() ? validation_errors() : ($this->ion_auth->errors() ? $this->ion_auth->errors() : $this->session->flashdata('message')),'warning');
 
-            $data['groups']  = $this->ion_auth->get_users_groups()->result_array();
+            $data['groups']  = getRoles();
             $this->template->load('admin/base', 'admin/users/adduser', $data);
         }
 	 }
@@ -201,11 +203,11 @@ class Users extends CI_Controller {
         $data['csrf'] = $this->_get_csrf_nonce();
 
         // set the flash data error message if there is one
-        setMessage(validation_errors() ? validation_errors() : ($this->ion_auth->errors() ? $this->ion_auth->errors() : $this->session->flashdata('message')));
+        setMessage(validation_errors() ? validation_errors() : ($this->ion_auth->errors() ? $this->ion_auth->errors() : $this->session->flashdata('message')),'warning');
 
         // pass the user to the view
         $data['user'] = $user;
-        $data['groups'] = $groups;
+        $data['groups'] = getRoles();
         $data['currentGroups'] = $currentGroups;
 
         $this->template->load('admin/base', 'admin/users/edituser', $data);
@@ -241,12 +243,11 @@ class Users extends CI_Controller {
   */
 	function deleteUser($id = NULL)
 	{
-			/*if(!checkAccess($this->accessLabelId,'users','delete'))	
-			{
-			
-			setMessage($this->accessDenidMessage,'warning');
-			redirect('admin/users', 'refresh');	
-			}*/
+		if(!checkAccess($this->admin->accessLabelId,'users','delete'))	
+		{
+    		setMessage($this->admin->accessDenidMessage,'warning');
+    		redirect('admin/users', 'refresh');	
+		}
 		$id = (int) $id;
 		if($id == $this->user_id){ // user can not delete his account
 			
@@ -254,15 +255,12 @@ class Users extends CI_Controller {
 			redirect('admin/users', 'refresh');
 		}
 		if($id > 1){
-				// do we have the right userlevel?
-					$this->ion_auth->delete_user($id);
-					
-					setMessage('Selected user deleted','success'); 
+			// do we have the right userlevel?
+			$this->ion_auth->delete_user($id);	
+			setMessage('Selected user deleted','success'); 
 		}
 		else{
-			
-					setMessage('Top lebel user  can not be deleted','warning'); 
-			
+			setMessage('Top lebel user  can not be deleted','warning'); 
 		}
 			// redirect them back to the auth page
 			redirect('admin/users', 'refresh');
@@ -278,7 +276,7 @@ class Users extends CI_Controller {
 
         if ($activation) {
             // redirect them to the auth page
-            setMessage($this->ion_auth->messages(),'success');
+            setMessage('User activated','success');
             redirect("admin/users", 'refresh');
         } else {
             // redirect them to the forgot password page
@@ -289,16 +287,11 @@ class Users extends CI_Controller {
 
     // deactivate the user
     function deactivate($id = NULL) {
-    	/*if(!checkAccess($this->accessLabelId,'users','delete'))	
+    	if(!checkAccess($this->admin->accessLabelId,'users','delete'))	
 		{
-		$sdata['message'] =$this->accessDenidMessage;					
-		$flashdata = array(
-					'flashdata'  => $sdata['message'],
-					'message_type'     => 'notice'
-					);				
-		setMessage($this->accessDenidMessage,'warning');
-		redirect('users', 'refresh');	
-		}*/	
+    		setMessage($this->admin->accessDenidMessage,'warning');
+    		redirect('admin/users', 'refresh');	
+		}	
 		$id = (int) $id;		
 		if ($this->ion_auth->logged_in())
 			{
@@ -308,5 +301,176 @@ class Users extends CI_Controller {
 
         // redirect them back to the auth page
         redirect('admin/users', 'refresh');
+    }
+
+    // create a new group
+    function addGroup() {
+        $data = array(
+            'title' => 'Users',
+            'list_heading' => 'Edit User',
+            'breadcrum' => '<li><a href="'.base_url('admin/users').'">Users</a></li>',
+        );
+
+        if (!$this->ion_auth->logged_in() || !$this->ion_auth->is_admin()) {
+            redirect('admin/users', 'refresh');
+        }
+
+        // validate form input
+        $this->form_validation->set_rules('group_name', $this->lang->line('create_group_validation_name_label'), 'required|alpha_dash');
+
+        if ($this->form_validation->run() == TRUE) {
+            $new_group_id = $this->ion_auth->create_group($this->input->post('group_name'), $this->input->post('description'));
+            if ($new_group_id) {
+                // check to see if we are creating the group
+                // redirect them back to the admin page
+                setMessage('Group created successfully','success');
+                redirect("admin/users", 'refresh');
+            }
+        } else {
+            // display the create group form
+            // set the flash data error message if there is one
+            setMessage(validation_errors() ? validation_errors() : ($this->ion_auth->errors() ? $this->ion_auth->errors() : $this->session->flashdata('message')),'warning');
+            $this->template->load('admin/base', 'admin/users/addgroup', $data);
+        }
+    }
+
+    // edit a group
+    function editGroup($id) {
+        $data = array(
+            'title' => 'Groups',
+            'list_heading' => 'Edit Group',
+            'breadcrum' => '<li><a href="'.base_url('admin/users').'">Users</a></li>',
+        );
+        // bail if no group id given
+        if (!$id || empty($id)) {
+            redirect('admin/users', 'refresh');
+        }
+        if (!$this->ion_auth->logged_in() || !$this->ion_auth->is_admin()) {
+            redirect('admin/users', 'refresh');
+        }
+
+        $group = $this->ion_auth->group($id)->row();
+
+        // validate form input
+        $this->form_validation->set_rules('group_name', $this->lang->line('edit_group_validation_name_label'), 'required|alpha_dash');
+
+        if (isset($_POST) && !empty($_POST)) {
+            if ($this->form_validation->run() === TRUE) {
+                $group_update = $this->ion_auth->update_group($id, $_POST['group_name'], $_POST['group_description']);
+
+                if ($group_update) {
+                    setMessage($this->lang->line('edit_group_saved'),'success');
+                } else {
+                    setMessage($this->ion_auth->errors(),'warning');
+                }
+                redirect("admin/users", 'refresh');
+            }
+        }
+
+        // set the flash data error message if there is one
+        setMessage(validation_errors() ? validation_errors() : ($this->ion_auth->errors() ? $this->ion_auth->errors() : $this->session->flashdata('message')),'warning');
+
+        // pass the user to the view
+        $data['group'] = $group;
+        $this->template->load('admin/base', 'admin/users/editgroup', $data);
+    }
+
+    /**
+    * @method  userGroups()
+    * @todo this method is for display  user groups
+    * @return will return user group in the form of an array|false
+    */
+    function userGroups()
+    {
+        $data = array(
+        'title' => 'Access Level',
+        'list_heading' => 'Access Level',
+        'breadcrum' => '<li><a href="'.base_url('admin/users').'">Users</a></li>',
+        );
+        $data['groups'] = $this->ion_auth->groups()->result();
+        $this->template->load('admin/base', 'admin/users/usergroups', $data);
+    }
+
+    /**
+  * @method  edit_role() method used for edit user role
+  * @param int $id hold role id
+  * @todo this method use for edit user role and redirect to user_roles page on success
+  */
+    function editUserGroup($id)
+    {
+        // bail if no group id given
+        if(!$id || empty($id))
+        {
+            redirect('admin/users', 'refresh');
+        }
+
+        $data = array(
+        'title' => 'Access Level',
+        'list_heading' => 'Edit Access Level',
+        'breadcrum' => '<li><a href="'.base_url('admin/users').'">Users</a></li>',
+        );
+        if(!checkAccess($this->admin->accessLabelId,'users','edit'))   
+        { 
+            setMessage($this->admin->accessDenidMessag,'warning');
+            redirect('admin/users', 'refresh');   
+        }   
+        $group = $this->ion_auth->group($id)->row();
+        // validate form input
+        $this->form_validation->set_rules('group_name', $this->lang->line('edit_group_validation_name_label'), 'required|alpha_dash');
+        $group_update=false;
+        if (isset($_POST) && !empty($_POST))
+        {
+            if ($this->form_validation->run() === TRUE)
+            {
+                $group_update = $this->ion_auth->update_group($id, $_POST['group_name'], $_POST['group_name']);
+                $acl_controller_methods=$this->input->post('acl_method');
+                if($acl_controller_methods && count($acl_controller_methods)>0)
+                {
+                    foreach($acl_controller_methods as $controllerIDkey=>$methodsId)
+                    {
+                        $this->controllerID=$controllerIDkey;
+                        if(count($methodsId)>0)
+                        {
+                        foreach($methodsId as $methodId) {
+                            $contactData[] = array(
+                                    'access_level_id' => $id,
+                                    'acl_sys_controller_id' => $this->controllerID,                             
+                                    'acl_sys_method_id' => $methodId                                
+                                );                          
+                            }
+                        }
+                    }
+                    $this->ion_auth->addRoleAclInfo($contactData,$id);
+                }
+                else
+                {
+                    $this->ion_auth->removeRoleAclInfo($id);
+                }           
+                if($group_update)
+                {
+                    setMessage('Access level is updated','success');
+                }
+                else
+                {             
+                    setMessage($this->ion_auth->errors(),'warning');
+                }
+                redirect("admin/users/userGroups", 'refresh');
+            }
+        }
+        // pass the user to the view
+        
+        $readonly = $this->config->item('admin_group', 'ion_auth') === $group->name ? 'readonly' : '';
+        $data['group_name'] = array(
+            'name'    => 'group_name',
+            'id'      => 'group_name',
+            'type'    => 'text',
+            'value'   => $this->form_validation->set_value('group_name', $group->name),
+            $readonly => $readonly,
+        );
+        $data['group']            = $group;
+        $data['acl_controllers']  = $this->ion_auth->acl_controllers();
+        $data['ACLResource']      = $this->ion_auth->roleAssignedACLResource($id);
+        $this->template->load('admin/base', 'admin/users/editusergroups', $data);
+        
     }
 }

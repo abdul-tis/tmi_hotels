@@ -17,7 +17,7 @@ class Auth extends CI_Controller {
 
         if (!$this->ion_auth->logged_in()) {
             // redirect them to the login page
-            redirect('auth/login', 'refresh');
+            redirect('admin/auth/login', 'refresh');
         } elseif (!$this->ion_auth->is_admin()) { // remove this elseif if you want to enable this for non-admins
             // redirect them to the home page because they must be an administrator to view this
             return show_error('You must be an administrator to view this page.');
@@ -57,18 +57,19 @@ class Auth extends CI_Controller {
                 if ($this->ion_auth->login($this->input->post('email'), $this->input->post('password'), $remember)) {
                     //if the login is successful
                     //redirect them back to the home page
-                    $this->session->set_flashdata('message', $this->ion_auth->messages());
+                    setMessage($this->ion_auth->messages(),'success');
                     redirect('admin/dashboard', 'refresh');
                 } else {
                     // if the login was un-successful
                     // redirect them back to the login page
-                    $this->session->set_flashdata('message', $this->ion_auth->errors());
+                    
+                    setMessage($this->ion_auth->errors(),'warning');
                     redirect('admin/auth/login', 'refresh'); // use redirects instead of loading views for compatibility with MY_Controller libraries
                 }
             } else {
                 // the user is not logging in so display the login page
                 // set the flash data error message if there is one
-                $this->data['message'] = (validation_errors()) ? validation_errors() : $this->session->flashdata('message');
+                setMessage(validation_errors() ? validation_errors() : $this->session->flashdata('message'),'warning');
 
                 $this->data['identity'] = array('name' => 'identity',
                     'id' => 'identity',
