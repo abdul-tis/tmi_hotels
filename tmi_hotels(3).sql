@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.5.4.1deb2ubuntu1
+-- version 4.0.10.14
 -- http://www.phpmyadmin.net
 --
--- Host: localhost
--- Generation Time: Sep 27, 2016 at 07:10 PM
--- Server version: 5.7.13-0ubuntu0.16.04.2
--- PHP Version: 7.0.8-0ubuntu0.16.04.2
+-- Host: localhost:3306
+-- Generation Time: Sep 30, 2016 at 09:01 AM
+-- Server version: 5.5.52-cll
+-- PHP Version: 5.6.20
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -14,10 +14,10 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
+/*!40101 SET NAMES utf8 */;
 
 --
--- Database: `tmi_hotels`
+-- Database: `getaprog_tmi_hotels`
 --
 
 -- --------------------------------------------------------
@@ -26,11 +26,12 @@ SET time_zone = "+00:00";
 -- Table structure for table `access_levels`
 --
 
-CREATE TABLE `access_levels` (
-  `id` mediumint(8) UNSIGNED NOT NULL COMMENT 'access level id  used  for defining access restriction, used as foreign key  in tables access_levels_acl ,user_authorization and role',
+CREATE TABLE IF NOT EXISTS `access_levels` (
+  `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT 'access level id  used  for defining access restriction, used as foreign key  in tables access_levels_acl ,user_authorization and role',
   `name` varchar(20) NOT NULL COMMENT 'access level  defined in this field  like  high, low etc..',
-  `description` varchar(100) DEFAULT NULL COMMENT 'description of the access level  for explanation'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `description` varchar(100) DEFAULT NULL COMMENT 'description of the access level  for explanation',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -38,33 +39,38 @@ CREATE TABLE `access_levels` (
 -- Table structure for table `access_levels_acl`
 --
 
-CREATE TABLE `access_levels_acl` (
-  `id` int(11) NOT NULL COMMENT 'auto incremented record id of the table.',
+CREATE TABLE IF NOT EXISTS `access_levels_acl` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'auto incremented record id of the table.',
   `access_level_id` int(11) NOT NULL COMMENT 'it holds id from table "groups" for which  access permission need to defined ',
   `acl_sys_controller_id` int(11) NOT NULL COMMENT 'it holds id from table "acl_system_controllers", to specify the access for that particular section ',
-  `acl_sys_method_id` int(11) NOT NULL COMMENT 'it holds id from table "acl_system_controller_methods", to specify the access permission to a sub section like  add , view , edit  '
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `acl_sys_method_id` int(11) NOT NULL COMMENT 'it holds id from table "acl_system_controller_methods", to specify the access permission to a sub section like  add , view , edit  ',
+  PRIMARY KEY (`id`),
+  KEY `access_level_id` (`access_level_id`),
+  KEY `acl_sys_controller_id` (`acl_sys_controller_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=28 ;
 
 --
 -- Dumping data for table `access_levels_acl`
 --
 
 INSERT INTO `access_levels_acl` (`id`, `access_level_id`, `acl_sys_controller_id`, `acl_sys_method_id`) VALUES
-(20, 3, 3, 4),
-(21, 3, 3, 12),
-(22, 3, 3, 7),
-(23, 3, 3, 13),
-(24, 3, 2, 14),
-(25, 4, 3, 4),
-(26, 4, 3, 12),
-(27, 4, 3, 5),
-(28, 4, 3, 6),
-(29, 4, 3, 7),
-(30, 4, 3, 13),
-(31, 4, 3, 8),
-(32, 4, 3, 9),
-(33, 4, 3, 10),
-(34, 4, 2, 14);
+(1, 3, 3, 4),
+(2, 3, 3, 12),
+(3, 3, 3, 7),
+(4, 3, 3, 13),
+(5, 3, 2, 14),
+(16, 4, 4, 15),
+(17, 4, 4, 16),
+(18, 4, 3, 4),
+(19, 4, 3, 12),
+(20, 4, 3, 5),
+(21, 4, 3, 6),
+(22, 4, 3, 7),
+(23, 4, 3, 13),
+(24, 4, 3, 8),
+(25, 4, 3, 9),
+(26, 4, 3, 10),
+(27, 4, 2, 14);
 
 -- --------------------------------------------------------
 
@@ -72,11 +78,13 @@ INSERT INTO `access_levels_acl` (`id`, `access_level_id`, `acl_sys_controller_id
 -- Table structure for table `acl_system_controllers`
 --
 
-CREATE TABLE `acl_system_controllers` (
-  `id` int(11) NOT NULL COMMENT 'unique record number, used in  access_levels_acl table  to define the access for a section',
+CREATE TABLE IF NOT EXISTS `acl_system_controllers` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'unique record number, used in  access_levels_acl table  to define the access for a section',
   `class_name` varchar(200) NOT NULL COMMENT 'controller class name,  for which section ACL access needs to be defined.',
-  `title` varchar(300) DEFAULT NULL COMMENT 'custom title for the  controller class to display'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `title` varchar(300) DEFAULT NULL COMMENT 'custom title for the  controller class to display',
+  PRIMARY KEY (`id`),
+  KEY `class_name` (`class_name`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
 
 --
 -- Dumping data for table `acl_system_controllers`
@@ -85,7 +93,8 @@ CREATE TABLE `acl_system_controllers` (
 INSERT INTO `acl_system_controllers` (`id`, `class_name`, `title`) VALUES
 (1, 'users', 'Users'),
 (2, 'settings', 'Settings'),
-(3, 'hotels', 'Hotels');
+(3, 'hotels', 'Hotels'),
+(4, 'booking', 'Booking');
 
 -- --------------------------------------------------------
 
@@ -93,13 +102,16 @@ INSERT INTO `acl_system_controllers` (`id`, `class_name`, `title`) VALUES
 -- Table structure for table `acl_system_controller_methods`
 --
 
-CREATE TABLE `acl_system_controller_methods` (
-  `id` int(11) NOT NULL COMMENT 'this field value is auto incremented and it should be unique, and used in  access_level_acl  table ',
+CREATE TABLE IF NOT EXISTS `acl_system_controller_methods` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'this field value is auto incremented and it should be unique, and used in  access_level_acl  table ',
   `acl_controller_id` int(11) NOT NULL COMMENT 'it holds id from acl_system_controllers table,to define  for which section/controller the  subsection is associated',
   `class_method_name` varchar(300) NOT NULL COMMENT ' ACL sub section/controller method  name for which  permission is required like view, edit etc.',
   `title` varchar(100) NOT NULL COMMENT 'short name to compare the access  for example "view" to  give  view access',
-  `description` varchar(300) DEFAULT NULL COMMENT 'extra description for the controller method'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `description` varchar(300) DEFAULT NULL COMMENT 'extra description for the controller method',
+  PRIMARY KEY (`id`),
+  KEY `acl_controller_id` (`acl_controller_id`),
+  KEY `class_method_name` (`class_method_name`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=17 ;
 
 --
 -- Dumping data for table `acl_system_controller_methods`
@@ -119,7 +131,9 @@ INSERT INTO `acl_system_controller_methods` (`id`, `acl_controller_id`, `class_m
 (11, 1, 'addUser', 'add', 'add user'),
 (12, 3, 'addHotel', 'add', 'add hotel'),
 (13, 3, 'addHotelRoom', 'add room', 'add hotel room'),
-(14, 2, 'index', 'view', 'view settings');
+(14, 2, 'index', 'view', 'view settings'),
+(15, 4, 'index', 'view', 'view bookings'),
+(16, 4, 'makeBooking', 'add', 'make booking a hotel');
 
 -- --------------------------------------------------------
 
@@ -127,15 +141,24 @@ INSERT INTO `acl_system_controller_methods` (`id`, `acl_controller_id`, `class_m
 -- Table structure for table `campaigns`
 --
 
-CREATE TABLE `campaigns` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `campaigns` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `compaign_name` varchar(255) NOT NULL,
   `target_hotel` varchar(50) NOT NULL,
   `start_date` datetime NOT NULL,
   `finish_date` datetime NOT NULL,
   `discount` float(5,2) NOT NULL,
-  `active` enum('0','1') NOT NULL COMMENT '0->inactive,1->active'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `active` enum('0','1') NOT NULL COMMENT '0->inactive,1->active',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
+
+--
+-- Dumping data for table `campaigns`
+--
+
+INSERT INTO `campaigns` (`id`, `compaign_name`, `target_hotel`, `start_date`, `finish_date`, `discount`, `active`) VALUES
+(1, 'Holiday Special', '0', '2016-09-26 00:00:00', '2016-10-05 00:00:00', 3.00, '1'),
+(2, 'Festive Special', '0', '2016-09-30 00:00:00', '2016-10-30 00:00:00', 3.50, '1');
 
 -- --------------------------------------------------------
 
@@ -143,11 +166,12 @@ CREATE TABLE `campaigns` (
 -- Table structure for table `cancellation_rules`
 --
 
-CREATE TABLE `cancellation_rules` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `cancellation_rules` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `cancellation_rule` text NOT NULL,
-  `status` enum('0','1') NOT NULL COMMENT '0->inactive,1->active'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` enum('0','1') NOT NULL COMMENT '0->inactive,1->active',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
 
 --
 -- Dumping data for table `cancellation_rules`
@@ -165,8 +189,8 @@ INSERT INTO `cancellation_rules` (`id`, `cancellation_rule`, `status`) VALUES
 -- Table structure for table `cities`
 --
 
-CREATE TABLE `cities` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `cities` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `state_id` int(11) DEFAULT NULL,
   `city_name` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `name_varient` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
@@ -178,8 +202,16 @@ CREATE TABLE `cities` (
   `longitude` varchar(255) CHARACTER SET utf8 NOT NULL,
   `alias` text NOT NULL,
   `lic_required` tinyint(2) NOT NULL DEFAULT '0',
-  `base_credit` int(11) NOT NULL DEFAULT '1'
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+  `base_credit` int(11) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`),
+  KEY `state_id` (`state_id`),
+  KEY `country_id` (`country_id`),
+  KEY `city_name` (`city_name`),
+  KEY `name_varient` (`name_varient`),
+  KEY `longitude` (`longitude`),
+  KEY `latitude` (`latitude`),
+  KEY `id` (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=7929 ;
 
 --
 -- Dumping data for table `cities`
@@ -197,7 +229,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (9, 6, 'Teramo', '', '', 1, 0, 104, '42.67', '13.70', 'teramo', 0, 1),
 (10, 6, 'Vasto', '', '', 1, 0, 104, '42.12', '14.70', 'vasto', 0, 1),
 (11, 7, 'Abu Dhabi', '', '<p style="text-align: justify;">\n	White-washed mosques encircled by soaring sky scrapers, neon-lit big business rises and arabesque minarets pop up from the verdant parks of central Abu Dhabi like elegant architectural reminders of this emirate&rsquo;s soaring wealth. All around, the waves of the Persian Gulf and a sea of undulating sand dunes straight out of Disney&rsquo;s Aladdin encompass the cityscape, enfolding its modernist peaks and troughs in a capsule of Arabian wilds.<br />\n	Welcome to Abu Dhabi, the UAE&rsquo;s capital, and a bubbling hub of life that&rsquo;s everything you&rsquo;d expect of an oil town on the Gulf. Before heading out to see the sights and attractions of the Corniche, Khalifa Park and Saadiyat Island, be sure to quiz your Abu Dhabi tourist guide on the various important religious hotspots&mdash;from the colossal Sheikh Zayed Mosque, to the blue-tiled Ali Bin Murshid Mosque in the downtown.<br />\n	Afterwards, take a jaunt down to one of the city&rsquo;s celebrated gastronomic hotspots, to sample the curious mix of Indian and Arabic flavours and cuisines that have taken hold. Then, enjoy a spot of retail therapy in one of the city&rsquo;s many sprawling mall complexes or souk-style market bazaars.</p>\n', 1, 0, 2, '24.48', '54.37', 'abu-dhabi', 0, 1),
-(12, 7, 'Al Ain', '', '<p class="fr-tag"  justify;">Straddling the Omani border with the town of Buraimi, Al Ain springs up from the desert in a burst of verdant greenery, easily confirming its ‘Garden City’ epithet, and them some. In fact, so startling is this town’s position on the very cusp of the great Rub\' al Khali Desert, that it has earned it a UNESCO tag as well as plenty of attention from local investors and international travellers alike.</p><p class="fr-tag"  justify;">Today, Al Ain boasts one of the best zoos in the country, with exhibitions that encompass more than 2,000 separate species of mammals, along with a dedicated conservation program aimed at sustaining the wildlife of the Arabian Peninsula. Close by, the looming figure of Jebel Hafeet signifies the country’s second tallest peak, and Al Ain tour guides often recommend taking the hair-raising drive to the top, if only to relax in the bubbling springs of the Green Mubazara Park. And amidst the town’s districts, visitors can explore bustling Arab souks laden with livestock and local textile productions, the city’s historic fort-come-museum complex, and seemingly endless swathes of date palms that offer shady avenues around the Oasis.</p>', 1, 0, 2, '24.23', '55.74', 'al-ain', 0, 1),
+(12, 7, 'Al Ain', '', '<p class="fr-tag"  justify;">Straddling the Omani border with the town of Buraimi, Al Ain springs up from the desert in a burst of verdant greenery, easily confirming its ‘Garden City’ epithet, and them some. In fact, so startling is this town’s position on the very cusp of the great Rub'' al Khali Desert, that it has earned it a UNESCO tag as well as plenty of attention from local investors and international travellers alike.</p><p class="fr-tag"  justify;">Today, Al Ain boasts one of the best zoos in the country, with exhibitions that encompass more than 2,000 separate species of mammals, along with a dedicated conservation program aimed at sustaining the wildlife of the Arabian Peninsula. Close by, the looming figure of Jebel Hafeet signifies the country’s second tallest peak, and Al Ain tour guides often recommend taking the hair-raising drive to the top, if only to relax in the bubbling springs of the Green Mubazara Park. And amidst the town’s districts, visitors can explore bustling Arab souks laden with livestock and local textile productions, the city’s historic fort-come-museum complex, and seemingly endless swathes of date palms that offer shady avenues around the Oasis.</p>', 1, 0, 2, '24.23', '55.74', 'al-ain', 0, 1),
 (13, 8, 'Abuja', '', '', 1, 0, 157, '9.06', '7.49', 'abuja', 0, 1),
 (14, 9, 'Banda Aceh', 'Kutaraja, Kutaradja, Kuturaja, Kota Raja, Kota Radja', '<p class="fr-tag" style="text-align: justify;">The sleepy regional capital of less-trodden North Sumatra has risen from the ashes of the 2004 Indian Ocean Tsunami to once more evoke the laid-back, chilled-out vibe expected of an Indonesian backcountry town. The off-the-beaten-track character of Banda Aceh continues to draw travellers, making their way along the coastal stretches of the Malaccan Strait to take in its traditional timber homes, elegant mosques, earthy warungs and bubbling fish markets. </p><p class="fr-tag" style="text-align: justify;">Most Banda Aceh tour guides recommend seeing the town on foot, weaving between colonial buildings before arriving at the graphite domes of the Masjid Raya Baiturrahman Grand Mosque, the religious epicentre of this highly zealous place.</p><p class="fr-tag" style="text-align: justify;">However, no trip to this northern tip of Sumatra could be complete without surveying the legacy of the destructive tsunami, and Aceh is home to perhaps the most striking and sobering collection of monuments. To see them, head down to the reconstructed port areas of pretty Ulee Lheue, or the Tsunami Monument Gardens and the nearby beached ship—sitting just where the waves left it, more than five kilometres from the shore.</p>', 1, 0, 96, '5.55', '95.32', 'banda-aceh', 0, 1),
 (15, 10, 'Ponta Delgada', '', '', 1, 0, 176, '37.75', '-25.67', 'ponta-delgada', 0, 1),
@@ -262,7 +294,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (74, 41, 'Aqaba', '', '<p style="text-align: justify;">\n	Jordan&rsquo;s only coastal town, the beautiful city of&nbsp; Aqaba sits surrounded by&nbsp; majestic desertmountains and the picturesque&nbsp; Red Sea. Some of the world&rsquo;s most spectacular coral reefs and unique sea life abound along its waters and at the Red Sea Marine Park, making it a veritable paradise for scuba divers and snorkelling enthusiasts. These underwater gems infact count as Aqaba&rsquo;s major attraction, beckoning locals and international travellers alike to stay at its opulent resorts along the coastline, that pamper guests with spas,world class facilities and relaxing days along its sandy beaches. And yet, your Aqaba tour guide will tell you there is so much more to see and experience. Aqaba castle, and in its vicinity the Aqaba Archeological&nbsp; Museum highlight the long history of this city that was once called Ayla in the pre biblical times. Back to its present day, travellers can enjoy a day of shopping for memoirs and handicrafts at the Queen Noor Hussein Foundation, stopping by at one of the city&rsquo;s&nbsp; many delightful coffee shops for a taste of its delectable desserts like Baklava, Knafeh and Mansaf.&nbsp;</p>\n', 1, 0, 107, '29.53', '35.00', 'aqaba', 0, 1),
 (75, 42, 'Kuwait', 'Kuwayt, Koweit, Qurayn, Qurein', '', 1, 0, 117, '29.38', '47.99', 'kuwait', 0, 1),
 (76, 42, 'Doha', 'ad Dawhah', '', 1, 0, 117, '29.32', '47.82', 'doha', 0, 1),
-(77, 43, 'El Aaiun', 'Al Ayun, Ayun, La\'youn, Laayoun, Al Uyun, Laayoune, Aaiún, La Youne, Al Ayun', '<p style="text-align: justify;">\n	Once the colonial capital of the Spanish Sahara, El Aaiun now forms one of the territory&rsquo;s economic, cultural and social focal points. It&rsquo;s nestled on Africa&rsquo;s north-eastern tip, sprawled over a series of arid bluffs that rise dramatically from the sea of Saharan dunes that spans out southwards for miles. Currently under the administration of nearby Morocco, guests here enjoy a curious mix of North African cultures; a place where ancient Berber traditionalism coalesces with Arabic influences to boot.<br />\n	This all makes the city a great spot for culture vultures looking for a taste of more off-the-beaten-track North Africa, while history buffs should be sure to ask their El Aaiun tourist guide for tips on how to get to the nearby remnants of Spanish forts and outposts.<br />\n	The town also plays host to the market of Sheria Mekka, where visitors can explore a series of makeshift stalls and authentic domed bazaar shops selling hand-crafted jewellery and trinkets, while foodies will enjoy the local mastery of Western Sahara&rsquo;s trademark Gofia fruit cocktail, and the super-fresh offering of farmer&rsquo;s food at the city&rsquo;s central goods market.</p>\n', 1, 0, 63, '27.16', '-13.20', 'el-aaiun', 0, 1),
+(77, 43, 'El Aaiun', 'Al Ayun, Ayun, La''youn, Laayoun, Al Uyun, Laayoune, Aaiún, La Youne, Al Ayun', '<p style="text-align: justify;">\n	Once the colonial capital of the Spanish Sahara, El Aaiun now forms one of the territory&rsquo;s economic, cultural and social focal points. It&rsquo;s nestled on Africa&rsquo;s north-eastern tip, sprawled over a series of arid bluffs that rise dramatically from the sea of Saharan dunes that spans out southwards for miles. Currently under the administration of nearby Morocco, guests here enjoy a curious mix of North African cultures; a place where ancient Berber traditionalism coalesces with Arabic influences to boot.<br />\n	This all makes the city a great spot for culture vultures looking for a taste of more off-the-beaten-track North Africa, while history buffs should be sure to ask their El Aaiun tourist guide for tips on how to get to the nearby remnants of Spanish forts and outposts.<br />\n	The town also plays host to the market of Sheria Mekka, where visitors can explore a series of makeshift stalls and authentic domed bazaar shops selling hand-crafted jewellery and trinkets, while foodies will enjoy the local mastery of Western Sahara&rsquo;s trademark Gofia fruit cocktail, and the super-fresh offering of farmer&rsquo;s food at the city&rsquo;s central goods market.</p>\n', 1, 0, 63, '27.16', '-13.20', 'el-aaiun', 0, 1),
 (78, 44, 'al Bahah', '', '', 1, 0, 185, '20.02', '41.47', 'al-bahah', 0, 1),
 (79, 44, 'Baljursi', '', '', 1, 0, 185, '19.86', '41.56', 'baljursi', 0, 1),
 (80, 45, 'Hurghada', 'Hurgada, Ghurdaqah, El Ghardaka, al Ghurdaqah', '<p style="text-align: justify;">\n	Once a tiny fishing village, Hurghada is one of Egypt&rsquo;s best-loved seaside resorts, a place with a well-cultivated offering of family-friendly accommodations and wide array of outdoorsy activities. It now attracts intrepid adventure travellers and relaxation-seekers alike, so make sure your Hurghada tour guide points you in the right direction.<br />\n	Most come in search of the Red Sea&rsquo;s diving culture, which continues to expand further and further in the Gulf in order to offer scuba and free diving packages in the supremely beautiful, and hitherto uncharted waters away from the shore. But if diving isn&rsquo;t your thing, then rest assured, Hurghada&rsquo;s sandy beaches are buzzing most months of the year.<br />\n	This resort destination has all the amenities and services any traveller could require, along with a high-energy nightlife rivalling any of the Red Sea destinations on Egypt&rsquo;s eastern shore. There&rsquo;s also plenty of gastronomy to explore, and visitors won&rsquo;t be disappointed by the eclectic line-up of both traditional and international cuisine. End your day sipping local drinks karkaday and chi, looking out at a glorious sunset.</p>\n', 1, 0, 62, '27.23', '33.83', 'hurghada', 0, 1),
@@ -304,7 +336,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (116, 63, 'al Karak', 'Karak, Kerak', '<p style="text-align: justify;">\n	Crowned by the iconic silhouette of the formidable and ancient citadel of Kerak Castle, this city is an enduring monument to the region&rsquo;s long history and bountiful cultural offerings. Thought to be one of the largest crusader castles in the entire Levant, the fortifications that dominate the skyline here are an intermingling of Arabic architecture and western defensive styles that sprawl their way over the southern edge of Al Karak&rsquo;s mountain plateau.<br />\n	In the grounds of the castle itself the town&rsquo;s archaeological museum gives visitors a unique insight into the historical happenings of central Jordan, and the medieval power struggles that came to define al Karak as a much-coveted stronghold for Christian crusaders and Muslim dynasts alike.<br />\n	Outside of the obvious historical sites, your al Karak tour guide will tell you that the city is also well known for its perfection of Jordan&rsquo;s national dish, the slow-cooked lamb Mansaf, and any hospitable resident will point you to one of the many traditional eateries in town for a hearty meal.&nbsp;</p>\n', 1, 0, 107, '31.18', '35.70', 'al-karak', 0, 1),
 (117, 64, 'Lattakia', '', '', 1, 0, 203, '35.54', '35.78', 'lattakia', 0, 1),
 (118, 65, 'Medina', '', '', 1, 0, 185, '24.48', '39.59', 'medina', 0, 1),
-(119, 65, 'Yanbu', 'Yambu, Yanbu\' al Bahr, Yanbu al Bahr, Yanbo, Yenbo, Yambo, Yanbu\' al Bahr', '', 1, 0, 185, '24.09', '38.05', 'yanbu', 0, 1),
+(119, 65, 'Yanbu', 'Yambu, Yanbu'' al Bahr, Yanbu al Bahr, Yanbo, Yenbo, Yambo, Yanbu'' al Bahr', '', 1, 0, 185, '24.09', '38.05', 'yanbu', 0, 1),
 (120, 65, 'al Ula', '', '', 1, 0, 185, '26.63', '37.92', 'al-ula', 0, 1),
 (121, 65, 'Badr', '', '', 1, 0, 185, '23.78', '38.79', 'badr', 0, 1),
 (122, 66, 'Mafraq', '', '', 1, 0, 107, '32.36', '36.22', 'mafraq', 0, 1),
@@ -409,7 +441,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (221, 86, 'Alexandria', 'Alexandrie', '<p style="text-align: justify;">\n	Hailed as the &lsquo;Pearl of the Mediterranean&rsquo; for its curious cultural intermingling of Middle Eastern traditions and European character, Alexandria has stayed true to its history as a Greek colonial outpost on the coast of North Africa. The city was first established in 331 BC by Alexander the Great (who&rsquo;s also its namesake), making it noticeably younger than most of the metropolitan centres in Egypt, but no less important in its line-up of historical and cultural points of interest.<br />\n	But the story of this truly legendary city is both grand and tragic. Unfortunately much of the old Alexandria has been lost, consumed by the ever-encroaching ocean and the destructive course of history. Amongst the fallen, the majestic Pharos Lighthouse and the Royal Library Complex stand as perhaps its greatest and most lamentable losses.&nbsp;<br />\n	But while the bulk of the ancient sites of Alexandria remain submerged at sea, there is something of a cultural revolution taking place on its modern streets. A number of planned museums, an exploding gastronomic scene and lively day-to-day atmosphere make it a truly enticing city that is worthy of its reputation.</p>\n', 1, 0, 62, '31.22', '29.95', 'alexandria', 0, 1),
 (222, 87, 'Portimao', '', '', 1, 0, 176, '37.13', '-8.54', 'portimao', 0, 1),
 (223, 87, 'Faro', '', '', 1, 0, 176, '37.03', '-7.94', 'faro', 0, 1),
-(224, 88, 'Algiers', 'al Jaza\'ir, Alger, Al Jazair, Al Jaza\'ir, El Djazair, El Jazair, El Djezair, Tamurt n Ldzayer', '<p class="fr-tag" style="text-align: justify;">From afar, the city of Algiers seems to rise directly from the deep blue waters of the scintillating Mediterranean Sea in a haze of shimmering white, set in stark contrast to the pine-clad hills and craggy cliffs that enfold it to the north and south. Over its millennia-long history it has played host to Berber dynasties, Barbary outlaws, Ottoman pashas and French colonialists alike; which is why there are Parisian avenues to be found shooting out from the tight-knit lanes of the central Kasbah, and the menus of the earthy eateries here mix fresh Mediterranean fish catches with Moorish chick pea curries and North African tagines. For sightseers, most Algiers tour guides will recommend a jaunt through the dusty passages of the arabesque Kasbah, afterwards breaking out to the bulbous domes of the Notre Dame d\'Afrique Cathedral and the intricate interiors of the Grand and New mosques. There is also the striking avant-garde Monument des Martyrs, the leafy gardens of Le Jardin d\'Essai du Hamma and a whole host of museums to explore, before joining the locals for a relaxed evening at the Corniche.</p>', 1, 0, 59, '36.77', '3.04', 'algiers', 0, 1),
+(224, 88, 'Algiers', 'al Jaza''ir, Alger, Al Jazair, Al Jaza''ir, El Djazair, El Jazair, El Djezair, Tamurt n Ldzayer', '<p class="fr-tag" style="text-align: justify;">From afar, the city of Algiers seems to rise directly from the deep blue waters of the scintillating Mediterranean Sea in a haze of shimmering white, set in stark contrast to the pine-clad hills and craggy cliffs that enfold it to the north and south. Over its millennia-long history it has played host to Berber dynasties, Barbary outlaws, Ottoman pashas and French colonialists alike; which is why there are Parisian avenues to be found shooting out from the tight-knit lanes of the central Kasbah, and the menus of the earthy eateries here mix fresh Mediterranean fish catches with Moorish chick pea curries and North African tagines. For sightseers, most Algiers tour guides will recommend a jaunt through the dusty passages of the arabesque Kasbah, afterwards breaking out to the bulbous domes of the Notre Dame d''Afrique Cathedral and the intricate interiors of the Grand and New mosques. There is also the striking avant-garde Monument des Martyrs, the leafy gardens of Le Jardin d''Essai du Hamma and a whole host of museums to explore, before joining the locals for a relaxed evening at the Corniche.</p>', 1, 0, 59, '36.77', '3.04', 'algiers', 0, 1),
 (225, 89, 'Ali Sabieh', '', '', 1, 0, 55, '11.15', '42.71', 'ali-sabieh', 0, 1),
 (226, 90, 'Kandi', '', '', 1, 0, 24, '11.13', '2.94', 'kandi', 0, 1),
 (227, 91, 'Thoddoo', '', '', 1, 0, 148, '4.42', '72.95', 'thoddoo', 0, 1),
@@ -557,7 +589,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (368, 137, 'Bari', 'Bari delle Puglie', '<p class="fr-tag" style="text-align: justify;">With its tactical location on the picturesque Adriatic coast of Puglia, it’s hardly surprising that Bari was once a major Roman trading port connecting Italy with its various territories in the eastern Mediterranean. Today, the town’s dual harbours have carried it on in much the same vein; offering speedy ferry connections to Greece and Croatia to thousands of tourists a year, along with all the energetic characteristics you’d expect of a bustling port town.</p><p class="fr-tag" style="text-align: justify;"><span style="line-height: 16.7999992370605px; font-size: 1em; background-color: initial;">But –as any Bari tour guide will be quick to say – this one isn’t simply a convenient stopover before heading out across the sea. In fact, Bari has some serious cultural gumption of its own, touting the rustic Bari Vecchia old town, the medieval heart of the city, and all the concomitant churches and charming alleyways. Don’t miss the Basilica di San Nicola and its Romanesque façade, or the bustling promenade of Lungomare e Murat, with its unforgettable sea-to-table fish bistros.</span></p><p class="fr-tag" style="text-align: justify;"></p><p class="fr-tag" style="text-align: justify;"></p><p class="fr-tag" style="text-align: justify;"></p><p class="fr-tag" style="text-align: justify;">What’s more, Bari’s position in the very heart of the region means that it’s the perfect base for exploring the majestic beauty of Puglia as a whole, and guests are invited to break out to the tunnels of the alien Grotte di Castellana, or the UNESCO-attested rises of the Trulli of Alberobello just to the south.</p>', 1, 0, 104, '41.12', '16.87', 'bari', 0, 1),
 (369, 137, 'Taranto', '', '<p class="fr-tag" style="text-align: justify;">Hugging its own natural harbour like the gatekeeper of the Apulian panhandle, Taranto now stands as a lesson in Italian history from its earliest years. First here were the Greeks (Spartan refuges to be precise) and then the Romans with their taxes and triumvirates. Later, the Arabs dominated the town, using it to sack Campania and southern Italy, before retiring it to the French and the kings of Aragon. Finally, the financial mismanagement of the modern age took hold, leaving Taranto noticeably bare of concurrent developments save for that sprawling industrial plant on the horizon to the south.</p><p class="fr-tag" style="text-align: justify;">Most of the interesting sights line the city’s <i>Mare Piccolo </i>(Little Sea), traversed by the oddly wonderful Ponte Girevole that also divides the old and new parts of the town. The medieval area is centred on the Castello Aragonese, while nearby the Hypogeum and Cathedral are surrounded with redbrick palazzos and sunny piazzas where locals sip tipples in the ubiquitous trattorias and Puglian wine cellars.</p><p class="fr-tag" style="text-align: justify;">Taranto tour guides also often recommend breaking away from the city to explore the fascinating UNESCO site of Alberobello with its striking trulli homes, many of which still indulge in the traditional production of wine and olive oil.</p>', 1, 0, 104, '40.48', '17.24', 'taranto', 0, 1),
 (370, 137, 'Foggia', '', '', 1, 0, 104, '41.47', '15.55', 'foggia', 0, 1),
-(371, 137, 'Lecce', '', '<p class="fr-tag" style="text-align: justify;">Situated on the picturesque lowlands of Apulia on the Italian heel, there’s no question that the gloriously adorned city of Lecce deserves its nickname as the ‘Florence of the South’. Granted it’s a little rougher around the edges than its renaissance compadres to the north, but that only adds to its charm. In truth, Lecce is a lively, lived-in southern city, one with age-stained Baroque grandeur, aromatic pizzerias and endless array of hidden piazzas. </p><p class="fr-tag" style="text-align: justify;">Lecce’s history goes back millennia, which is why the central old town fuses an ancient Roman amphitheatre with Neapolitan palaces. It is here that travellers can view the exquisite façade of the Basialica de Santa Croce, and the Duomo di Lecce, all centred on the Piazza del Duomo and Piazza Sant\'Oronzo. And while you’re getting lost amidst that labyrinthine web of roadways that forms the Centro Storico (because lost you certainly will get!), be sure to stop off at a wine bar or two to sample the flavoursome reds and whites of greater Apulia. For those looking to enjoy the town’s unique location on the edge of the Mediterranean, Lecce tour guides often recommend taking a trip to nearby Punta Prosciutto or the Grecian towns of the Salento peninsula, where beaches and seafood eateries cluster en masse.</p>', 1, 0, 104, '40.36', '18.16', 'lecce', 0, 1),
+(371, 137, 'Lecce', '', '<p class="fr-tag" style="text-align: justify;">Situated on the picturesque lowlands of Apulia on the Italian heel, there’s no question that the gloriously adorned city of Lecce deserves its nickname as the ‘Florence of the South’. Granted it’s a little rougher around the edges than its renaissance compadres to the north, but that only adds to its charm. In truth, Lecce is a lively, lived-in southern city, one with age-stained Baroque grandeur, aromatic pizzerias and endless array of hidden piazzas. </p><p class="fr-tag" style="text-align: justify;">Lecce’s history goes back millennia, which is why the central old town fuses an ancient Roman amphitheatre with Neapolitan palaces. It is here that travellers can view the exquisite façade of the Basialica de Santa Croce, and the Duomo di Lecce, all centred on the Piazza del Duomo and Piazza Sant''Oronzo. And while you’re getting lost amidst that labyrinthine web of roadways that forms the Centro Storico (because lost you certainly will get!), be sure to stop off at a wine bar or two to sample the flavoursome reds and whites of greater Apulia. For those looking to enjoy the town’s unique location on the edge of the Mediterranean, Lecce tour guides often recommend taking a trip to nearby Punta Prosciutto or the Grecian towns of the Salento peninsula, where beaches and seafood eateries cluster en masse.</p>', 1, 0, 104, '40.36', '18.16', 'lecce', 0, 1),
 (372, 137, 'Andria', '', '', 1, 0, 104, '41.23', '16.29', 'andria', 0, 1),
 (373, 137, 'Brindisi', 'Vrindisi', '<p class="fr-tag" style="text-align: justify;">Clinging to the back heel of the Italian boot, the marble-clad port town of Brindisi once marked the very end of the Roman Appian Way. It was here that troupes of legionnaires were shipped out across the Mediterranean to do battle in the far corners of the eastern empire; here that countless cultures and creeds flooded in and out of Italy with silks, spices and slaves to trade. No wonder then that the Brindisi of today is nothing short of a palimpsest of historical influences, with elaborate Doric columns, one startling Romanesque duomo, and an Aragonese Castle, all peppering the city’s innards. </p><p class="fr-tag" style="text-align: justify;">However, modern life here has certainly taken a turn for the sleepy since the boom days of antiquity. Most travellers now pass over Brindisi with just a cursory glance before heading straight for the ever-present outlines of passenger ferries that bob in the port, bound for Greece or Croatia or the Italian North. That said, the town promises a smattering of hidden eateries touting Apulian reds and whites, earthy durum lasagne dishes and the like along with some truly untrodden historical points of interest, well worth exploring with the help of a Brindisi tour guide!</p>', 1, 0, 104, '40.64', '17.93', 'brindisi', 0, 1),
 (374, 137, 'Altamura', '', '', 1, 0, 104, '40.84', '16.55', 'altamura', 0, 1),
@@ -1027,7 +1059,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (836, 344, 'Potsdam', '', '<p style="text-align: justify;">\n	Potsdam is a scenic gem of Germany, dotted with picturesque parks and historical castles. The city&rsquo;s twelve historic palaces lie amongst equally notable parks, many of which were given UNESCO Heritage Site status in the early 1990s. The splendor of Schloss Sanssouci has engaged visitors since Frederick the Great first called it home. Be it the picturesque Dutch Quarter, the Russian Cilony or the mysterious Bridge of Spies, Potsdam&rsquo;s antiquity runs deep through its&rsquo; streets. Many historical sites continue to be under maintenance following WWII, but the charming squares create an enchanting ambience for any stroll-takers.<br />\n	Bordering Berlin, Germany&rsquo;s S-Bahn rail system runs the S7 line between Potsdam and its&rsquo; tourist-friendly neighbor every ten minutes. Public transportation is easily available, but one notes that Biking is a common tradition among tourists and locals alike in this history-trodden region. In fact, your Potsdam tour guide would insist on a cycling tour, a cherished way to see the old-European city. After a day on two wheels, Potsdam&rsquo;s scattered pubs, nightclubs, and plentiful eateries end every evening right.&nbsp;</p>\n', 1, 0, 54, '52.40', '13.07', 'potsdam', 0, 1),
 (837, 344, 'Cottbus', 'Choebuz, Kottbus', '', 1, 0, 54, '51.77', '14.33', 'cottbus', 0, 1),
 (838, 344, 'Brandenburg', 'Branneborg, Bramborg, Brandenbourg, Brandenburgo', '', 1, 0, 54, '52.42', '12.53', 'brandenburg', 0, 1),
-(839, 345, 'Brasov', 'Stalin, Brassó, Kronstadt, Brashov, Orashul Stalin, Brasso, Orasul Stalin', '<p class="fr-tag" style="text-align: justify;">Nestled between the sylvan valleys and rolling hills of the central Transylvanian plateau, in the shadow of the mighty Carpathian Range, the city of Brasov is a truly picturesque affair that’s loaded with all the ubiquitous European attractions. No wonder the city is the most popular in the whole Romania, a delight of travellers and filming crews alike. </p><p class="fr-tag" style="text-align: justify;">Be sure to explore the Germanic squares of Piata Sfatului that form the town centre under the bulwarks of the grand Citadel. Here, the old Town Hall (now housing the city museum) and various orthodox churches, the most famous being its Black Church, stand watch over the city’s bustling cafés and subterranean Bavarian beer halls. Your Brasov tour guide will next lead you to the historic Union Square, home to the fairy-tale spires of the St. Nicholas Church, and kingpin of the charming <i>Șcheii Brașovului</i> district; a place of lichen-peppered graveyards, Old World homes and pretty red-tiled roofs that rise up neatly to the rugged Solomon Cliffs. </p><p class="fr-tag" style="text-align: justify;">Away from the town, why not make a jaunt through the Aleea Tiberiu Brediceanu to hike up the Tampa Mountain, or lose yourself between the chilling bulwarks of Dracula\'s Castle, or even carve out snow tracks on the pistes of Poiana Braşov—sitting amidst the pine trees and looming castles of the greater region.</p>', 1, 0, 181, '45.66', '25.61', 'brasov', 0, 1),
+(839, 345, 'Brasov', 'Stalin, Brassó, Kronstadt, Brashov, Orashul Stalin, Brasso, Orasul Stalin', '<p class="fr-tag" style="text-align: justify;">Nestled between the sylvan valleys and rolling hills of the central Transylvanian plateau, in the shadow of the mighty Carpathian Range, the city of Brasov is a truly picturesque affair that’s loaded with all the ubiquitous European attractions. No wonder the city is the most popular in the whole Romania, a delight of travellers and filming crews alike. </p><p class="fr-tag" style="text-align: justify;">Be sure to explore the Germanic squares of Piata Sfatului that form the town centre under the bulwarks of the grand Citadel. Here, the old Town Hall (now housing the city museum) and various orthodox churches, the most famous being its Black Church, stand watch over the city’s bustling cafés and subterranean Bavarian beer halls. Your Brasov tour guide will next lead you to the historic Union Square, home to the fairy-tale spires of the St. Nicholas Church, and kingpin of the charming <i>Șcheii Brașovului</i> district; a place of lichen-peppered graveyards, Old World homes and pretty red-tiled roofs that rise up neatly to the rugged Solomon Cliffs. </p><p class="fr-tag" style="text-align: justify;">Away from the town, why not make a jaunt through the Aleea Tiberiu Brediceanu to hike up the Tampa Mountain, or lose yourself between the chilling bulwarks of Dracula''s Castle, or even carve out snow tracks on the pistes of Poiana Braşov—sitting amidst the pine trees and looming castles of the greater region.</p>', 1, 0, 181, '45.66', '25.61', 'brasov', 0, 1),
 (840, 346, 'Bratislava', 'Prebburg, Pozsony', '<p class="fr-tag" style="text-align: justify;">Centred on its charming and miniature old town, the historic city of Bratislava combines Austro-Hungarian palaces with formidable gothic churches, and bustling European café culture with endless streams of frothy Slavic beer. Across the Danube, or peppering the new town, visitors can lose themselves in a sea of industrial-chic streets, punctuated by lingering spectres of the country’s communist past. </p><p class="fr-tag" style="text-align: justify;">No trip here could be complete without touring the cobbled streets of the medieval city, winding beneath the Sigismund Gate on the castle hill and spying out the surreal human statues that peep out from drains and alleyways all around the bustling Main Square. Don’t be surprised if you happen upon concealed Roman ruins lurking between the churches either, or simply lose yourself in the myriad museums as well as a performance by the Slovak Philharmonic.</p><p class="fr-tag" style="text-align: justify;">And, as any Bratislava tourist guide will tell you, there’s even more to see beyond the city’s boundaries, with guests enjoying easy access to everything from Devin Castle and its concomitant fir forests, to the powdery ski slopes of Liptov and the UNESCO-attested palaces at Lednice-Valtice just to the north.      </p>', 1, 0, 193, '48.16', '17.13', 'bratislava', 0, 1),
 (841, 347, 'Brazzaville', '', '', 1, 0, 39, '-4.25', '15.26', 'brazzaville', 0, 1),
 (842, 348, 'Bremen', 'Brème', '', 1, 0, 54, '53.08', '8.81', 'bremen', 0, 1),
@@ -1149,7 +1181,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (957, 371, 'Butare', 'Astrida', '', 1, 0, 184, '-2.59', '29.73', 'butare', 0, 1),
 (958, 372, 'Buzau', 'Bodza', '', 1, 0, 181, '45.15', '26.82', 'buzau', 0, 1),
 (959, 373, 'Byumba', '', '', 1, 0, 184, '-1.58', '30.06', 'byumba', 0, 1),
-(960, 374, 'Caaguazu', 'Ka\'aguasu', '', 1, 0, 178, '-25.46', '-56.02', 'caaguazu', 0, 1),
+(960, 374, 'Caaguazu', 'Ka''aguasu', '', 1, 0, 178, '-25.46', '-56.02', 'caaguazu', 0, 1),
 (961, 375, 'Cabinda', 'Kabinda', '', 1, 0, 8, '-5.56', '12.19', 'cabinda', 0, 1),
 (962, 376, 'Pemba', 'Port Amelia, Porto Amélia', '', 1, 0, 152, '-12.96', '40.48', 'pemba', 0, 1),
 (963, 376, 'Montepuez', '', '', 1, 0, 152, '-13.12', '39.00', 'montepuez', 0, 1),
@@ -1634,7 +1666,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (1440, 477, 'Cizah', 'Cizak, Dzizak, Jizzakh, Djizak, Dzhizak, ?izzax, Zizaq, Banjzak', '', 1, 0, 222, '40.11', '67.84', 'cizah', 0, 1),
 (1441, 477, 'Zomin', 'Zaamin', '', 1, 0, 222, '39.96', '68.41', 'zomin', 0, 1),
 (1442, 478, 'Ennis', '', '', 1, 0, 97, '52.86', '-8.99', 'ennis', 0, 1),
-(1443, 479, 'Cluj Napoca', 'Klausenburg, Cluj, Kolozsvár, Kolozsvar', '<p class="fr-tag" style="text-align: justify;">Spiked at the centre by the formidable turret of St. Michael\'s Church, Cluj Napoca commands its place at the very heartlands of Romanian Transylvania with a pot pourri of elegant Baroque buildings and one of the most culturally endowed metropolitan scenes in the country. </p><p class="fr-tag" style="text-align: justify;">If you are looking to delve straight into the thick layers of Romanian heritage offered by this town, then be sure to ask your Cluj Napoca tour guide about the fascinating gothic effigy of Matei Corvin at Union square, the historical buildings peppering the lively café scene at Museum Square, the onion domes of the city’s Orthodox Cathedral, its sprawling Botanical Gardens, or the soaring viewpoints now offered by the old rises of Fortress Hill. </p><p class="fr-tag" style="text-align: justify;">But it’s not all architecture in Cluj either, and thanks in part to the thousands of students that call the city their home, guests here enjoy everything from smoky subterranean blues bars to stylish super clubs sprawled out over several floors, not to mention one of the most culturally packed events calendars in Romania, with everything from the Transylvanian Film Festival, to the European Night of the Museums and Autumn time Jazz Fest erupting in the town.</p>', 1, 0, 181, '46.78', '23.59', 'cluj-napoca', 0, 1),
+(1443, 479, 'Cluj Napoca', 'Klausenburg, Cluj, Kolozsvár, Kolozsvar', '<p class="fr-tag" style="text-align: justify;">Spiked at the centre by the formidable turret of St. Michael''s Church, Cluj Napoca commands its place at the very heartlands of Romanian Transylvania with a pot pourri of elegant Baroque buildings and one of the most culturally endowed metropolitan scenes in the country. </p><p class="fr-tag" style="text-align: justify;">If you are looking to delve straight into the thick layers of Romanian heritage offered by this town, then be sure to ask your Cluj Napoca tour guide about the fascinating gothic effigy of Matei Corvin at Union square, the historical buildings peppering the lively café scene at Museum Square, the onion domes of the city’s Orthodox Cathedral, its sprawling Botanical Gardens, or the soaring viewpoints now offered by the old rises of Fortress Hill. </p><p class="fr-tag" style="text-align: justify;">But it’s not all architecture in Cluj either, and thanks in part to the thousands of students that call the city their home, guests here enjoy everything from smoky subterranean blues bars to stylish super clubs sprawled out over several floors, not to mention one of the most culturally packed events calendars in Romania, with everything from the Transylvanian Film Festival, to the European Night of the Museums and Autumn time Jazz Fest erupting in the town.</p>', 1, 0, 181, '46.78', '23.59', 'cluj-napoca', 0, 1),
 (1444, 480, 'Saltillo', '', '', 1, 0, 150, '25.43', '-101.00', 'saltillo', 0, 1),
 (1445, 480, 'Torreon', '', '', 1, 0, 150, '25.54', '-103.44', 'torreon', 0, 1),
 (1446, 480, 'Monclova', '', '', 1, 0, 150, '26.90', '-101.42', 'monclova', 0, 1),
@@ -1713,7 +1745,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (1519, 499, 'La Serena', '', '', 1, 0, 43, '-29.90', '-71.25', 'la-serena', 0, 1),
 (1520, 499, 'Coquimbo', '', '', 1, 0, 43, '-29.96', '-71.33', 'coquimbo', 0, 1),
 (1521, 499, 'Ovalle', '', '', 1, 0, 43, '-30.59', '-71.20', 'ovalle', 0, 1),
-(1522, 500, 'Caacupe', 'Ka\'akupe', '', 1, 0, 178, '-25.39', '-57.14', 'caacupe', 0, 1),
+(1522, 500, 'Caacupe', 'Ka''akupe', '', 1, 0, 178, '-25.39', '-57.14', 'caacupe', 0, 1),
 (1523, 2389, 'Baguio', '', '<p style="text-align: justify;">\n	Hailed as the &lsquo;City of Pines&rsquo; for its sprawling Alpine-esque forestry, the Filipino hill town of Baguio is a patchwork of cultivated valleys and energetic urban centres. Locals love it for the year-round temperate climate that dominates due to a continuing dialectic between high-altitude and the city&rsquo;s sub-tropical setting, while tourists flock to wander in the maze of post-colonial architecture, explore the rugged mountains and unravel the curious history of this once American town.<br />\n	Don&rsquo;t leave without experiencing the downtown bustle of Session Road, the city&rsquo;s main theatre of action and a continuing kaleidoscope of multi-coloured &lsquo;jeepney&rsquo; taxis that&rsquo;s peppered with restaurants and bars, boutiques and big business. Also worth a stop-off is the luxurious Camp John Hay, a US army base-come-country club that&rsquo;s home to a great 18-hole golf course and top-end camping facilities, and the Mines View Park that offers some magnificent panoramas of the surrounding Benguet Mountains from pride of place above the city.<br />\n	Baguio is relatively easy to reach from Manila and promises a truly unique holiday experience high in the hills of central Luzon.&nbsp;</p>\n', 1, 0, 170, '16.42', '120.59', 'baguio', 0, 1);
 INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
 (1524, 501, 'Cordoba', 'La Calera, Villa Allende, Rio Ceballos, Unquillo', '<p class="fr-tag" style="text-align: justify;">Encompassed by the ridges of the mighty Sierras Chicas, and watered by the snaking Suquia River, Argentina’s second city Cordoba sits right at the heart of the country; best described as a metropolitan city fielding an impressive colonial history. </p><p class="fr-tag" style="text-align: justify;">With UNESCO tags peeping through every crack and crevice of its Spanish churches and colonial missions, the newly inscribed Jesuit Block makes for some seriously chart-topping sightseeing (complete with the exquisite Los Capuchinos and Manzana of the Jesuits). Of course, there are museums to match the historical legacy too, ranging from the Marquis of Sobremonte Provincial exhibition, to the impressive art of the Museo Palacio Ferreyra. </p><p class="fr-tag" style="text-align: justify;">Cordoba tour guides will also tell you about the youthful energy and modern vibe that runs strong here. Consequently, travellers can easily lose themselves between the endless outlets of the Dinosaurio Mall and Patio Olmos, the Gaucho taverns of the centre, and the sleepless merengue dance bars, while others will leave invigorated by the contemporary art fairs and thought-provoking performances of the city’s various theatres.</p>', 1, 0, 10, '-31.40', '-64.19', 'cordoba', 0, 1),
@@ -1742,8 +1774,8 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (1547, 510, 'Ohafia', '', '', 1, 0, 157, '5.62', '7.82', 'ohafia', 0, 1),
 (1548, 511, 'Szeged', '', '', 1, 0, 95, '46.26', '20.16', 'szeged', 0, 1),
 (1549, 512, 'Menongue', 'Vila Serpa, Pinto, Serpa Pinto', '', 1, 0, 8, '-14.66', '17.69', 'menongue', 0, 1),
-(1550, 513, 'N\'dalatando', 'Ndalatando', '', 1, 0, 8, '-9.30', '14.91', 'ndalatando', 0, 1),
-(1551, 514, 'Sumbe', 'N\'gunza, Ngunza', '', 1, 0, 8, '-11.21', '13.85', 'sumbe', 0, 1),
+(1550, 513, 'N''dalatando', 'Ndalatando', '', 1, 0, 8, '-9.30', '14.91', 'ndalatando', 0, 1),
+(1551, 514, 'Sumbe', 'N''gunza, Ngunza', '', 1, 0, 8, '-11.21', '13.85', 'sumbe', 0, 1),
 (1552, 412, 'Popayan', '', '', 1, 0, 46, '2.42', '-76.61', 'popayan', 0, 1),
 (1553, 425, 'Valledupar', '', '', 1, 0, 46, '10.48', '-73.25', 'valledupar', 0, 1),
 (1554, 519, 'Cojutepeque', '', '', 1, 0, 201, '13.73', '-88.94', 'cojutepeque', 0, 1),
@@ -1770,7 +1802,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (1575, 533, 'Damietta', '', '', 1, 0, 62, '31.42', '31.82', 'damietta', 0, 1),
 (1576, 535, 'Tulsipur', 'Tulshipur, Dang', '', 1, 0, 161, '28.13', '82.29', 'tulsipur', 0, 1),
 (1577, 537, 'Dar es Salaam', 'Daressalam', '<p style="text-align: justify;">\n	A harbour city, Dar Es Salaam is probably best known for its more famous Tanzanian cousins, Serengeti National Park, Mount Kilimanjaro and Zanzibar. Much like its alluring neighbours, Dar es Salaam is a melting pot of influences thanks to its past as an important trading centre.<br />\n	Having achieved its independence as recently as 1963, the city is embracing the founder of Dar es Salaam, a sultan of Zanzibar&rsquo;s, original intention for the city; that it be a Palace of pleasure and peace. Visitors can enjoy the ancient history of the region at the Village Museum which showcases traditional Tanzanian music and dance daily, snorkel, swim and sunbath at one of the local beaches and enjoy tropical flora and fauna at the Botanical Gardens.<br />\n	As it is a Muslim city, Dar es Salaam tourist guides won&rsquo;t be able to offer much in the way of bars, but the food and music will more than make up for that. The heady mixture of Arab, Asian, African and German colonial influences make for a cosmopolitan city, you&rsquo;ll find it hard to forget.&nbsp;</p>\n', 1, 0, 217, '-6.82', '39.28', 'dar-es-salaam', 0, 1),
-(1578, 538, 'Dara', 'Dar\'a, Darayya', '', 1, 0, 203, '32.63', '36.10', 'dara', 0, 1),
+(1578, 538, 'Dara', 'Dar''a, Darayya', '', 1, 0, 203, '32.63', '36.10', 'dara', 0, 1),
 (1579, 538, 'Nawa', '', '', 1, 0, 203, '32.90', '36.04', 'nawa', 0, 1),
 (1580, 539, 'Darhan', '', '', 1, 0, 140, '46.63', '109.40', 'darhan', 0, 1),
 (1581, 540, 'Darnah', 'Derna', '', 1, 0, 130, '32.76', '22.64', 'darnah', 0, 1),
@@ -1820,7 +1852,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (1625, 572, 'Bismil', '', '', 1, 0, 214, '37.85', '40.67', 'bismil', 0, 1),
 (1626, 572, 'Silvan', '', '', 1, 0, 214, '38.14', '41.01', 'silvan', 0, 1),
 (1627, 573, 'Djelfa', 'al Jilfah, El Djelfa', '', 1, 0, 59, '34.68', '3.25', 'djelfa', 0, 1),
-(1628, 573, 'Messad', 'Mis\'ad', '', 1, 0, 59, '34.16', '3.50', 'messad', 0, 1),
+(1628, 573, 'Messad', 'Mis''ad', '', 1, 0, 59, '34.16', '3.50', 'messad', 0, 1),
 (1629, 573, 'Ain Oussera', 'Ayn Wissarah', '', 1, 0, 59, '35.46', '2.90', 'ain-oussera', 0, 1),
 (1630, 574, 'Djibouti', '', '', 1, 0, 55, '11.59', '43.15', 'djibouti', 0, 1),
 (1631, 575, 'Dnipropetrovsk', 'Dnepropetrovsk, Dniepropetrovsk', '', 1, 0, 218, '48.45', '34.98', 'dnipropetrovsk', 0, 1),
@@ -1834,7 +1866,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (1639, 580, 'Legnica', 'Liegnitz', '', 1, 0, 172, '51.21', '16.16', 'legnica', 0, 1),
 (1640, 580, 'Jelenia Gora', 'Hirschberg, Hirschberg im Riesengebirge, Hirschberg in Schlesien', '', 1, 0, 172, '50.91', '15.73', 'jelenia-gora', 0, 1),
 (1641, 580, 'Lubin', 'Luben', '', 1, 0, 172, '51.40', '16.20', 'lubin', 0, 1),
-(1642, 581, 'Donetsk', 'Doneck, Donets\'k, Stalino', '<p style="text-align: justify;">\n	First time visitors to Donetsk could be forgiven for forgetting that this stylish city nestled in the industrial heartlands of Ukraine is surrounded on all sides by monstrous coalfields and sweeping mine country. Indeed, the downtown smattering of shiny buildings, bars and eateries does well to hide its outer mechanisation.<br />\n	But unexpected class is not Donetsk&rsquo;s only surprise. Far from it. For one, the city was founded by the unlikely Welshman, John Hughes, who came here by invitation of the Russian tsars to raise the blast furnaces and sink the collieries. For two, the city stands at the very heart of Ukraine&rsquo;s oldest of nationalist uncertainties, between the curious cultural divide of Russia and Europe, east and west.&nbsp;<br />\n	Today, those interested in unravelling this truly curious history should ask their Donetsk tourist guide for directions to the city&rsquo;s Regional History Museum, the Forged Figures Park, or perhaps just the Yuzovskaya Pivovarnya, where it&rsquo;s possible to raise a frothy beer to the city&rsquo;s founder!</p>\n', 1, 0, 218, '48.00', '37.82', 'donetsk', 0, 1),
+(1642, 581, 'Donetsk', 'Doneck, Donets''k, Stalino', '<p style="text-align: justify;">\n	First time visitors to Donetsk could be forgiven for forgetting that this stylish city nestled in the industrial heartlands of Ukraine is surrounded on all sides by monstrous coalfields and sweeping mine country. Indeed, the downtown smattering of shiny buildings, bars and eateries does well to hide its outer mechanisation.<br />\n	But unexpected class is not Donetsk&rsquo;s only surprise. Far from it. For one, the city was founded by the unlikely Welshman, John Hughes, who came here by invitation of the Russian tsars to raise the blast furnaces and sink the collieries. For two, the city stands at the very heart of Ukraine&rsquo;s oldest of nationalist uncertainties, between the curious cultural divide of Russia and Europe, east and west.&nbsp;<br />\n	Today, those interested in unravelling this truly curious history should ask their Donetsk tourist guide for directions to the city&rsquo;s Regional History Museum, the Forged Figures Park, or perhaps just the Yuzovskaya Pivovarnya, where it&rsquo;s possible to raise a frothy beer to the city&rsquo;s founder!</p>\n', 1, 0, 218, '48.00', '37.82', 'donetsk', 0, 1),
 (1643, 581, 'Mariupol', 'Zhdanov, Zdanov, Marioupol', '', 1, 0, 218, '47.10', '37.55', 'mariupol', 0, 1),
 (1644, 581, 'Kramatorsk', '', '', 1, 0, 218, '48.72', '37.53', 'kramatorsk', 0, 1),
 (1645, 582, 'Halong', 'Hong Gai, Hon Gai, Ha Long', '<p style="text-align: justify;">\n	One of the true wonders of the world, the whole of Halong Bay in Vietnam is a UNESCO world natural heritage site. &lsquo;Halong&rsquo; means literally &lsquo;descending dragon&rsquo; and is taken from the ancient belief that the city was once protected from enemy forces by a dragon and her children.</p>\n<p style="text-align: justify;">\n	The striking islands and islets all around the bay make a breath taking seascape of limestone formations attracting visitors from all around the globe. The best way to explore the mysterious and stunning karst topography of Halong Bay is by engaging a Halong Bay tour guide aboard a trip on a cruise boat, or traditional Chinese junk. Each island, archipelago or coastline has its own unique attractions such as the primitive cave Thien Cung, or &lsquo;Heavenly Palace&rsquo; cave in the Southwest of Halong or the charming Cat Ba Island, home to a national park and the Cat Ba langur. For swimmers, kayakers, sailors and adventurers of any kind, Halong Bay is a destination you won&rsquo;t want to miss.&nbsp;</p>\n', 1, 0, 228, '20.97', '107.08', 'halong', 0, 1),
@@ -1847,13 +1879,13 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (1652, 583, 'My Tho', '', '<p class="fr-tag" style="text-align: justify;">The first major urban conglomeration to rise from the edge of the verdant Mekong Delta, My Tho is a patchwork of crooked timber huts and tin-shack houses clinging precariously to the water’s edge.</p><p class="fr-tag" style="text-align: justify;">Most travellers head in on day trips for a rustic escape from nearby Saigon. Accordingly, My Tho tourist guides will show them the clusters of fishing shacks and rural villages that pepper the banks of the Mekong to the east and west as they lose themselves in the water channels of the river. Nearby, the wondrous Tortuga, Dragon, Phoenix and Unicorn Islands reveal jungle-shrouded enclaves where rice liquor and honeyed teas flow beneath the papaya groves. These provide the perfect appetizer for My Tho’s frenetic bazaars, which burst forth from the riverside walks in a fray of steamy noodle stalls and hawker emporiums, laden with lances of grilled meat and skewers of boiled corn ears. Visitors looking for a cultural twist away from the everyday hustle can look to explore the Vinh Trung Pagoda on the outskirts of town</p>', 1, 0, 228, '10.36', '106.36', 'my-tho', 0, 1),
 (1653, 583, 'Bac Lieu', 'Minh Hai, Vinh Loi', '', 1, 0, 228, '9.30', '105.72', 'bac-lieu', 0, 1),
 (1654, 583, 'Ca Mau', 'Quan Long', '', 1, 0, 228, '9.18', '105.15', 'ca-mau', 0, 1),
-(1655, 583, 'Soc Trang', 'Khanh Hung, Khanh Hu\'ng', '', 1, 0, 228, '9.62', '105.97', 'soc-trang', 0, 1),
+(1655, 583, 'Soc Trang', 'Khanh Hung, Khanh Hu''ng', '', 1, 0, 228, '9.62', '105.97', 'soc-trang', 0, 1),
 (1656, 583, 'Tan An', '', '', 1, 0, 228, '10.54', '106.41', 'tan-an', 0, 1),
 (1657, 583, 'Chau Doc', 'Chau Phu', '', 1, 0, 228, '10.71', '105.11', 'chau-doc', 0, 1),
 (1658, 584, 'Hanoi', 'Ha Noi', '<p style="text-align: justify;">\n	Vietnam&rsquo;s most-visited city is a smouldering hotpot of cultural traditions like no other in the region. Its downtown Old Quarter has suffered invasion and counter-invasion from the north, east, south and west for more than a thousand years, making it an enticing fabric of multicultural threads woven from such diverse origins as the culinary traditions of China and the post-colonial Euro-architecture of the French imperials.<br />\n	But unlike many of its contemporaries, Hanoi has emerged noticeably unscathed from the turmoil of its past, and is a city that still proudly totes its grandeur and over-confidence to visiting tourists. Take note of the great colonnades of the Ho Chi Minh Mausoleum and the sprawling and grandiose grounds of the Uncle&rsquo;s own Presidential Palace, in many ways the political forge of the modern Vietnamese State. Then head east, to the UNESCO site at Hạ Long Bay, where soaring karst hills rise from the water like an army of jungle-clad teeth&mdash;unquestionably this city&rsquo;s most-visited landmark.<br />\n	Trekking tours, theatre and inner-city museums abound as well, and any Hanoi tour guide would do well to cram their itinerary with all the &lsquo;must do&rsquo; activities of the metropolis. But, if you&rsquo;ve got the time, there are also some truly worthy off-the-beaten-track things to do, from hard partying on the ubiquitous Vietnam booze cruise, to soul searching in the temple complexes of Hanoi&rsquo;s backcountry.</p>\n', 1, 0, 228, '21.03', '105.84', 'hanoi', 0, 1),
 (1659, 584, 'Hai Phong', 'Haiphong, Haifong', '', 1, 0, 228, '20.86', '106.68', 'hai-phong', 0, 1),
 (1660, 584, 'Nam Dinh', 'Nam Ha', '', 1, 0, 228, '20.43', '106.17', 'nam-dinh', 0, 1),
-(1661, 584, 'Hai Duong', 'Hai Du\'o\'ng', '', 1, 0, 228, '20.96', '106.32', 'hai-duong', 0, 1),
+(1661, 584, 'Hai Duong', 'Hai Du''o''ng', '', 1, 0, 228, '20.96', '106.32', 'hai-duong', 0, 1),
 (1662, 584, 'Ha Dong', '', '', 1, 0, 228, '20.97', '105.77', 'ha-dong', 0, 1),
 (1663, 585, 'Ho Chi Minh', 'Saigon', '<p style="text-align: justify;">\n	Ho Chi Minh is Vietnam&rsquo;s largest city, a place that has emerged from its tumultuous time as Saigon, to become one of Southeast Asia&rsquo;s most immersive and exhilarating experiences without question.<br />\n	Around the city centre, endless streams of purring mopeds weave their way through lanes and tight-knit streets, past the vast green parks and curious architectural relics of French-colonial rule, like the life-size replica of Notre Dame Cathedral on busy Han Thuyen Street.<br />\n	For the historically interested visitor, this city is an absolute must on the Vietnam trail, many of its structures standing testimony to the country&rsquo;s late 20th century strife. The War Remnants Museum puts up an enthralling and harrowing exhibition while a visit to the Củ Chi tunnels is best experienced with a tour guide&rsquo;s vivid &lsquo;live&rsquo; chronicle into the lives of the soldiers at that time.<br />\n	This living, breathing, enormous metropolis, sprawled over the vast flatlands of the south seamlessly blends the old with the new, where skyscrapers and malls rub shoulders with old world temples and boisterous markets. To get into the complete local vibe, however make your way to the Ben Thanh Market and its surrounding streets, a splendid place for souvenirs, quirky street food and an authentic bowl of Pho noodles.</p>\n', 1, 0, 228, '10.78', '106.69', 'ho-chi-minh', 0, 1),
 (1664, 586, 'Djougou', '', '', 1, 0, 24, '9.70', '1.68', 'djougou', 0, 1),
@@ -1955,7 +1987,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (1759, 620, 'Machala', '', '', 1, 0, 60, '-3.26', '-79.96', 'machala', 0, 1),
 (1760, 620, 'Pasaje', '', '', 1, 0, 60, '-3.32', '-79.80', 'pasaje', 0, 1),
 (1761, 621, 'El Oued', 'al Wad, El Wad, El Ouadi, Al Oued', '', 1, 0, 59, '33.37', '6.86', 'el-oued', 0, 1),
-(1762, 621, 'Djamaa', 'Jama\'a, Djemaa', '', 1, 0, 59, '33.52', '5.96', 'djamaa', 0, 1),
+(1762, 621, 'Djamaa', 'Jama''a, Djemaa', '', 1, 0, 59, '33.52', '5.96', 'djamaa', 0, 1),
 (1763, 621, 'El Mghair', 'El Meghaier, El Mghayyar', '', 1, 0, 59, '33.96', '5.92', 'el-mghair', 0, 1),
 (1764, 622, 'Danli', '', '', 1, 0, 92, '14.04', '-86.58', 'danli', 0, 1),
 (1765, 623, 'Besbes', 'Basbas', '', 1, 0, 59, '36.70', '7.85', 'besbes', 0, 1),
@@ -2301,7 +2333,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (2104, 685, 'Lugo', '', '', 1, 0, 65, '43.02', '-7.56', 'lugo', 0, 1),
 (2105, 685, 'Santiago de Compostela', 'Compostella', '', 1, 0, 65, '42.88', '-8.54', 'santiago-de-compostela', 0, 1),
 (2106, 686, 'Galle', '', '<p style="text-align: justify;">\n	Jutting out from the southern end of the Sri Lankan isle, the promontory town of Galle is one of the country&rsquo;s undisputed colonial treasures. Its formidable bulwarks and fort walls rise from the swells of the Laccadive Sea in sharp gradients, encircling one of the most-coveted harbour towns in the history of the Indian Ocean; fought over by Portuguese, Dutch and British settlers, Moroccan explorers and local Sri Lankan kings alike.<br />\n	Start by accompanying your Galle tourist guide to the major &lsquo;must sees&rsquo; within the Fort&rsquo;s walls, making sure you tick off the well preserved colonial buildings including the unique architecture of the Dutch Church, before heading off to survey the crumbling battlements and cannon towers that now loom above the boutique caf&eacute;s and curry houses that still adorn the living streets here.<br />\n	If history&rsquo;s not your thing, then perhaps a dose of culture at the nearby Kalutara Temple or will be better, or maybe a stint on the stands of Galle&rsquo;s seaside cricket grounds cheering on the city team with the fervent locals. Then, of course there are the curries&mdash;hot, spicy and strong flavoured&mdash;all mixed with a curious array of western foods, lingering on the menu thanks to Galle&rsquo;s long colonial past.</p>\n', 1, 0, 124, '6.05', '80.21', 'galle', 0, 1),
-(2107, 687, 'Galway', '', '<p class="fr-tag" style="text-align: justify;">An artsy, Guinness-fuelled conglomeration of old stone cottages and seaside homes painted by the ceaseless Atlantic salt spray, Galway is every inch a city of the Emerald Isle. Between its ancient alleyways, folk bars ring to the squeak of fiddles, and St Paddies Day revellers stagger beside medieval mansions like Lynch\'s Castle, as well as through the marketplaces of Church Lane. On the promenades and pavements of Salthill, the words of O\'Flaherty ring out from nearby windows, seabirds squawk in the icy breeze and students ebb and flow like the waters of the all-seeing River Corrib. The fact that this town one was once a bastion of the tribal Irish kings, and later a hot point of contest between the natives and English loyalists, is indelible in its modern makeup. The old Gaelic tongue is still spoken in the bakeries and brew houses, and history oozes from every crack and crevice of the town, inviting visitors to follow Galway tour guides through the rooms of the City Museum and the old relics of the ruling de Burgh family alike.</p>', 1, 0, 97, '53.28', '-9.06', 'galway', 0, 1),
+(2107, 687, 'Galway', '', '<p class="fr-tag" style="text-align: justify;">An artsy, Guinness-fuelled conglomeration of old stone cottages and seaside homes painted by the ceaseless Atlantic salt spray, Galway is every inch a city of the Emerald Isle. Between its ancient alleyways, folk bars ring to the squeak of fiddles, and St Paddies Day revellers stagger beside medieval mansions like Lynch''s Castle, as well as through the marketplaces of Church Lane. On the promenades and pavements of Salthill, the words of O''Flaherty ring out from nearby windows, seabirds squawk in the icy breeze and students ebb and flow like the waters of the all-seeing River Corrib. The fact that this town one was once a bastion of the tribal Irish kings, and later a hot point of contest between the natives and English loyalists, is indelible in its modern makeup. The old Gaelic tongue is still spoken in the bakeries and brew houses, and history oozes from every crack and crevice of the town, inviting visitors to follow Galway tour guides through the rooms of the City Museum and the old relics of the ruling de Burgh family alike.</p>', 1, 0, 97, '53.28', '-9.06', 'galway', 0, 1),
 (2108, 534, 'Dandong Sinuiju', '', '', 1, 0, 45, '40.13', '124.40', 'dandong-sinuiju', 0, 1),
 (2109, 536, 'Daqing', '', '', 1, 0, 45, '46.65', '124.86', 'daqing', 0, 1),
 (2110, 542, 'Datong', '', '', 1, 0, 45, '40.08', '113.30', 'datong', 0, 1),
@@ -2348,9 +2380,9 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (2151, 704, 'Warner Robins', '', '', 1, 0, 220, '32.61', '-83.63', 'warner-robins', 0, 1),
 (2152, 704, 'Alpharetta', '', '', 1, 0, 220, '34.07', '-84.27', 'alpharetta', 0, 1),
 (2153, 704, 'Valdosta', '', '', 1, 0, 220, '30.85', '-83.28', 'valdosta', 0, 1),
-(2154, 704, 'Marietta', '', '', 1, 0, 220, '33.95', '-84.54', 'marietta', 0, 1),
-(2155, 704, 'Smyrna (Georgia)', '', '', 1, 0, 220, '33.87', '-84.52', 'smyrna-georgia', 0, 1);
+(2154, 704, 'Marietta', '', '', 1, 0, 220, '33.95', '-84.54', 'marietta', 0, 1);
 INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
+(2155, 704, 'Smyrna (Georgia)', '', '', 1, 0, 220, '33.87', '-84.52', 'smyrna-georgia', 0, 1),
 (2156, 704, 'Dunwoody', '', '', 1, 0, 220, '33.94', '-84.31', 'dunwoody', 0, 1),
 (2157, 704, 'North Atlanta', '', '', 1, 0, 220, '33.86', '-84.33', 'north-atlanta', 0, 1),
 (2158, 702, 'Ganja', '', '', 1, 0, 15, '40.68', '46.35', 'ganja', 0, 1),
@@ -2358,7 +2390,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (2160, 705, 'Sidi Slimane', 'Sidi Sulayman', '', 1, 0, 131, '34.27', '-5.93', 'sidi-slimane', 0, 1),
 (2161, 705, 'Sidi Kacem', 'Sidi Qasim, Sidi Qacem, Petitjean', '', 1, 0, 131, '34.24', '-5.71', 'sidi-kacem', 0, 1),
 (2162, 705, 'Ouezzane', 'Wazzan, Ouazzane', '', 1, 0, 131, '34.81', '-5.57', 'ouezzane', 0, 1),
-(2163, 705, 'Souk El Arbaa', 'Suq al Arba, Suq al Arbaa, Souq Larb\'a al Gharb, Souk Larbat Gharb, Souk el Arbaa', '', 1, 0, 131, '34.70', '-6.00', 'souk-el-arbaa', 0, 1),
+(2163, 705, 'Souk El Arbaa', 'Suq al Arba, Suq al Arbaa, Souq Larb''a al Gharb, Souk Larbat Gharb, Souk el Arbaa', '', 1, 0, 131, '34.70', '-6.00', 'souk-el-arbaa', 0, 1),
 (2164, 706, 'El Mahalla el Kubra', 'al Mahallah al Kubra, El Mahalla El Kubra', '', 1, 0, 62, '30.97', '31.17', 'el-mahalla-el-kubra', 0, 1),
 (2165, 706, 'Tanta', '', '', 1, 0, 62, '30.79', '31.00', 'tanta', 0, 1),
 (2166, 706, 'Zefta', 'Zifta', '', 1, 0, 62, '30.70', '31.25', 'zefta', 0, 1),
@@ -2535,10 +2567,10 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (2338, 774, 'Debrecen', '', '', 1, 0, 95, '47.54', '21.63', 'debrecen', 0, 1),
 (2339, 775, 'Hajjah', 'Hajja', '', 1, 0, 232, '15.69', '43.60', 'hajjah', 0, 1),
 (2340, 775, 'Harad', '', '', 1, 0, 232, '16.41', '43.06', 'harad', 0, 1),
-(2341, 776, 'Yuksekova', 'Gewer', '', 1, 0, 214, '37.57', '44.29', 'yuksekova', 0, 1),
-(2342, 776, 'Hakkari', 'Colemerik, Colemerg, Culemerg, Hekari', '', 1, 0, 214, '37.57', '43.75', 'hakkari', 0, 1),
-(2343, 777, 'Halmstad', '', '', 1, 0, 189, '56.67', '12.86', 'halmstad', 0, 1);
+(2341, 776, 'Yuksekova', 'Gewer', '', 1, 0, 214, '37.57', '44.29', 'yuksekova', 0, 1);
 INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
+(2342, 776, 'Hakkari', 'Colemerik, Colemerg, Culemerg, Hekari', '', 1, 0, 214, '37.57', '43.75', 'hakkari', 0, 1),
+(2343, 777, 'Halmstad', '', '', 1, 0, 189, '56.67', '12.86', 'halmstad', 0, 1),
 (2344, 777, 'Varberg', '', '', 1, 0, 189, '57.11', '12.25', 'varberg', 0, 1),
 (2345, 778, 'Hamadan', 'Hamedan', '', 1, 0, 102, '34.77', '48.58', 'hamadan', 0, 1),
 (2346, 779, 'Hamah', 'Hama', '', 1, 0, 203, '35.15', '36.73', 'hamah', 0, 1),
@@ -2648,7 +2680,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (2450, 818, 'Hiroshima', '', '<p style="text-align: justify;">\n	Hiroshima is a name recognisable to most for being the site of the world&rsquo;s first atomic bomb attack. Nowadays, Hiroshima is known as a place of beauty and peace with an endless array of cultural treasures to tempt visitors from all over the world.<br />\n	While Hiroshima is a modern metropolis with the blinking neon lights of any other large Japanese city, the tragic past of this place remains a big part of modern identity. Pay your respects with a visit to Peace Park, the location of the iconic A-Bomb Dome and countless other monuments and memorials to victims of the 1945 bomb.<br />\n	There are so many beautiful, historic places to visit in Hiroshima it&rsquo;s difficult to pick only a few but Hiroshima Castle, it&rsquo;s grounds full of sakura trees, is definitely one. Hiroshima has three impressive art galleries in the city centre and UNESCO world heritage site Miyajima is a definite must-see as it is home to Itsukushima Shrine, the only shrine in the world with a shrine building and torii-gate in the sea.</p>\n', 1, 0, 108, '34.39', '132.44', 'hiroshima', 0, 1),
 (2451, 819, 'Nema', '', '', 1, 0, 144, '16.62', '-7.26', 'nema', 0, 1),
 (2452, 819, 'Tinbadgah', 'Timbédra, Timébédra', '', 1, 0, 144, '16.26', '-8.15', 'tinbadgah', 0, 1),
-(2453, 820, 'Ayun', 'Ayun al \'Atrus, Ayun al Atrus, Aioun el Atrouss, \'Ayoun el \'Atrous', '', 1, 0, 144, '16.66', '-9.62', 'ayun', 0, 1),
+(2453, 820, 'Ayun', 'Ayun al ''Atrus, Ayun al Atrus, Aioun el Atrouss, ''Ayoun el ''Atrous', '', 1, 0, 144, '16.66', '-9.62', 'ayun', 0, 1),
 (2454, 821, 'Reykjavik', '', '<p style="text-align: justify;">\n	Known as &lsquo;the land of ice and fire&rsquo; thanks to its distinctive mix of white frozen tundra and steam-emitting geothermal springs, Reykjavik has flowered in recent years from a little known climbers&rsquo; getaway to a full-blown cosmopolitan party capital. Considered by some to be the Ibiza of the winter, Reykjavik surprisingly attracts dedicated clubbers from all over the world. In winter, the night does not end and hence neither does the party. In contrast to the moon-like, barren landscape of its surrounding areas, Reykjavik has the look of a toy town, clean, chaotic and brightly-coloured.</p>\n<p style="text-align: justify;">\n	Alternating before your eyes between being a super-modern globally-wired capital and old-fashioned rural village, Reykjavik has many cultural spoils to offer its visitors. Rely on your Reykjavik tour guide for an exhaustive list of museums, art galleries and inspired structures, and the busy schedule of concerts, festivals and theatre happenings buzzing this city. Don&rsquo;t forget to go further afield than the charming streets of the centre though, as Reykjavik is also home to some of the great geological wonders of the world including the Blue Lagoon, the city&rsquo;s own turquoise blue thermal swimming pool.&nbsp;</p>\n', 1, 0, 103, '64.14', '-21.92', 'reykjavik', 0, 1),
 (2455, 823, 'Sapporo', '', '', 1, 0, 108, '43.06', '141.34', 'sapporo', 0, 1),
 (2456, 823, 'Asahikawa', 'Asahigawa', '', 1, 0, 108, '43.77', '142.36', 'asahikawa', 0, 1),
@@ -2706,7 +2738,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (2508, 809, 'Zhoukou', 'Zhoukouzhen', '', 1, 0, 45, '33.64', '114.63', 'zhoukou', 0, 1),
 (2509, 809, 'Zhumadian', '', '', 1, 0, 45, '32.97', '114.05', 'zhumadian', 0, 1),
 (2510, 809, 'Hebi', 'Shancheng', '', 1, 0, 45, '35.95', '114.22', 'hebi', 0, 1),
-(2511, 844, 'Huehuetenango', 'Chinab\'jul, Chinajul', '', 1, 0, 87, '15.32', '-91.47', 'huehuetenango', 0, 1),
+(2511, 844, 'Huehuetenango', 'Chinab''jul, Chinajul', '', 1, 0, 87, '15.32', '-91.47', 'huehuetenango', 0, 1),
 (2512, 845, 'Lubango', 'Sá da Bandeira', '', 1, 0, 8, '-14.91', '13.49', 'lubango', 0, 1),
 (2513, 845, 'Matala', '', '', 1, 0, 8, '-14.74', '15.03', 'matala', 0, 1),
 (2514, 425, 'Aguachica', '', '', 1, 0, 46, '8.31', '-73.62', 'aguachica', 0, 1),
@@ -2751,10 +2783,10 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (2553, 857, 'Kohtla Jarve', '', '', 1, 0, 61, '59.40', '27.25', 'kohtla-jarve', 0, 1),
 (2554, 858, 'Boise City', 'Boise', '<p style="text-align: justify;">\n	With a population of just 1,300, Boise City is often overlooked. But what it lacks in size and trendiness, it makes up for in small town charm. Founded in 1908 by two men who created brochures falsely depicting the town as an elegant , established municipality, even the origin of Boise City offers an intriguing narrative. Though the developers were sent to prison for fraud, the population grew and eventually transformed the barren land into the lively neighborhood it was originally said to be.<br />\n	Located on the handle of Oklahoma, Boise City is less than an hour drive to Colorado, Kansas, Texas, and New Mexico. A close proximity to such destinations has made it a common stop on many road-trippers&rsquo; journeys, but a Boise City tour guide will lure you to visit the town&rsquo;s best attractions before moving on. The Cimarron Heritage Center features a step through the city&rsquo;s history, with restored village buildings and countless hands-on artifacts ranging from the Dust Bowl era to war-time relics.&nbsp; It is the perfect getaway for anyone seeking a break from his or her hometown&rsquo;s hustle and bustle.</p>\n', 1, 0, 220, '43.61', '-116.23', 'boise-city', 0, 1),
 (2555, 858, 'Nampa', '', '', 1, 0, 220, '43.58', '-116.56', 'nampa', 0, 1),
-(2556, 858, 'Meridian (Idaho)', '', '', 1, 0, 220, '43.61', '-116.40', 'meridian-idaho', 0, 1),
-(2557, 858, 'Idaho Falls', '', '<p style="text-align: justify;">\n	Named for rapids that splash through the city&rsquo;s Snake River, Idaho Falls lies on a grassy plain amidst the voluminous Rocky Mountains. The 2-mile walk along Snake River, affectionately called the Greenbelt, runs through the city&rsquo;s center and hosts community events including concerts and Farmers&rsquo; Markets. Nature is an authentic backdrop in Idaho Falls and visitors of all ages enjoy white water rafting and fishing on Snake River, or an educational stroll through Tautphaus Park Zoo. The city also lies just 20 miles from Yellowstone Bear World.<br />\n	But your skilled Idaho Falls tour guide would also lead you beyond the outdoors to the heart of downtown. Eateries, wineries, art galleries and performance centers have made the city a cultural epicenter in the region, while its&rsquo; age-old landmarks highlight the town&rsquo;s history of settlers and development. Idaho Falls is an energetic delta where the contemporary meet the antique, and the northwest countryside meets its&rsquo; human counterparts.&nbsp;</p>\n', 1, 0, 220, '43.49', '-112.03', 'idaho-falls', 0, 1),
-(2558, 858, 'Pocatello', '', '', 1, 0, 220, '42.88', '-112.47', 'pocatello', 0, 1);
+(2556, 858, 'Meridian (Idaho)', '', '', 1, 0, 220, '43.61', '-116.40', 'meridian-idaho', 0, 1);
 INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
+(2557, 858, 'Idaho Falls', '', '<p style="text-align: justify;">\n	Named for rapids that splash through the city&rsquo;s Snake River, Idaho Falls lies on a grassy plain amidst the voluminous Rocky Mountains. The 2-mile walk along Snake River, affectionately called the Greenbelt, runs through the city&rsquo;s center and hosts community events including concerts and Farmers&rsquo; Markets. Nature is an authentic backdrop in Idaho Falls and visitors of all ages enjoy white water rafting and fishing on Snake River, or an educational stroll through Tautphaus Park Zoo. The city also lies just 20 miles from Yellowstone Bear World.<br />\n	But your skilled Idaho Falls tour guide would also lead you beyond the outdoors to the heart of downtown. Eateries, wineries, art galleries and performance centers have made the city a cultural epicenter in the region, while its&rsquo; age-old landmarks highlight the town&rsquo;s history of settlers and development. Idaho Falls is an energetic delta where the contemporary meet the antique, and the northwest countryside meets its&rsquo; human counterparts.&nbsp;</p>\n', 1, 0, 220, '43.49', '-112.03', 'idaho-falls', 0, 1),
+(2558, 858, 'Pocatello', '', '', 1, 0, 220, '42.88', '-112.47', 'pocatello', 0, 1),
 (2559, 858, 'Caldwell', '', '', 1, 0, 220, '43.66', '-116.67', 'caldwell', 0, 1),
 (2560, 858, 'Coeur dAlene', '', '', 1, 0, 220, '47.70', '-116.78', 'coeur-dalene', 0, 1),
 (2561, 858, 'Twin Falls', '', '', 1, 0, 220, '42.56', '-114.46', 'twin-falls', 0, 1),
@@ -2953,7 +2985,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (2754, 926, 'Znojmo', 'Znaim', '', 1, 0, 53, '48.86', '16.06', 'znojmo', 0, 1),
 (2755, 927, 'Jijel', 'Djidjeli, Djidjel, Djidjelli, Jijeli, Igilgili', '', 1, 0, 59, '36.83', '5.77', 'jijel', 0, 1),
 (2756, 927, 'El Milia', 'al Miliyah, El Miliyya', '', 1, 0, 59, '36.76', '6.27', 'el-milia', 0, 1),
-(2757, 927, 'Taher', 'al tahir, Fajj Mazallah, Fedj M\'Zala', '', 1, 0, 59, '36.41', '5.94', 'taher', 0, 1),
+(2757, 927, 'Taher', 'al tahir, Fajj Mazallah, Fedj M''Zala', '', 1, 0, 59, '36.41', '5.94', 'taher', 0, 1),
 (2758, 846, 'Shaoyang', 'Baoqing', '', 1, 0, 45, '27.00', '111.20', 'shaoyang', 0, 1),
 (2759, 846, 'Xiangtan', '', '', 1, 0, 45, '27.85', '112.90', 'xiangtan', 0, 1),
 (2760, 846, 'Changde', 'Changte', '', 1, 0, 45, '29.03', '111.68', 'changde', 0, 1),
@@ -2966,7 +2998,8 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (2767, 930, 'Jinotega', '', '', 1, 0, 158, '13.10', '-86.00', 'jinotega', 0, 1),
 (2768, 934, 'Jizan', 'Jisan, Qizan', '', 1, 0, 185, '16.90', '42.55', 'jizan', 0, 1),
 (2769, 934, 'Sabya', '', '', 1, 0, 185, '17.15', '42.62', 'sabya', 0, 1),
-(2770, 934, 'Abu Aris', 'Abu Arish', '', 1, 0, 185, '16.97', '42.83', 'abu-aris', 0, 1),
+(2770, 934, 'Abu Aris', 'Abu Arish', '', 1, 0, 185, '16.97', '42.83', 'abu-aris', 0, 1);
+INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
 (2771, 936, 'Johor Bahru', '', '<p style="text-align: justify;">\n	Johor Bahru is located in southern Malaysia, connected to Singapore by a causeway. More known as a commercial centre for manufacturing electronics and transport, the city hosts a very mixed population that comprises Malay, Chinese and Indian communities amongst others.<br />\n	There are a few places of touristic significance to visit here, such as The Sultan Ibrahim Building, the Sultan Abu Bakar mosque and Istana Besar or Grand Palace, the royal palace of the Sultanate of Johor. If traveling with kids, or simply looking for some fun, check out the theme park Danga World, or the Puteri Harbour Family Theme Park. The Johor Bahru tourist guide lists the Johor Bahur City Square office tower as the tallest building in this area, its shopping complex the latest of shopping malls that add to the spruced up look of the city. A few hours drive away from Johor Bahru get your nature fix; beaches, the Kota Tinggi and Lombong Waterfalls and the Endau-Rompin National Park, a rainforest reserve. Relax with a multitude of choices of activity; golf at world class golf courses, diving, snorkeling and many such water sports at Palau Tioman and its neighbouring islands or just a lazy seafood meal at the fishing town of Mersing.&nbsp;</p>\n', 1, 0, 151, '1.48', '103.75', 'johor-bahru', 0, 1),
 (2772, 936, 'Bandar Penggaram', 'Batu Pahat', '', 1, 0, 151, '1.85', '102.93', 'bandar-penggaram', 0, 1),
 (2773, 936, 'Bandar Maharani', 'Muar', '', 1, 0, 151, '2.05', '102.56', 'bandar-maharani', 0, 1),
@@ -2979,8 +3012,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (2780, 940, 'Betar Illit', 'Betar', '', 1, 0, 98, '31.70', '35.12', 'betar-illit', 0, 1),
 (2781, 941, 'Jujuy', 'San Salvador de Jujuy, Palpalá', '', 1, 0, 10, '-24.19', '-65.30', 'jujuy', 0, 1),
 (2782, 941, 'San Pedro (Jujuy)', '', '', 1, 0, 10, '-24.22', '-64.87', 'san-pedro-jujuy', 0, 1),
-(2783, 942, 'Jundubah', 'Jendouba, Souk el Arba', '', 1, 0, 212, '36.50', '8.77', 'jundubah', 0, 1);
-INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
+(2783, 942, 'Jundubah', 'Jendouba, Souk el Arba', '', 1, 0, 212, '36.50', '8.77', 'jundubah', 0, 1),
 (2784, 943, 'Huancayo', '', '<p class="fr-tag" style="text-align: justify;">Settled in the Manataro Valley of Peru, the sprawling city of Huancayo offers a chance to get acclimatized to the Andes; not just the altitude, but also the ancient culture and traditions of the Quechua peoples that dominates in the hills. A neat and enthralling balance of activities, attractions and possibilities is on offer here, where straight-up museum exhibitions that could have been lifted from Lima rub shoulders with folksy craft markets laden with articles like whittled trinkets, shamanistic healing roots and multi-coloured woven bowler hats and ponchos at its Sunday Fair. Elsewhere in town, bursts of Peruvian pipes rise from around the La Inmaculada, the statues at the Parque de la Identidad Huance make for a good photo op, the chugs and whistles herald the El Tren Macho (the highest railway on the planet) and indigenous recipes of papa a la Huancaina and pachamanca pepper the local eateries. And let’s not forget the geological red clay formations at Torre Torre, or the looming Andes to the east, alive with trekking trails best accessed with the help of the most experienced Huancayo tour guides.</p>', 1, 0, 167, '-12.07', '-75.21', 'huancayo', 0, 1),
 (2785, 943, 'Tarma', '', '', 1, 0, 167, '-11.41', '-75.73', 'tarma', 0, 1),
 (2786, 943, 'La Oroya', '', '', 1, 0, 167, '-11.52', '-75.94', 'la-oroya', 0, 1),
@@ -3196,14 +3228,15 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (2996, 1030, 'Lozova', 'Lozovaya', '', 1, 0, 218, '48.88', '36.38', 'lozova', 0, 1),
 (2997, 1030, 'Izyum', '', '', 1, 0, 218, '49.21', '37.26', 'izyum', 0, 1),
 (2998, 1031, 'Khartoum', 'Khartum, Jartum', '', 1, 0, 188, '15.58', '32.52', 'khartoum', 0, 1),
-(2999, 1032, 'Kulob', 'Kulyab, Kul\'ab, Kuljab', '', 1, 0, 209, '37.92', '69.78', 'kulob', 0, 1),
-(3000, 1032, 'Qurgonteppa', 'Kurgontepa, Kurgan Tjube, Kurgan T\'ube, Qurghonteppa, Kurgan Tiube', '', 1, 0, 209, '37.84', '68.77', 'qurgonteppa', 0, 1),
+(2999, 1032, 'Kulob', 'Kulyab, Kul''ab, Kuljab', '', 1, 0, 209, '37.92', '69.78', 'kulob', 0, 1),
+(3000, 1032, 'Qurgonteppa', 'Kurgontepa, Kurgan Tjube, Kurgan T''ube, Qurghonteppa, Kurgan Tiube', '', 1, 0, 209, '37.84', '68.77', 'qurgonteppa', 0, 1),
 (3001, 1033, 'Khenchela', 'Hansalah, Khenchla', '', 1, 0, 59, '35.44', '7.15', 'khenchela', 0, 1),
 (3002, 1034, 'Kherson', 'Herson, Cherson, Khersan', '', 1, 0, 218, '46.63', '32.60', 'kherson', 0, 1),
 (3003, 1034, 'Kakhovka', '', '', 1, 0, 218, '46.81', '33.48', 'kakhovka', 0, 1),
 (3004, 1035, 'Khmelnytskyi', 'Hmelnickij, Khmelnitsky', '', 1, 0, 218, '49.42', '27.00', 'khmelnytskyi', 0, 1),
 (3005, 1035, 'Kamyanets Podilskyi', 'Kamenets Podolsky, Kamenec Podolskij, Kamienec', '', 1, 0, 218, '48.68', '26.58', 'kamyanets-podilskyi', 0, 1),
-(3006, 1035, 'Shepetivka', 'Sepetovka, Shepetovka', '', 1, 0, 218, '50.18', '27.07', 'shepetivka', 0, 1),
+(3006, 1035, 'Shepetivka', 'Sepetovka, Shepetovka', '', 1, 0, 218, '50.18', '27.07', 'shepetivka', 0, 1);
+INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
 (3007, 1036, 'Windhoek', 'Windhuk', '<p style="text-align: justify;">\n	The gateway to Namibia, the cosmopolitan city of Windhoek is surrounded by mountains. Once colonised by Germany, the strong German influence prevails with the annual Oktoberfest, beer drinking and a European caf&eacute; feel. Intertwined with the local population there is a vibrancy of colour, traditional dress and a variety of languages spoken. A well-heeled Windhoek Tourist guide will be able to expose you to the bustling markets, the Lutheran Christuskirche (Christ Church) and the National Museum of Alte Feste (Old Fort). Beyond Windhoek one is able to visit the orange sand dunes of Sossusvlei. The snake like curves of the sand transformed by wind provide spectacular views of the area as well as the dry white clay deposits of Deadvlei. If you are looking for relief from the dry heat, Swakopmund provides adventure galore. Take on the dunes with quad bikes or sand boarding or para sail over the sea from one of the landing bases. Sitting at one of the many cafes on the promenade, the fresh breeze from the ocean is a welcome relief. Don your helmet, jump on the jeep and take safari ride in Walvis Bay and witness Africa&rsquo;s Big 5. The only place on earth where the black rhino has freedom, the largest population of cheetahs and elephant&rsquo; roaming freely in the desert makes this a one of a kind safari.</p>\n', 1, 0, 153, '-22.56', '17.09', 'windhoek', 0, 1),
 (3008, 1037, 'Mashhad', '', '<p class="fr-tag" style="text-align: justify;">Centred on the venerated shrine to the 8<sup>th</sup> and 9<sup>th</sup> century Imam Reza, Iran’s second largest city Mashhad rises up from the sands in a patchwork of arabesque domes and archways sandwiched between the Binalood and the Hezar Masjed ridges. It’s historical 8<sup>th</sup> century core is encompassed by a modern frame of sprawling residential neighbourhoods and unexpected parks, blooming green like a desert oasis amidst the urban fray. </p><p class="fr-tag" style="text-align: justify;">When planning a visit to the Haram complex of the Imam, your Mashhad tour guide will advice you to avoid the booming pilgrimage dates, when even the colossal Ghoharshad Mosque prayer halls (one of the largest of their kind in the world) are packed to bursting point. Elsewhere in the city centre lie the Safavid baths of the 17<sup>th</sup> century (now a fantastic museum), bazaars selling carpets and Khorassan crafts, and the Mellat fun park (home to Iran’s answer to the London Eye. A stone’s throw away from the city lies the leafy Ferdowsi Park, along with the honorific tomb of Nadir Shah, with the borders of Turkmenistan and Afghanistan just a bit further ahead within easy reach.</p>', 1, 0, 102, '36.27', '59.57', 'mashhad', 0, 1),
 (3009, 1037, 'Nayshabur', 'Neishabour, Nishapur', '', 1, 0, 102, '36.22', '58.82', 'nayshabur', 0, 1),
@@ -3211,8 +3244,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (3011, 1037, 'Turbat i Haidari', 'Torbat e Heydariyeh, Torbat e Heydarrieh', '', 1, 0, 102, '35.28', '59.22', 'turbat-i-haidari', 0, 1),
 (3012, 1037, 'Quchan', 'Ghouchan, Ghuchan, QoCan, Qochan, Kuchan', '', 1, 0, 102, '37.12', '58.50', 'quchan', 0, 1),
 (3013, 1038, 'Birdjand', '', '', 1, 0, 102, '32.88', '59.22', 'birdjand', 0, 1),
-(3014, 1039, 'Bojnord', '', '', 1, 0, 102, '37.47', '57.32', 'bojnord', 0, 1);
-INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
+(3014, 1039, 'Bojnord', '', '', 1, 0, 102, '37.47', '57.32', 'bojnord', 0, 1),
 (3015, 1040, 'Khulna', '', '<p style="text-align: justify;">\n	Home to one of the oldest river ports in Bangladesh, Khulna is the third largest city in Bangladesh. The Rupsha River runs alongside connecting this industrial city to other cities in the Gangetic delta. Known as the &lsquo;City of shrimp&rsquo; one of Khulna&rsquo;s main exports is shrimp and other seafood in addition to the city hosting Bangladesh&rsquo;s newsprint and ship building industry. Humid in the summer but still warm and dry in the winter, Khulna&rsquo;s climate attracts visitors from the Middle East and beyond, aiding its dramatic transformation from a small seaport into a modern day metropolis. Close to the city of Khulna, in the south-western part of Bangladesh lies the Sundarbans, the world&rsquo;s largest mangrove forest and a UNESCO world heritage site. Home to the endangered Royal Bengal tiger, this virgin forest offers the adventurous traveller a seemingly unending network of trees and wildlife. Your Khulna Travel guide will navigate you through clusters of islands separated by meandering rivers and streams to catch glimpses of crocodiles, monkeys, deer and different species of birds amongst others, all blending harmoniously in their natural habitat.</p>\n', 1, 0, 18, '22.84', '89.56', 'khulna', 1, 1),
 (3016, 1041, 'Ahwaz', '', '', 1, 0, 102, '31.28', '48.72', 'ahwaz', 0, 1),
 (3017, 1041, 'Dizful', 'Desful, Disful', '', 1, 0, 102, '32.38', '48.47', 'dizful', 0, 1),
@@ -3248,7 +3280,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (3047, 1053, 'Kirikkale', 'Kirrikkale', '', 1, 0, 214, '39.85', '33.52', 'kirikkale', 0, 1),
 (3048, 1054, 'Luleburgaz', '', '', 1, 0, 214, '41.42', '27.36', 'luleburgaz', 0, 1),
 (3049, 1055, 'Kirov', 'Vjatka, Vyatka, Kylno', '', 1, 0, 183, '58.60', '49.66', 'kirov', 0, 1),
-(3050, 1056, 'Kirovohrad', 'Kirovograd, Kirovo, Yelizavetgrad, Elizavetgrad, Zinovjevsk, Zinv\'yevsk', '', 1, 0, 218, '48.50', '32.26', 'kirovohrad', 0, 1),
+(3050, 1056, 'Kirovohrad', 'Kirovograd, Kirovo, Yelizavetgrad, Elizavetgrad, Zinovjevsk, Zinv''yevsk', '', 1, 0, 218, '48.50', '32.26', 'kirovohrad', 0, 1),
 (3051, 1056, 'Alexandria', 'Aleksandriya, Oleksandriya, Alexandriya', '', 1, 0, 218, '48.67', '33.12', 'alexandria', 0, 1),
 (3052, 1057, 'Kirsehir', '', '', 1, 0, 214, '39.15', '34.16', 'kirsehir', 0, 1),
 (3053, 1058, 'Bhairab Bazar', 'Bhairab', '', 1, 0, 18, '24.06', '90.96', 'bhairab-bazar', 1, 1),
@@ -3266,7 +3298,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (3065, 1065, 'Coxs Bazar', 'Koks Bazar', '<p style="text-align: justify;">\n	The longest natural stretch of beach on the planet curves its way along the coastline of Bangladesh on the Bay of Bengal over 120 kilometres of glistening yellow sands and rolling ocean waves, making Cox&#39;s Bazar one of the most-coveted tourist spots in the country. From the region&rsquo;s northern edges at the mouth of the Bakkhali River, to the southern sands at Kolatoli, it covers the gamut of rolling surf, beachcombing, rugged coastal dunes, Buddhist temples, and paradisal islands, not to mention a collection of some of the best hotels and restaurants in the region.<br />\n	Start by quizzing your Cox&#39;s Bazar tour guide about the best beaches around town, ranging from the boulder-peppered stretch at Laboni, where crowds settle in to watch the pink glow of the Indian sun dip behind the horizon, to the wild and rustic Inani Beach, where the green hills of southern Bangladesh enclose visitors in an enclave of majestic ocean beauty. And once travellers are done enjoying the wealth of fresh seafood eateries that pepper the coast, there can head out to watch the Himchori falls crashing over the cliffs, or to see the undulating hills of Teknaf, culminating with an exploration of the Buddhist influence in the region, at the Aggmeda Khyang and the village of Ramu.</p>\n', 1, 0, 18, '21.44', '91.98', 'coxs-bazar', 1, 1),
 (3066, 1066, 'Kolda', '', '', 1, 0, 196, '12.91', '-14.95', 'kolda', 0, 1),
 (3067, 1066, 'Velingara', 'Vélinngara', '', 1, 0, 196, '13.15', '-14.11', 'velingara', 0, 1),
-(3068, 1067, 'Syktyvkar', 'Ust Sysolsk, Ust\' Sysol\'sk', '', 1, 0, 183, '61.67', '50.81', 'syktyvkar', 0, 1),
+(3068, 1067, 'Syktyvkar', 'Ust Sysolsk, Ust'' Sysol''sk', '', 1, 0, 183, '61.67', '50.81', 'syktyvkar', 0, 1),
 (3069, 1067, 'Ukhta', 'Uhta, Ukva', '', 1, 0, 183, '63.56', '53.69', 'ukhta', 0, 1),
 (3070, 1068, 'Komilla', 'Comilla, Kumilla', '', 1, 0, 18, '23.46', '91.17', 'komilla', 1, 1),
 (3071, 1069, 'Konya', '', '', 1, 0, 214, '37.88', '32.48', 'konya', 0, 1),
@@ -3333,7 +3365,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (3132, 1102, 'Durban', '', '<p style="text-align: justify;">\n	Durban meets the swells of the Indian Ocean with a wall of jagged downtown skyscrapers and protruding port jetties; in many ways the perfect visual image of the city&rsquo;s character as a whole&mdash;a place where laid-back surfies mingle with suited businessmen, and earthy, cosmopolitan districts like Durban&rsquo;s little Indian Quarter, coalesce with chic cocktail bars and worldly fine-dining joints on the very edge of the sea.<br />\n	The city is unarguably all about the beach, with a golden coastline well thronged by the Durbs, top surf on the east coast, and even a surfing museum to boot. Durban also takes pride of some of the best golf courses in the region and the coolest football stadium in the country, not to miss a Marine world with the largest Aquarium in Africa. Then there&rsquo;s the retail scene, complete with the wild Indian bazaars that cluster around the Victoria Street Market, and gleaming modern malls, at the Pavilion and the colossal Gateway Theatre. Visiting foodies should be sure to ask their local Durban tourist guide about their favourite curry houses and tandoori grills, because they&rsquo;re said to cook up the best spice dishes in all of South Africa.</p>\n', 1, 0, 234, '-29.87', '30.99', 'durban', 0, 1),
 (3133, 1102, 'Pietermaritzburg', 'Edendale, Msunduzi, Msundini', '', 1, 0, 234, '-29.61', '30.39', 'pietermaritzburg', 0, 1),
 (3134, 1102, 'Sihlangu', 'Madadeni, Osizweni, Newcastle', '', 1, 0, 234, '-27.75', '29.92', 'sihlangu', 0, 1),
-(3135, 1102, 'Richards Bay', 'Richards Baai, Richard\'s Bay, Richardsbay, Richardsbaai', '', 1, 0, 234, '-28.80', '32.09', 'richards-bay', 0, 1),
+(3135, 1102, 'Richards Bay', 'Richards Baai, Richard''s Bay, Richardsbay, Richardsbaai', '', 1, 0, 234, '-28.80', '32.09', 'richards-bay', 0, 1),
 (3136, 1102, 'Vryheid', 'Bhekuzulu', '', 1, 0, 234, '-27.76', '30.79', 'vryheid', 0, 1),
 (3137, 1102, 'Epumalanga', 'Mpumalanga, Sankontshe', '<p style="text-align: justify;">\n	As one of South Africa&rsquo;s most geographically diverse locales, tourists are steadily drawn to Mpumalanga (aka Epumalanga)&nbsp;for its&rsquo; rich tribal history and expansive natural environment. Waterfalls glisten as they roar through mountainous valleys and dense forestation prospers amongst the land&rsquo;s native residents. Speaking of whom, Elephant Whispers invites you to ride, talk and handle elephants before putting them to bed, while Chimpanzee Eden houses vigorous monkeys for exhilarating observation and education. Despite Mpumalanga&rsquo;s many animal sighting settings, none can compete with the world-renowned and go-to safari spot that is Kruger National Park. As your Mpumalanga tour guide will tell you, deciding to explore this region&rsquo;s breathtaking natural scenes isn&rsquo;t hard choice to make- deciding <em>how</em> to explore it? That&rsquo;s a whole different story.<br />\n	The route with which one discovers the city&rsquo;s environment and resident creatures comes in many forms, each more adventurous than the next. Staid 4-wheel drives down the Panorama Route show up Three Rondavels and Bourke&rsquo;s Luck Potholes amongst amazing landscapes. Simple automobile caravans welcome tourists to the national park, while Mpumalanga&rsquo;s horseback, elephant rides, and hiking trails meander through the regions natural reserves and forestation for up close and personal sightings of Africa&rsquo;s wilderness.</p>\n', 1, 0, 234, '-29.82', '30.61', 'epumalanga', 0, 1),
 (3138, 1102, 'Emnambithi', 'Ezakheni, eZakheni, Ladysmith', '', 1, 0, 234, '-28.55', '29.78', 'emnambithi', 0, 1),
@@ -3437,7 +3469,8 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (3236, 920, 'Changzhou', 'Changchow', '', 1, 0, 45, '31.78', '119.97', 'changzhou', 0, 1),
 (3237, 920, 'Nantong', 'Nantung', '', 1, 0, 45, '32.02', '120.82', 'nantong', 0, 1),
 (3238, 920, 'Yancheng', '', '', 1, 0, 45, '33.39', '120.12', 'yancheng', 0, 1),
-(3239, 920, 'Taizhou', 'Taichow', '', 1, 0, 45, '32.49', '119.90', 'taizhou', 0, 1),
+(3239, 920, 'Taizhou', 'Taichow', '', 1, 0, 45, '32.49', '119.90', 'taizhou', 0, 1);
+INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
 (3240, 1145, 'Liberec', 'Reichenberg', '<p style="text-align: justify;">\n	Once the industrial powerhouse of northern Bohemia, the charming city of Liberec sits nestled beneath the low, smooth ridges of the pine-clad Jizera Mountains. Architecturally it&rsquo;s a curious mix of Slavic and Germanic townhouses, all peppered with open squares and the occasional gothic church spire, like the majestic towers of its City Hall. This is matched with a character that is laid-back and relaxed, a place where travellers can sip frothy pilsner beers in the company of locals, and conquer huge servings of hearty Czech dumplings to the sounds of Bohemian folkbeats.<br />\n	There&rsquo;s aplenty to do, with museums, a zoo and botanical garden worth a visit, but as any Liberec tour guide will tell you the city&rsquo;s overarching attractions are the rolling hills and forests of the Czech north that cling to the slopes of the Lusatian and Jizera Ranges all around the town. Long hailed for their wealth of cross-country ski tracks, magnificent hiking trails and enchanting mountain homes, they are an adventure traveller&rsquo;s dream just waiting to be explored.</p>\n', 1, 0, 53, '50.78', '15.06', 'liberec', 0, 1),
 (3241, 1145, 'Ceska Lipa', 'Bohmisch Leipa', '', 1, 0, 53, '50.69', '14.53', 'ceska-lipa', 0, 1),
 (3242, 1146, 'Rancagua', '', '', 1, 0, 43, '-34.17', '-70.74', 'rancagua', 0, 1),
@@ -3455,8 +3488,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (3254, 1154, 'Huacho', '', '', 1, 0, 167, '-11.11', '-77.62', 'huacho', 0, 1),
 (3255, 1154, 'San Vicente de Canete', '', '', 1, 0, 167, '-13.09', '-76.40', 'san-vicente-de-canete', 0, 1),
 (3256, 1155, 'Hasselt', '', '', 1, 0, 19, '50.93', '5.33', 'hasselt', 0, 1),
-(3257, 1155, 'Maastricht', '', '', 1, 0, 159, '50.85', '5.69', 'maastricht', 0, 1);
-INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
+(3257, 1155, 'Maastricht', '', '', 1, 0, 159, '50.85', '5.69', 'maastricht', 0, 1),
 (3258, 1155, 'Sittard Geleen', 'Born, Sittard, Geleen', '', 1, 0, 159, '51.01', '5.86', 'sittard-geleen', 0, 1),
 (3259, 1155, 'Venlo', 'Venloo, Belfeld, Tegelen', '', 1, 0, 159, '51.38', '6.17', 'venlo', 0, 1),
 (3260, 1156, 'Limerick', '', '', 1, 0, 97, '52.67', '-8.63', 'limerick', 0, 1),
@@ -3554,8 +3586,8 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (3352, 1187, 'Zielona Gora', 'Grunberg', '', 1, 0, 172, '51.94', '15.49', 'zielona-gora', 0, 1),
 (3353, 1188, 'Luhansk', 'Vorosilovgrad, Voroshilovgrad', '', 1, 0, 218, '48.57', '39.33', 'luhansk', 0, 1),
 (3354, 1188, 'Alchevsk', 'Alcevsk, Kommunarsk, Vorosilovsk, Voroshilovsk', '', 1, 0, 218, '48.47', '38.80', 'alchevsk', 0, 1),
-(3355, 1188, 'Syeverodonetsk', 'Severodonets\'k, Severodonetsk, Severodoneck, Severo Doneck, Severo Donetsk', '', 1, 0, 218, '48.95', '38.50', 'syeverodonetsk', 0, 1),
-(3356, 1188, 'Rovenky', 'Rovenki, Roven\'ki', '', 1, 0, 218, '48.08', '39.37', 'rovenky', 0, 1),
+(3355, 1188, 'Syeverodonetsk', 'Severodonets''k, Severodonetsk, Severodoneck, Severo Doneck, Severo Donetsk', '', 1, 0, 218, '48.95', '38.50', 'syeverodonetsk', 0, 1),
+(3356, 1188, 'Rovenky', 'Rovenki, Roven''ki', '', 1, 0, 218, '48.08', '39.37', 'rovenky', 0, 1),
 (3357, 1189, 'Dundo', 'Chitato', '', 1, 0, 8, '-7.38', '20.83', 'dundo', 0, 1),
 (3358, 1190, 'Saurimo', '', '', 1, 0, 8, '-9.66', '20.39', 'saurimo', 0, 1),
 (3359, 1192, 'Lusaka', '', '', 1, 0, 235, '-15.42', '28.29', 'lusaka', 0, 1),
@@ -3632,9 +3664,10 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (3430, 1222, 'Maimansingh', 'Nasirabad, Mymensingh', '', 1, 0, 18, '24.75', '90.39', 'maimansingh', 1, 1),
 (3431, 1223, 'Portland (Maine)', '', '<p style="text-align: justify;">\n	Portland, Maine&rsquo;s modernized antiquity offers a relaxing getaway or road trip detour. Its&rsquo; cobblestone paths and brick-laid sidewalks bring European charm, while the boat shoes and breweries scream of New England&rsquo;s good-time pace.&nbsp; In short, it is the quintessential port town. Bars, restaurants, and galleries line the waterfront with live music and bright colors, while historic Victorian-era neighborhoods boom with antique architecture and art galleries.<br />\n	Because of its&rsquo; busy downtown area, parking and driving can be more of a hassle than a convenience. Any good Portland tour guide can direct you to the public transportation bus lines but walking and bicycling are among the more common ways to get around. In fact, most locals stroll with such infectious calmness that visitors cannot help but do the same.&nbsp; A walk through the old port, along the bustling storefronts and brewery doors is the perfect way to engulf yourself in the city upon arrival. With its&rsquo; laid back charm and exciting nightlife, Portland is a surprisingly well-understood blend of rowdy relaxation.&nbsp;</p>\n', 1, 0, 220, '43.66', '-70.28', 'portland', 0, 1),
 (3432, 1224, 'Makamba', '', '', 1, 0, 23, '-4.13', '29.80', 'makamba', 0, 1),
-(3433, 1225, 'Jeddah', '', '<p style="text-align: justify;">\n	Located between the Red Sea and Mecca, Jeddah has been a port of pilgrimage and trading for centuries. Despite the industrial bustle that continues in Saudi Arabia&rsquo;s commercial capital, Jeddah remains one of the nation&rsquo;s most mesmerizingly laidback neighborhoods. Perhaps it&rsquo;s the city&rsquo;s coastal locale that attracts such a steady stream of visitors, as Red Sea waters roll over dive-worthy reefs to the fingertips of sandy beaches and luxurious seaside resorts. In fact, Jeddah Corniche is the nation&rsquo;s largest waterfront area and boasts recently renovated restaurants, parks, and the world&rsquo;s highest fountain!<br />\n	Still, much of the city&rsquo;s appeal lies more inland. Many a Jeddah tour guide showcase to visitors the traditional coral architecture remains in much of the older Al-Balad district, right in the heart of Jeddah. Urbanization co-exists alongside the established aesthetics, where high-end shopping malls and theme parks lie across town from the provincial souks. Though Jeddah blends old and new so seamlessly, tourists are prudently reminded of the city&rsquo;s conservative expectation regarding dress and alcohol consumption.</p>\n', 1, 0, 185, '21.50', '39.17', 'jeddah', 0, 1),
+(3433, 1225, 'Jeddah', '', '<p style="text-align: justify;">\n	Located between the Red Sea and Mecca, Jeddah has been a port of pilgrimage and trading for centuries. Despite the industrial bustle that continues in Saudi Arabia&rsquo;s commercial capital, Jeddah remains one of the nation&rsquo;s most mesmerizingly laidback neighborhoods. Perhaps it&rsquo;s the city&rsquo;s coastal locale that attracts such a steady stream of visitors, as Red Sea waters roll over dive-worthy reefs to the fingertips of sandy beaches and luxurious seaside resorts. In fact, Jeddah Corniche is the nation&rsquo;s largest waterfront area and boasts recently renovated restaurants, parks, and the world&rsquo;s highest fountain!<br />\n	Still, much of the city&rsquo;s appeal lies more inland. Many a Jeddah tour guide showcase to visitors the traditional coral architecture remains in much of the older Al-Balad district, right in the heart of Jeddah. Urbanization co-exists alongside the established aesthetics, where high-end shopping malls and theme parks lie across town from the provincial souks. Though Jeddah blends old and new so seamlessly, tourists are prudently reminded of the city&rsquo;s conservative expectation regarding dress and alcohol consumption.</p>\n', 1, 0, 185, '21.50', '39.17', 'jeddah', 0, 1);
+INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
 (3434, 1225, 'Mecca', '', '<p style="text-align: justify;">\n	The holiest city in Islam, Mecca or Makkah is located in western Saudi Arabia. The birthplace of the Prophet Muhammad, Mecca&rsquo;s rich history stretches back to the early middle ages and its historical sites are some of the most fascinating in the world. These ancient relics and holy sites associated with the events and milestones in the prophet&rsquo;s life attract millions of worshippers every year to undertake the holy pilgrimage, the Hajj.<br />\n	The grand mosque, or Masjid Al Haram, is the largest mosque in the world. Home to the sacred Kaaba and the Zamzam well, the Mosque is said to hold up to 1.2million worshippers at once. The Al Jaaranah Mosque said to be the location where Mohammed clothes himself before performing his own Hajj can be visited only with government permission. The Thor Mountain and Al Nour Mountain are also significant religious sites and can be visited by pilgrims freely.<br />\n	While the Hajj is an obligatory trip for all Muslims who are able, non-Muslims are not allowed to make a pilgrimage, though tourists can visit the wider district of Mecca. Keep in mind that a visit can only be booked through specialist Mecca travel guides.</p>\n', 1, 0, 185, '21.43', '39.82', 'mecca', 0, 1),
-(3435, 1225, 'Taif', 'Ta\'if, at Taif, At Taif', '<p style="text-align: justify;">\n	Perched up on the highlands of Saudi Arabia&rsquo;s Mecca province, just east of the iconic holy city of the same name, Taif has long enjoyed one of the country&rsquo;s most hospitable summer climates. Once the powerhouse of the country&rsquo;s mountain tribes, the city passed hands throughout the medieval period, before being cultivated more recently as a de facto seasonal capital, where Saudi&rsquo;s royals could go to escape the scorching heat of the lowlands.<br />\n	Since its earliest beginnings, the city of Taif has been famed for its wealth of fertile agricultural land, and today the undulating fields of wheat, sprawling rows of fruit orchards and verdant valleys of wild flowers can be spied out encompassing the centre in the surrounding districts of Al Shafa and Al Hada. For the best views of the vistas around town though, most Taif tourist guides will recommend the newly-opened cable car (the largest in all of the Middle East), which takes guests to the Al Kar Tourist Village above town.<br />\n	For a taste of local life, head to the old town district in the centre. Here, clusters of traditional eateries serve up Saudi fare, while lively little roadways wind their way pleasantly beneath the peaks.</p>\n', 1, 0, 185, '21.26', '40.38', 'taif', 0, 1),
+(3435, 1225, 'Taif', 'Ta''if, at Taif, At Taif', '<p style="text-align: justify;">\n	Perched up on the highlands of Saudi Arabia&rsquo;s Mecca province, just east of the iconic holy city of the same name, Taif has long enjoyed one of the country&rsquo;s most hospitable summer climates. Once the powerhouse of the country&rsquo;s mountain tribes, the city passed hands throughout the medieval period, before being cultivated more recently as a de facto seasonal capital, where Saudi&rsquo;s royals could go to escape the scorching heat of the lowlands.<br />\n	Since its earliest beginnings, the city of Taif has been famed for its wealth of fertile agricultural land, and today the undulating fields of wheat, sprawling rows of fruit orchards and verdant valleys of wild flowers can be spied out encompassing the centre in the surrounding districts of Al Shafa and Al Hada. For the best views of the vistas around town though, most Taif tourist guides will recommend the newly-opened cable car (the largest in all of the Middle East), which takes guests to the Al Kar Tourist Village above town.<br />\n	For a taste of local life, head to the old town district in the centre. Here, clusters of traditional eateries serve up Saudi fare, while lively little roadways wind their way pleasantly beneath the peaks.</p>\n', 1, 0, 185, '21.26', '40.38', 'taif', 0, 1),
 (3436, 1225, 'al Hawiyah', '', '', 1, 0, 185, '21.44', '40.50', 'al-hawiyah', 0, 1),
 (3437, 1225, 'Bahrah', '', '', 1, 0, 185, '21.40', '39.45', 'bahrah', 0, 1),
 (3438, 1225, 'Rabigh', '', '', 1, 0, 185, '22.80', '39.02', 'rabigh', 0, 1),
@@ -3642,8 +3675,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (3440, 1227, 'Malanje', 'Malange', '', 1, 0, 8, '-9.54', '16.34', 'malanje', 0, 1),
 (3441, 1228, 'Malatya', 'Meleti', '', 1, 0, 214, '38.36', '38.31', 'malatya', 0, 1),
 (3442, 1229, 'Maldonado', '', '', 1, 0, 221, '-34.91', '-54.96', 'maldonado', 0, 1),
-(3443, 1230, 'Male', '', '<p style="text-align: justify;">\n	Oft overlooked by travellers heading to this low-lying luxury land of the Indian Ocean for their all-inclusive package holidays and beachside sessions of R&amp;R amidst the postcard-perfect tropical atolls of the Maldives, Male is a place that seems almost content to go on by itself. But, those who do make the effort to cross to the capital from the airport on nearby Hulhumale, will be faced with a lively clean town sitting both geographically and figuratively at the very heart of this archipelago nation.<br />\n	Start off by heading to one of the exhilarating fish markets, where it&rsquo;s possible to sample some of the freshest fish on the islands, or the bazaar at Chandanee Magu to stock up on souvenirs made of local products of the region. Then, ask your Male tour guide to show you the local joints that cluster along the South West Harbour, or perhaps tick off the towering religious and historical sites that define the city&rsquo;s skyline and downtown; the gold-domed Islamic Centre; the arabesque Friday Mosque; the sprawling Sultan Park.</p>\n', 1, 0, 148, '4.17', '73.50', 'male', 0, 1);
-INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
+(3443, 1230, 'Male', '', '<p style="text-align: justify;">\n	Oft overlooked by travellers heading to this low-lying luxury land of the Indian Ocean for their all-inclusive package holidays and beachside sessions of R&amp;R amidst the postcard-perfect tropical atolls of the Maldives, Male is a place that seems almost content to go on by itself. But, those who do make the effort to cross to the capital from the airport on nearby Hulhumale, will be faced with a lively clean town sitting both geographically and figuratively at the very heart of this archipelago nation.<br />\n	Start off by heading to one of the exhilarating fish markets, where it&rsquo;s possible to sample some of the freshest fish on the islands, or the bazaar at Chandanee Magu to stock up on souvenirs made of local products of the region. Then, ask your Male tour guide to show you the local joints that cluster along the South West Harbour, or perhaps tick off the towering religious and historical sites that define the city&rsquo;s skyline and downtown; the gold-domed Islamic Centre; the arabesque Friday Mosque; the sprawling Sultan Park.</p>\n', 1, 0, 148, '4.17', '73.50', 'male', 0, 1),
 (3444, 1231, 'Cracow', 'Krakow', '<p style="text-align: justify;">\n	The largest city in Poland after Warsaw, Kracow is the cultural and historic heart of the country.</p>\n<p style="text-align: justify;">\n	The royal capital for over 500 years, Kracow had been an important centre for trade since around 1000AD and survived the Second World War almost completely intact. Today its incredible architecture, a heady mix of gothic and renaissance, draws in visitors from all over the world. The Historic Old town is home to impressive churches, synagogues, palaces and squares, all of its streets culminating in the magnificent main market square of Rynek Gł&oacute;wny. Bordered with endless restaurants and bars housed in decadent historic building, the square comes alive at night with al fresco diners and drinkers all year round. In a historically and culturally rich city with a multitude of wonderful places to explore, a must see is the Jewish district of Kazimierz, the atmosphere around its 500-year old synagogue and cemetery, peaceful and somewhat melancholy.</p>\n<p style="text-align: justify;">\n	Kracow has kept up the pace with history and has many modern diversions such as clubs, bars, restaurants and music venues. When walking the streets be sure to look down as well as up as many of the best places are tucked away in basements. Friendly on the pocket, Kracow is best enjoyed slowly and luxuriously.</p>\n', 1, 0, 172, '50.06', '19.96', 'cracow', 0, 1),
 (3445, 1231, 'Tarnow', '', '', 1, 0, 172, '50.01', '20.99', 'tarnow', 0, 1),
 (3446, 1231, 'Nowy Sacz', 'Neusandez', '', 1, 0, 172, '49.63', '20.70', 'nowy-sacz', 0, 1),
@@ -3736,7 +3768,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (3533, 721, 'Itumbiara', '', '', 1, 0, 29, '-18.40', '-49.21', 'itumbiara', 0, 1),
 (3534, 1259, 'Ancona', '', '<p class="fr-tag" style="text-align: justify;">Perched on the sunny coastal stretches on Italy’s eastern edge, the lively port town and regional capital of Ancona has long been a naval nerve centre of the country as a whole, receiving and sending out cruise ships and tankers and merchant vessels to the deep blue of the ocean, across the Adriatic to Croatia, Greece and beyond. </p><p class="fr-tag" style="text-align: justify;">Today, the place still throbs with all the earthy energy expected of a booming trading centre. Behind the frenetic medley of cranes and containers though, lies a truly enthralling town awash with unexpected sites and cultural attractions. On soaring Guasco Hill, the Byzantine frontispieces of the famous Duomo sparkle while cypresses sway in the salty breeze at the Parco del Cardeto. Ancona tour guides also proudly reveal a chipped and chiselled Arch of Trajan, an ancient testimony to the city’s long and tumultuous past. Of course, beaches are part and parcel in Marche’s seaside capital, with pristine sands stringing their way along the coast at the base of nearby Mount Conero, and creamy beaches primed for sunbathers at Sirolo and Marcelli just to the south.</p>', 1, 0, 104, '43.60', '13.50', 'ancona', 0, 1),
 (3535, 1259, 'Pesaro', '', '', 1, 0, 104, '43.92', '12.91', 'pesaro', 0, 1),
-(3536, 1259, 'Ascoli Piceno', '', '<p class="fr-tag" style="text-align: justify;">A symphony of travertine shrouded by the jagged ridges of the Gran Sasso and the massifs of the Sibillini Mountains, pretty little Ascoli Piceno beckons travellers with its sun-splashed Piazza del Popolo (arguably the most beautiful town square in all of Italy!), a labyrinthine web of stone-clad streets, and more crumbling Roman ruins than you can shake a bowl of meaty all\'ascolana olives at!</p><p class="fr-tag" style="text-align: justify;">Since first entering the historical annals at the behest of the Picentes tribespeople several centuries before the rise of the Eternal City, Ascoli certainly hasn’t had it easy. Consuls have razed its buildings, revolts have ravaged its innards, Ostrogoths have scarred its streets and Frankish invaders held sway here for some two centuries. This tumultuous history is enough to leave any visitor wondering why they didn’t build it on higher ground, and more crucially, plenty for your Ascoli Piceno tour guide to tell you about the town, as you stroll between its loggias<strong>, </strong>amphitheatre, duomo chapels and picturesque neighbourhoods.</p>', 1, 0, 104, '42.86', '13.58', 'ascoli-piceno', 0, 1),
+(3536, 1259, 'Ascoli Piceno', '', '<p class="fr-tag" style="text-align: justify;">A symphony of travertine shrouded by the jagged ridges of the Gran Sasso and the massifs of the Sibillini Mountains, pretty little Ascoli Piceno beckons travellers with its sun-splashed Piazza del Popolo (arguably the most beautiful town square in all of Italy!), a labyrinthine web of stone-clad streets, and more crumbling Roman ruins than you can shake a bowl of meaty all''ascolana olives at!</p><p class="fr-tag" style="text-align: justify;">Since first entering the historical annals at the behest of the Picentes tribespeople several centuries before the rise of the Eternal City, Ascoli certainly hasn’t had it easy. Consuls have razed its buildings, revolts have ravaged its innards, Ostrogoths have scarred its streets and Frankish invaders held sway here for some two centuries. This tumultuous history is enough to leave any visitor wondering why they didn’t build it on higher ground, and more crucially, plenty for your Ascoli Piceno tour guide to tell you about the town, as you stroll between its loggias<strong>, </strong>amphitheatre, duomo chapels and picturesque neighbourhoods.</p>', 1, 0, 104, '42.86', '13.58', 'ascoli-piceno', 0, 1),
 (3537, 1260, 'Kiziltepe', '', '', 1, 0, 214, '37.19', '40.59', 'kiziltepe', 0, 1),
 (3538, 1260, 'Nusaybin', 'Nisibin', '', 1, 0, 214, '37.09', '41.23', 'nusaybin', 0, 1),
 (3539, 1260, 'Mardin', 'Merdin', '<p class="fr-tag" style="text-align: justify;">More than a handful of totemic historical and cultural traditions unfold between the adobe streets of Mardin. They lurk in the shadows of the ancient Zinciriye Madrasah, eke out the filigree and Seljuk arches that pepper the tight-knit alleyways, and twist and turn with spices and silks in the Kurdish souks that punctuate the town and its curious topography.</p><p class="fr-tag" style="text-align: justify;">The whole place is like some great palimpsest of Turkish history, which makes it easy to believe why Mardin is billed by the current government as one of the cultural kingpins of the nation. Between the Persian bulwarks and Artukid architecture of the old town centre, churches abut looming minarets, arabesque doorways give way to sweet-smelling kebab joints, and aromatic Kurdish mezze cafés spring up on the horizontal rooftops after dark. And from the tips of the great citadel itself, draped dramatically on a dusty bluff above the rolling swathes of Mesopotamia, Mardin tour guides will be able to pick out countless mosques and monasteries built before the 13<sup>th</sup> century, directing travellers first and foremost towards the legendary Deyrul Zafran Monastery (perhaps the oldest in the world) in the distance.</p>', 1, 0, 214, '37.33', '40.78', 'mardin', 0, 1),
@@ -3780,7 +3812,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (3577, 2467, 'Potomac', '', '', 1, 0, 220, '39.03', '-77.20', 'potomac', 0, 1),
 (3578, 2467, 'Catonsville', '', '', 1, 0, 220, '39.26', '-76.74', 'catonsville', 0, 1),
 (3579, 2467, 'Odenton', '', '', 1, 0, 220, '39.06', '-76.70', 'odenton', 0, 1),
-(3580, 1272, 'Mascara', 'Mu\'askar, Mouaskar', '', 1, 0, 59, '35.40', '0.14', 'mascara', 0, 1),
+(3580, 1272, 'Mascara', 'Mu''askar, Mouaskar', '', 1, 0, 59, '35.40', '0.14', 'mascara', 0, 1),
 (3581, 1273, 'Maseru', '', '', 1, 0, 126, '-29.31', '27.49', 'maseru', 0, 1),
 (3582, 1274, 'Bindura', '', '', 1, 0, 236, '-17.31', '31.32', 'bindura', 0, 1),
 (3583, 1275, 'Marondera', 'Marandellas', '', 1, 0, 236, '-18.19', '31.55', 'marondera', 0, 1),
@@ -3875,7 +3907,8 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (3672, 1298, 'Schwerin', '', '', 1, 0, 54, '53.63', '11.40', 'schwerin', 0, 1),
 (3673, 1298, 'Neubrandenburg', 'Nigenbramborg', '', 1, 0, 54, '53.57', '13.27', 'neubrandenburg', 0, 1),
 (3674, 1298, 'Stralsund', '', '', 1, 0, 54, '54.32', '13.09', 'stralsund', 0, 1),
-(3675, 1299, 'Medea', 'al Midyah, Lemdiyya, Médéa', '', 1, 0, 59, '36.27', '2.77', 'medea', 0, 1),
+(3675, 1299, 'Medea', 'al Midyah, Lemdiyya, Médéa', '', 1, 0, 59, '36.27', '2.77', 'medea', 0, 1);
+INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
 (3676, 1301, 'Shillong', '', '<p style="text-align: justify;">\n	Splendid waterfalls in the hills, British style buildings, a mild climate with plenty of rain, Shillong is called &#39;Scotland of East&#39; for all the above reasons.1500 metres above sea level, this capital city in the northeastern state of Meghalya is a comprehensive course in natural beauty.<br />\n	Shillong receives rainfall aplenty and a visit in the monsoons sees the magnificent Elephant Falls, the beautiful Bishop &amp; Beadon Falls surrounded by numerous wild animals and the steep, tall Sweet Falls in full splendour. Natural Caves around Shillong compete with forests full of exotic flora around the Shillong Peak to be explored. To add to the natural allure of this city, your Shillong Tour guide will recommend to you man made attractions such as the Umiam Lake and Wards Lake, and Lake Hydari Park with its own small zoo, which is popular amongst locals. Trek further up to Shillong Peak to pay homage to U Shulong, the deity who gave the city its name and behold panoramic views of the city.</p>\n', 1, 0, 100, '25.57', '91.87', 'shillong', 0, 1),
 (3677, 1302, 'Drobeta Turnu Severin', 'Turnu Severin', '', 1, 0, 181, '44.64', '22.66', 'drobeta-turnu-severin', 0, 1),
 (3678, 1303, 'Meknes', '', '<p style="text-align: justify;">\n	Shrouded in a sea of lemon groves and olive fields, the soaring walls of imperial Meknes look nothing short of fairy tale. Perhaps it&rsquo;s because they are adorned in the same Arabian grandeur as the town&rsquo;s other great sights; the mosaic-clad Bab Mansour Gate; the square-cut Dar El Beida palace; the regal Mausoleum of Moulay Ismail, with its carved Moorish apses and sunny riad courtyards. Or, maybe it&rsquo;s because they encircle a city still largely mysterious and unknown to many tourists in Morocco.<br />\n	Clinging to the foothills of the Atlas Mountains, in-between the port of Rabat and the city of Fez, Meknes represents another of the country&rsquo;s must see historical centres; one a smidgen more off-the-beaten-track and relaxed.<br />\n	Be sure to ask your Meknes tour guide for a low down on all the major sights here, from the bubbling streets of the modern Ville Nouvelle, to the steamy medina and its palatial adjuncts. What&rsquo;s more, there are the ancient ruins of Volubilis and the hilly pilgrimage site of Moulay Idriss in the town&rsquo;s vicinity to explore. If you fancy trying your hand at a spot of Berber cooking, then seek out one of Meknes&rsquo; culinary schools, where travellers and locals alike mix pots of scented spices and broil vegetables in clay tagines.</p>\n', 1, 0, 131, '33.90', '-5.56', 'meknes', 0, 1),
@@ -3883,8 +3916,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (3680, 1303, 'Khenifra', 'Hanifrah, Khanifrah', '', 1, 0, 131, '32.95', '-5.67', 'khenifra', 0, 1),
 (3681, 1303, 'Midelt', 'Midalt', '', 1, 0, 131, '32.70', '-4.74', 'midelt', 0, 1),
 (3682, 1304, 'Malacca', '', '<p style="text-align: justify;">\n	Malacca, Malaysia is an epicenter of many different cultures. The Porta de Santiago, the St Pauls&rsquo; Church and of course the Portuguese settlement depict the heavy influence of Portuguese architecture. Additionally, British influence can be found in attractions like the Queen Victoria Fountain, one of the last traces of the British colonial era in the region. Not to be missed is the Dutch influenced Stadthuys, which now houses the Museum of History and Ethnography or silverware bearing the Dutch Coat of arms at the Christ Church.<br />\n	The Peranakan culture, however, is the heart of the Malacca of today. Let a Malacca tour guide provide you with more insight at The Nyonya Museum, an erstwhile Peranakan Heritage Townhouse. Couple this with a stopover at The Malay and Islamic Museum. Another fascinating place to visit is the Cheng Hoon Teng Temple, the oldest chinese temple in Malaysia.&nbsp;<br />\n	Along with its multicultural heritage, cultural hotspots and a bevy of museums, Malacca has yet another enticing feather in its cap in the form of its distinct local cuisine. Get in line at the Chung Hwa Chicken Rice Ball Shop, a favorite of visitors and natives alike. This famous eating joint can be found on Jonker Street, the surrounding vicinity being a charming residential area that is fast converting into a tourist area with eating joints, shops and hotels.</p>\n', 1, 0, 151, '2.21', '102.25', 'malacca', 0, 1),
-(3683, 1305, 'Melilla', 'Tamlit', '', 1, 0, 65, '35.30', '-2.95', 'melilla', 0, 1);
-INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
+(3683, 1305, 'Melilla', 'Tamlit', '', 1, 0, 65, '35.30', '-2.95', 'melilla', 0, 1),
 (3684, 1306, 'Mendoza', 'Godoy Cruz, Guaymallén, Las Heras, Luján de Cuyo, Maipú', '<p style="text-align: justify;">\n	Mendoza, the heart of Argentina&rsquo;s wine industry almost always boasts clear blue skies, hence also called the &ldquo;the land of good sunshine and good wine.&rdquo; Pleasant climes and the Malbec grape call for a Wine tour at the famous Mendoza bodegas, complete with tastings down the wine route.<br />\n	Ask your Mendoza tour guide to take you around the city&rsquo;s charming streets lined with shady trees culminating at the historic area graced with museums and cultural centres. &nbsp;A tour of Mendoza must include the Plaza Independencia, the meeting point of great architecture, delicious cuisine, street shows and artisans, and more. Do pen into your itinerary, incredible sights such as the Mendoza Museum of Modern Art located under the plaza, the Inca&rsquo;s Bridge and the Parque San Martin, a large park with great views and even a zoo.<br />\n	Nestled in the foothills of the Andes, Mendoza is home to some of the most beautiful mountain range views in the entire world. The Aconcagua, America&rsquo;s highest mountain stands tall in the Parque Provincial Aconcagua; the latter playing host to incredible flora and fauna in addition to camps for trekking, mountain climbing and the like. The nearby Mendoza River offers an extension of these outdoor adventures, with river-rafting courses and fishing.<br />\n	Mountains, thermal springs, agrarian bounty and a city brimming with culture make Mendoza an irresistible destination for any tourist visiting Argentina. &nbsp;</p>\n', 1, 0, 10, '-32.89', '-68.83', 'mendoza', 0, 1),
 (3685, 1306, 'San Rafael', '', '', 1, 0, 10, '-34.62', '-68.34', 'san-rafael', 0, 1),
 (3686, 1306, 'San Martin', 'La Colonia', '', 1, 0, 10, '-33.07', '-68.49', 'san-martin', 0, 1),
@@ -4016,7 +4048,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (3812, 1331, 'Springfield (Missouri)', '', '', 1, 0, 220, '37.20', '-93.29', 'springfield-missouri', 0, 1),
 (3813, 1331, 'Independence', '', '', 1, 0, 220, '39.09', '-94.35', 'independence', 0, 1),
 (3814, 1331, 'Columbia (Missouri)', '', '', 1, 0, 220, '38.95', '-92.33', 'columbia-missouri', 0, 1),
-(3815, 1331, 'Lee\'s Summit', '', '', 1, 0, 220, '38.92', '-94.38', 'lees-summit', 0, 1),
+(3815, 1331, 'Lee''s Summit', '', '', 1, 0, 220, '38.92', '-94.38', 'lees-summit', 0, 1),
 (3816, 1331, 'O Fallon', '', '', 1, 0, 220, '38.78', '-90.71', 'o-fallon', 0, 1),
 (3817, 1331, 'Saint Joseph', 'St. Joseph', '', 1, 0, 220, '39.76', '-94.82', 'saint-joseph', 0, 1),
 (3818, 1331, 'Saint Charles', 'St. Charles', '', 1, 0, 220, '38.79', '-90.52', 'saint-charles', 0, 1),
@@ -4082,14 +4114,14 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (3878, 1364, 'Standerton', 'Sakhile', '', 1, 0, 234, '-26.94', '29.24', 'standerton', 0, 1),
 (3879, 1364, 'Balfour', 'Siyathemba', '', 1, 0, 234, '-26.65', '28.59', 'balfour', 0, 1),
 (3880, 1364, 'Volksrust', 'Vukuzakhe', '', 1, 0, 234, '-27.36', '29.89', 'volksrust', 0, 1),
-(3881, 1365, 'Msila', 'al Masilah, M\'Sila, Msila, Tamsilt', '', 1, 0, 59, '35.71', '4.54', 'msila', 0, 1),
-(3882, 1365, 'Bou saada', 'Bu Sa\'adah, Bou Saada', '', 1, 0, 59, '35.21', '4.18', 'bou-saada', 0, 1),
+(3881, 1365, 'Msila', 'al Masilah, M''Sila, Msila, Tamsilt', '', 1, 0, 59, '35.71', '4.54', 'msila', 0, 1),
+(3882, 1365, 'Bou saada', 'Bu Sa''adah, Bou Saada', '', 1, 0, 59, '35.21', '4.18', 'bou-saada', 0, 1),
 (3883, 1365, 'Sidi Aissa', 'Sidi Aysa', '', 1, 0, 59, '35.90', '3.77', 'sidi-aissa', 0, 1),
 (3884, 1366, 'Mtwara', '', '', 1, 0, 217, '-10.27', '40.19', 'mtwara', 0, 1),
 (3885, 1366, 'Masasi', '', '', 1, 0, 217, '-10.73', '38.80', 'masasi', 0, 1),
 (3886, 1367, 'Subbah al Salem', '', '', 1, 0, 117, '29.26', '48.06', 'subbah-al-salem', 0, 1),
 (3887, 1367, 'al Qurayn', 'El Kreen', '', 1, 0, 117, '29.20', '48.07', 'al-qurayn', 0, 1),
-(3888, 1369, 'Gaalkacyo', 'Galkayo, Galkayu, Galcaio, Rocco Littorio, Gallacaio, Galka\'yo', '', 1, 0, 197, '6.77', '47.43', 'gaalkacyo', 0, 1),
+(3888, 1369, 'Gaalkacyo', 'Galkayo, Galkayu, Galcaio, Rocco Littorio, Gallacaio, Galka''yo', '', 1, 0, 197, '6.77', '47.43', 'gaalkacyo', 0, 1),
 (3889, 1370, 'Fethiye', '', '', 1, 0, 214, '36.62', '29.11', 'fethiye', 0, 1),
 (3890, 1370, 'Mugla', 'Mughla', '<p style="text-align: justify;">\n	Enjoying the cool Mediterranean climes of the Turkish Aegean highlands, the traditional Ottoman homes of old Mugla continue to tick over to the erudite chatter of its resident students, the occasional click of a visitor&rsquo;s camera, and the earthy tones of the muezzin&rsquo;s ezan, echoing out from the towering minarets of the city&rsquo;s Great Mosque.<br />\n	Most of the visitors who come here head swiftly for the nearby coastal resort towns of Bodrum or Marmaris and their concomitant beaches. But should they choose to linger a little, they can head out with their Mugla tour guide to explore the charming historic streets around Saburhane Square, experience the aged Arasta bazaar, or lose themselves between the frontispieces of the town&rsquo;s large mosque, its 13th century hamam, and the curious melange of Greek cubist homes and old Ottoman municipal buildings. Of course, there&rsquo;s also plenty of room for exploring the surrounding area, with the traditional village of Akyaka sitting to the south, and the fascinating cliff tombs of Dalyan just a little further afield.</p>\n', 1, 0, 214, '37.22', '28.36', 'mugla', 0, 1),
 (3891, 1370, 'Milas', 'Militos', '', 1, 0, 214, '37.32', '27.77', 'milas', 0, 1),
@@ -4113,7 +4145,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (3909, 1380, 'Mwanza', 'Nyamagana, Butimba, Ilemela, Nyakato', '<p style="text-align: justify;">\n	Energetic and exhilarating Mwanza is heady and overwhelming in its offering of local life. Perhaps that&rsquo;s because not many tourists come here, or maybe it&rsquo;s because this sprawling port town on the shores of Lake Victoria forms the beating economic heart the Tanzanian nation as whole. Whatever the reason, this city enfolded by Burundi, Rwanda and Uganda, with its curious Indian heritage and off-the-beaten-track position, makes for some serious cultural immersion.<br />\n	It&rsquo;s also a great base point from which to organise budget safari excursions into the nearby Serengeti National Park, whose borders lurk tantalisingly just a couple of hours to the east. Then there&rsquo;s also the UNESCO-attested Ngorongoro Crater, just a little further afield.<br />\n	Back in town though, and Mwanza fields a sprawling downtown market bazaar and a healthy array of local eateries, many serving up super fresh talapia fish from the waters of Victoria for the occasional clusters of visitors and locals alike. And then there are the region&rsquo;s signature rocks perched all over the hills and beaches of the town, a favourite sightseeing recommendation of many a Mwanza tour guide.</p>\n', 1, 0, 217, '-2.52', '32.89', 'mwanza', 0, 1),
 (3910, 1381, 'Mykolayiv', 'Nikolajev, Nikolayev, Mikolaiv, Nikolaiev, Nikolaev', '', 1, 0, 218, '46.97', '32.00', 'mykolayiv', 0, 1),
 (3911, 1381, 'Yelanets', '', '', 1, 0, 218, '47.70', '31.85', 'yelanets', 0, 1),
-(3912, 1381, 'Pervomaysk', 'Pervomays\'k, Pervomajsk', '', 1, 0, 218, '48.05', '30.85', 'pervomaysk', 0, 1),
+(3912, 1381, 'Pervomaysk', 'Pervomays''k, Pervomajsk', '', 1, 0, 218, '48.05', '30.85', 'pervomaysk', 0, 1),
 (3913, 1382, 'Mzuzu', '', '', 1, 0, 149, '-11.46', '34.02', 'mzuzu', 0, 1),
 (3914, 1383, 'Mecheria', 'al Misriyah, Mekerva', '', 1, 0, 59, '33.56', '-0.29', 'mecheria', 0, 1),
 (3915, 1383, 'Ain Sefra', '', '', 1, 0, 59, '32.76', '-0.58', 'ain-sefra', 0, 1),
@@ -4127,7 +4159,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (3923, 1389, 'Atbarah', 'Atbara', '', 1, 0, 188, '17.71', '33.98', 'atbarah', 0, 1),
 (3924, 1389, 'ad Damir', 'Ed Damer, Ad Damar', '', 1, 0, 188, '17.59', '33.96', 'ad-damir', 0, 1),
 (3925, 1389, 'Shandi', 'Shendi', '', 1, 0, 188, '16.68', '33.42', 'shandi', 0, 1),
-(3926, 1391, 'Najran', 'Aba as Su\'ud, Aba as Suud', '', 1, 0, 185, '17.50', '44.13', 'najran', 0, 1),
+(3926, 1391, 'Najran', 'Aba as Su''ud, Aba as Suud', '', 1, 0, 185, '17.50', '44.13', 'najran', 0, 1),
 (3927, 1392, 'Nalut', '', '', 1, 0, 130, '31.87', '10.98', 'nalut', 0, 1),
 (3928, 1393, 'Namangan', '', '', 1, 0, 222, '41.00', '71.67', 'namangan', 0, 1),
 (3929, 1393, 'Chust', '', '', 1, 0, 222, '41.00', '71.23', 'chust', 0, 1),
@@ -4150,7 +4182,8 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (3946, 1407, 'Narsaq', '', '', 1, 0, 81, '60.54', '-46.04', 'narsaq', 0, 1),
 (3947, 1408, 'Narsingdi', 'Narsinghdi, Ghorasal, Madabdi, Palash, Ghorashal', '', 1, 0, 18, '23.92', '90.72', 'narsingdi', 1, 1),
 (3948, 1409, 'Lafia', '', '', 1, 0, 157, '8.49', '8.52', 'lafia', 0, 1),
-(3949, 1409, 'Ado (Nassarawa)', '', '', 1, 0, 157, '9.01', '7.64', 'ado-nassarawa', 0, 1),
+(3949, 1409, 'Ado (Nassarawa)', '', '', 1, 0, 157, '9.01', '7.64', 'ado-nassarawa', 0, 1);
+INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
 (3950, 1411, 'Port Moresby', '', '<p style="text-align: justify;">\n	A heady mixture of colonial European-influences, indigenous Polynesian customs and the spoils of contemporary affluence, Port Moresby, the capital of Papa New Guinea, is a melting pot of cultures.<br />\n	The original inhabitants of this region were the Motu Koitabu people, who around 200 years ago settled in stilt houses on the edge of the harbour. The largest stilt village of Hanuabada can be visited, but only with a Port Moresby tourist guide. The influence of handcrafts prevails in Port Moresby, and the best shopping experiences can be had at the Ela Beach Craft Market, selling beautiful examples of traditional arts and crafts on the last Saturday of every month. Gordon&rsquo;s nearby is the largest market of the country, open for business daily, selling everything from fresh produce to museum-worthy artefacts from this part of the world. The National Museum and Art Gallery is a comprehensive tour guide into Papua Ne Guinea&rsquo;s history and culture; for a practical experience, time your visit with the Hiri Moale festival held every September, resplendent with traditional dance and lakatois (giant canoes) races.<br />\n	Other must-sees during your stay include the Port Moresby Nature Park, home to exotic birds and of course kangaroos, as well as a trip to the Port Moresby Golf Club and Yacht Club, even if it&rsquo;s just for a cocktail.&nbsp;</p>\n', 1, 0, 169, '-9.48', '147.18', 'port-moresby', 0, 1),
 (3951, 1412, 'Nator', 'Natore', '', 1, 0, 18, '24.41', '88.98', 'nator', 1, 1),
 (3952, 1413, 'Naogaon', 'Naugaon', '', 1, 0, 18, '24.82', '88.96', 'naogaon', 1, 1),
@@ -4182,8 +4215,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (3978, 921, 'Yichun (Jiangxi)', '', '', 1, 0, 45, '27.83', '114.40', 'yichun-jiangxi', 0, 1),
 (3979, 921, 'Linchuan', 'Fuzhou', '', 1, 0, 45, '27.99', '116.37', 'linchuan', 0, 1),
 (3980, 922, 'Jiaozuo', 'Tsiaotso', '', 1, 0, 45, '35.25', '113.22', 'jiaozuo', 0, 1),
-(3981, 928, 'Siping', 'Szeping', '', 1, 0, 45, '43.17', '124.33', 'siping', 0, 1);
-INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
+(3981, 928, 'Siping', 'Szeping', '', 1, 0, 45, '43.17', '124.33', 'siping', 0, 1),
 (3982, 1426, 'Nelson', 'Whakatu', '<p style="text-align: justify;">\n	Nestled around the bays, coves and inlets on the cusp of New Zealand&rsquo;s central ball-and-socket joint that connects the volcanic rises of North Island to the snow-tipped alpine mountains of the south, pretty little Nelson City really is one of the country&rsquo;s hidden gems.<br />\n	Right from the get go travellers here are treated to stunning scenery, with the undulating hills and farmlands of Motueka opening up into the wide Tasman Bay, crowned on the north-western end by the shimmering beaches, turquoise seas and forest-clad peaks of the Abel Tasman National Park (easily reachable from Nelson town).<br />\n	Closer to the centre, visitors can opt for a spot of beachcombing on the city&rsquo;s sandy Tahunanui Beach, or quiz their Nelson tourist guide for a selection of the city&rsquo;s sights that honour its English namesake; the Nelson Market on Montgomery Square; the leafy Founders Park; the tellingly-named Trafalgar Street. Adventure travellers can look forward to paragliding, sea kayaking and the ubiquitous New Zealand skydive to those who dare!</p>\n', 1, 0, 164, '-41.29', '173.24', 'nelson', 0, 1),
 (3983, 1427, 'La Chaux de Fonds', '', '', 1, 0, 40, '47.11', '6.82', 'la-chaux-de-fonds', 0, 1),
 (3984, 1427, 'Neuchatel', 'Neuenburg', '', 1, 0, 40, '47.01', '6.92', 'neuchatel', 0, 1),
@@ -4288,7 +4320,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (4084, 1437, 'West Babylon', '', '', 1, 0, 220, '40.71', '-73.36', 'west-babylon', 0, 1),
 (4085, 1437, 'Freeport', '', '', 1, 0, 220, '40.65', '-73.58', 'freeport', 0, 1),
 (4086, 1437, 'Hicksville', '', '', 1, 0, 220, '40.76', '-73.53', 'hicksville', 0, 1),
-(4087, 1438, 'Saint Johns', 'St John\'s', '', 1, 0, 35, '47.58', '-52.69', 'saint-johns', 0, 1),
+(4087, 1438, 'Saint Johns', 'St John''s', '', 1, 0, 35, '47.58', '-52.69', 'saint-johns', 0, 1),
 (4088, 1438, 'Corner Brook', '', '', 1, 0, 35, '48.96', '-57.96', 'corner-brook', 0, 1),
 (4089, 1438, 'Grand Falls Windsor', '', '', 1, 0, 35, '48.93', '-55.66', 'grand-falls-windsor', 0, 1),
 (4090, 1438, 'Bay Roberts', '', '', 1, 0, 35, '47.59', '-53.29', 'bay-roberts', 0, 1),
@@ -4331,7 +4363,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (4127, 1452, 'Mosul', '', '', 1, 0, 101, '36.34', '43.14', 'mosul', 0, 1),
 (4128, 1452, 'Tall Afar', 'Tilafar, Tilefer, Tell Afar', '', 1, 0, 101, '36.38', '42.45', 'tall-afar', 0, 1),
 (4129, 928, 'Liaoyuan', 'Shwangliao, Shuangliao, Dongliao, Chengchiatun', '', 1, 0, 45, '42.90', '125.13', 'liaoyuan', 0, 1),
-(4130, 928, 'Baicheng', 'Taonan, T\'aon an', '', 1, 0, 45, '45.62', '122.82', 'baicheng', 0, 1),
+(4130, 928, 'Baicheng', 'Taonan, T''aon an', '', 1, 0, 45, '45.62', '122.82', 'baicheng', 0, 1),
 (4131, 928, 'Jiutai', '', '', 1, 0, 45, '44.15', '125.84', 'jiutai', 0, 1),
 (4132, 1455, 'Heraklion', '', '<p style="text-align: justify;">\n	Crete&rsquo;s capital rises from the Island&rsquo;s northern coast in a plume of Venetian harbour architecture and modern condominiums, all punctuated by winding streets of Byzantine brick buildings and bubbling strips of cool cafes, chic fashion stores and local crafts outlets.<br />\n	It&rsquo;s a veritable magnet for tourists coming in on cruises from the Med, and the accepted jump off point for any history buffs eager to explore the sprawling ruins of ancient Knossos nearby&mdash;unquestionably one of the country&rsquo;s most enthralling archaeological sites, and fit to rival even the likes of the Athenian Acropolis. It&rsquo;s also something of a gateway to the hedonistic 18-30s towns that pepper the Island&rsquo;s eastern side, from Malia to Agios NIkolias on Mirabello Bay close by.<br />\n	If you&rsquo;d prefer something a little more laid-back and Cretan through-and-through, then be sure to quiz your Heraklion tourist guide on the more remote beaches that can be found lapped by the warm seas under the Dikti Mountains in the east. And yes, don&rsquo;t miss the food; Crete&rsquo;s famous olive creations, and of course the region&rsquo;s trademark seafood platters fresh from the Med.</p>\n', 1, 0, 86, '35.33', '25.13', 'heraklion', 0, 1),
 (4133, 1455, 'Rhodes', 'Rhodos, Rodi', '<p class="fr-tag" style="text-align: justify;">Whether you hit this sun-kissed island on the eastern edge of the Aegean Sea for the wealth of historic monuments dotting its famous UNESCO-attested old town, the traditional white-washed Greek villages nestled around Theologos, the earthy seafood joints of Haraki, the shimmering beaches at spots like Lindos, Kallithea and Prassonissi, or the heady 18 to 30s party strips of Faliraki, , then you can rest assured Rhodes won’t disappoint. </p><p class="fr-tag" style="text-align: justify;">But before you head out exploring the olive tree-peppered backcountry and rugged coastline here, Rhodes’ historic urban heart beckons; boasting its pristine medieval old town, the enchanting cobbled Avenue of the Knights, the formidable Palace of the Grand Master, and an acclaimed archaeological museum chronicling the island’s ancient past. </p><p class="fr-tag" style="text-align: justify;">If history isn’t your thing, then be sure to ask your Rhodes tourist guide about exploring the curious mix of cafes that converge here, touting Turkish shisha and gritty Greek coffees alike, or about hitting the Aegean for a spot of sailing, lazing under the sultry sun of the Dodecanese or strolling along the coast.</p>', 1, 0, 86, '36.44', '28.22', 'rhodes', 0, 1),
@@ -4415,7 +4447,8 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (4211, 1479, 'Kannapolis', '', '', 1, 0, 220, '35.49', '-80.62', 'kannapolis', 0, 1),
 (4212, 1479, 'Apex', '', '', 1, 0, 220, '35.73', '-78.85', 'apex', 0, 1),
 (4213, 1480, 'Fargo', '', '', 1, 0, 220, '46.88', '-96.82', 'fargo', 0, 1),
-(4214, 1480, 'Bismarck', '', '', 1, 0, 220, '46.81', '-100.77', 'bismarck', 0, 1),
+(4214, 1480, 'Bismarck', '', '', 1, 0, 220, '46.81', '-100.77', 'bismarck', 0, 1);
+INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
 (4215, 1480, 'Grand Forks', '', '', 1, 0, 220, '47.92', '-97.07', 'grand-forks', 0, 1),
 (4216, 1480, 'Minot', '', '', 1, 0, 220, '48.23', '-101.30', 'minot', 0, 1),
 (4217, 1513, 'Kisii', '', '', 1, 0, 109, '-0.67', '34.76', 'kisii', 0, 1),
@@ -4443,8 +4476,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (4239, 1489, 'Klerksdorp', 'Jouberton', '', 1, 0, 234, '-26.88', '26.62', 'klerksdorp', 0, 1),
 (4240, 1489, 'Orkney', 'Kanana', '', 1, 0, 234, '-26.98', '26.64', 'orkney', 0, 1),
 (4241, 1489, 'Brits', 'Lethabile', '', 1, 0, 234, '-25.63', '27.78', 'brits', 0, 1),
-(4242, 1489, 'Potchefstroom', '', '', 1, 0, 234, '-26.70', '27.10', 'potchefstroom', 0, 1);
-INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
+(4242, 1489, 'Potchefstroom', '', '', 1, 0, 234, '-26.70', '27.10', 'potchefstroom', 0, 1),
 (4243, 1489, 'Rustenburg', 'Hartbeesfontein, Tlhabane', '<p style="text-align: justify;">\n	Rugged, dry and dusty, Rustenburg sits nestled in the scrub and outback of northern South Africa, offering a visceral glimpse of local life and great access to a number of the region&rsquo;s natural gems. Just a stone&rsquo;s throw from the beating heart of Pretoria, this city is famous for its platinum and chrome reserves, vastly benefitting the Royal Bafokeng tribe, also the city&rsquo;s biggest landowners, in royalties.<br />\n	Ever-looming in the background, first-time visitors here never fail to notice the wild foothills of the Magaliesberg Mountains; a rugged spine of shale monoliths that runs the gamut from the capital to the western borderlands. Here, visitors will find the breath-taking Pilanesberg National Park, the country&rsquo;s answer to the Ngorongoro; a verdant caldera complete with giraffe and wandering waterbuck. This, and the surrounding nature reserves of Kgaswane and Madikwe are what any Rustenburg tourist guide will tout as the city&rsquo;s biggest pull.<br />\n	Back in the urban area there&rsquo;s also a lively conglomeration of market stalls and buzzing hole-in-the-wall eateries to enjoy, while guests interested in tracing the country&rsquo;s sporting history, should be sure to check the great Royal Bafokeng Stadium, once a host of World Cup fame.</p>\n', 1, 0, 234, '-25.65', '27.24', 'rustenburg', 0, 1),
 (4244, 1489, 'Mabopane', '', '', 1, 0, 234, '-25.50', '28.08', 'mabopane', 0, 1),
 (4245, 1489, 'Schweizer Reneke', 'Ipelegeng', '', 1, 0, 234, '-27.19', '25.33', 'schweizer-reneke', 0, 1),
@@ -4560,13 +4592,13 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (4355, 1515, 'San Juan Bautista Tuxtepec', 'Tuxtepec', '', 1, 0, 150, '18.09', '-96.12', 'san-juan-bautista-tuxtepec', 0, 1),
 (4356, 1515, 'Salina Cruz', '', '', 1, 0, 150, '16.18', '-95.20', 'salina-cruz', 0, 1),
 (4357, 1515, 'Heroica Ciudad de Juchitan de Zaragoza', 'Juchitán', '', 1, 0, 150, '16.43', '-95.02', 'heroica-ciudad-de-juchitan-de-zaragoza', 0, 1),
-(4358, 1516, 'Koper', 'Capodistria, Capo d\'Istria', '<p style="text-align: justify;">\n	The pristine and picturesque seaside city of Koper is one of the country&rsquo;s few urban areas situated on the small coastal stretch of Istrian Slovenia. Since its foundation in Roman times it&rsquo;s drawn influences from right across the Adriatic, with an Old Town harbour that&rsquo;s alive with classic Venetian architecture and some fantastic Italian pizzerias, while also assimilating a curious Eastern European character, still lingering in the wake of the former Yugoslavia.<br />\n	Koper tourist guides often recommend a walking tour of the compact ancient downtown, where the alluring 15th century Praetorian Palace and mysterious Cathedral of the Assumption still crown the stoic square of Tito. Here, it&rsquo;s also possible to scale the Campanile bell tower, where 360-degree panoramas of the city and its famous marina await.<br />\n	In true Istrian style, the coastline around town is rugged and rocky, with numerous cliff walks and inlets for walkers to explore. There are also some bathing spots just outside of the harbour in town, while most locals simply opt to sip a beer or savour the best pastas in Slovenia at one of the many waterside eateries or pubs.</p>\n', 1, 0, 192, '45.55', '13.73', 'koper', 0, 1),
+(4358, 1516, 'Koper', 'Capodistria, Capo d''Istria', '<p style="text-align: justify;">\n	The pristine and picturesque seaside city of Koper is one of the country&rsquo;s few urban areas situated on the small coastal stretch of Istrian Slovenia. Since its foundation in Roman times it&rsquo;s drawn influences from right across the Adriatic, with an Old Town harbour that&rsquo;s alive with classic Venetian architecture and some fantastic Italian pizzerias, while also assimilating a curious Eastern European character, still lingering in the wake of the former Yugoslavia.<br />\n	Koper tourist guides often recommend a walking tour of the compact ancient downtown, where the alluring 15th century Praetorian Palace and mysterious Cathedral of the Assumption still crown the stoic square of Tito. Here, it&rsquo;s also possible to scale the Campanile bell tower, where 360-degree panoramas of the city and its famous marina await.<br />\n	In true Istrian style, the coastline around town is rugged and rocky, with numerous cliff walks and inlets for walkers to explore. There are also some bathing spots just outside of the harbour in town, while most locals simply opt to sip a beer or savour the best pastas in Slovenia at one of the many waterside eateries or pubs.</p>\n', 1, 0, 192, '45.55', '13.73', 'koper', 0, 1),
 (4359, 1517, 'Linz', '', '', 1, 0, 12, '48.31', '14.29', 'linz', 0, 1),
 (4360, 1517, 'Wels', '', '', 1, 0, 12, '48.17', '14.03', 'wels', 0, 1),
 (4361, 1517, 'Steyr', 'Steier', '', 1, 0, 12, '48.04', '14.41', 'steyr', 0, 1),
 (4362, 1518, 'Odesa', 'Odessa, Odes', '<p style="text-align: justify;">\n	Perhaps best known as the USSR&rsquo;s trading powerhouse on the Black Sea, Odesa originally boomed in the final decades of the 18th century when great numbers of European entrepreneurs came to this corner of modern day Ukraine to seek their fortunes from the sea. Today, the city still rings with the energy and action one would expect of a major continental port town, often called the &ldquo;Southern capital&rdquo; of Ukraine.<br />\n	Odesa is also something of a self-proclaimed sun city, and today visitors from all over Ukraine flock here in the summer to enjoy some of the most celebrated beaches in the country. If interested, join the locals at the popular spots at Dolphin Langeron and Otrada, while party lovers should not miss the hedonistic after dark vibe at the Arcadia sands.<br />\n	At its downtown, the lingering architectural remnants of Odesa&rsquo;s golden age make for some great sightseeing, and your Odesa tour guide will proclaim spots like the iconic Potemkin Stairs and the neo-baroque Opera House as the veritable &lsquo;must sees&rsquo; of the city.</p>\n', 1, 0, 218, '46.47', '30.73', 'odesa', 0, 1),
 (4363, 1518, 'Izmayil', 'Izmail', '', 1, 0, 218, '45.35', '28.83', 'izmayil', 0, 1),
-(4364, 1518, 'Illichivs\'k', 'Illicevsk, Illichivsk, Ilyicyovsk, Ilyicovsk', '', 1, 0, 218, '46.30', '30.67', 'illichivsk', 0, 1),
+(4364, 1518, 'Illichivs''k', 'Illicevsk, Illichivsk, Ilyicyovsk, Ilyicovsk', '', 1, 0, 218, '46.30', '30.67', 'illichivsk', 0, 1),
 (4365, 1518, 'Kotovsk', '', '', 1, 0, 218, '47.75', '29.53', 'kotovsk', 0, 1),
 (4366, 1519, 'Port Gentil', '', '', 1, 0, 73, '-0.72', '8.78', 'port-gentil', 0, 1),
 (4367, 1520, 'Ogre', '', '', 1, 0, 129, '56.81', '24.61', 'ogre', 0, 1),
@@ -4649,7 +4681,8 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (4444, 1535, 'Sarnia', '', '', 1, 0, 35, '42.99', '-82.40', 'sarnia', 0, 1),
 (4445, 1535, 'Sault Sainte Marie', '', '', 1, 0, 35, '46.53', '-84.35', 'sault-sainte-marie', 0, 1),
 (4446, 1535, 'Belleville', '', '', 1, 0, 35, '44.17', '-77.38', 'belleville', 0, 1),
-(4447, 1535, 'North Bay', '', '', 1, 0, 35, '46.30', '-79.45', 'north-bay', 0, 1),
+(4447, 1535, 'North Bay', '', '', 1, 0, 35, '46.30', '-79.45', 'north-bay', 0, 1);
+INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
 (4448, 1535, 'Cornwall', '', '<p style="text-align: justify;">\n	Cornwall, fondly called the &ldquo;Friendly Seaway City&rdquo;, is located on the Saint Lawrence River, and is part of the Seaway Valley.&nbsp; This easternmost city of Ontario is part of the engineering masterpiece; the St. Lawrence Seaway, which extends from the Gulf of St. Lawrence right into the heart of North America.&nbsp; Watching an ocean going vessel being hauled in and out of a lock is quite an uplifting experience. &nbsp;<br />\n	To a person interested in history, a Cornwall travel guide will recommend a visit to the sites of the Lost Villages, which were flooded during the construction of the St. Lawrence Seaway.<br />\n	There are many marinas in and around Cornwall, where one can take a cruise, or hire a boat to explore the St. Lawrence River and other waterways.&nbsp; The scenery is spectacular and provides some of the best fishing in the region.<br />\n	Cornwall has cold, snowy winters and warm, humid summers.&nbsp; The annual Lift Off festival features hot air balloon rides, carnival rides and live entertainment.&nbsp;&nbsp;&nbsp; Cyclists can enjoy the 75 kilometers of waterfront recreational pathway with stop offs at beaches, waterfront parks and other tourist attractions such as museums.&nbsp;&nbsp; A visit to the Upper Canada Village is a very popular attraction, in which costumed guides recreate an 1860&rsquo;s community village with 40 historic buildings.&nbsp;</p>\n', 1, 0, 35, '45.03', '-74.74', 'cornwall', 0, 1),
 (4449, 1535, 'Bowmanville Newcastle', '', '', 1, 0, 35, '43.90', '-78.68', 'bowmanville-newcastle', 0, 1),
 (4450, 1535, 'Chatham', '', '', 1, 0, 35, '42.41', '-82.19', 'chatham', 0, 1),
@@ -4677,8 +4710,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (4472, 1535, 'Fort Erie', '', '', 1, 0, 35, '42.91', '-78.93', 'fort-erie', 0, 1),
 (4473, 1535, 'Tillsonburg', '', '', 1, 0, 35, '42.87', '-80.73', 'tillsonburg', 0, 1),
 (4474, 1535, 'Simcoe', '', '', 1, 0, 35, '42.84', '-80.31', 'simcoe', 0, 1),
-(4475, 1535, 'Strathroy', '', '', 1, 0, 35, '42.95', '-81.62', 'strathroy', 0, 1);
-INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
+(4475, 1535, 'Strathroy', '', '', 1, 0, 35, '42.95', '-81.62', 'strathroy', 0, 1),
 (4476, 1535, 'Amherstburg', '', '', 1, 0, 35, '42.10', '-83.10', 'amherstburg', 0, 1),
 (4477, 1535, 'Petawawa', '', '', 1, 0, 35, '45.90', '-77.28', 'petawawa', 0, 1),
 (4478, 1535, 'New Hamburg', '', '', 1, 0, 35, '43.48', '-80.72', 'new-hamburg', 0, 1),
@@ -4893,7 +4925,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (4687, 1567, 'Djang', 'Dschang', '', 1, 0, 44, '5.46', '10.05', 'djang', 0, 1),
 (4688, 1567, 'Port au Prince', '', '', 1, 0, 94, '18.54', '-72.34', 'port-au-prince', 0, 1),
 (4689, 1568, 'Ain Beida', 'Ayn al Bayda, Ain el Beida, Daoud', '', 1, 0, 59, '35.81', '7.39', 'ain-beida', 0, 1),
-(4690, 1568, 'Ain Milia', 'Ayn Malilah, Ain M\'Lila', '', 1, 0, 59, '36.04', '6.57', 'ain-milia', 0, 1),
+(4690, 1568, 'Ain Milia', 'Ayn Malilah, Ain M''Lila', '', 1, 0, 59, '36.04', '6.57', 'ain-milia', 0, 1),
 (4691, 1569, 'Enschede', 'Eanske', '', 1, 0, 159, '52.22', '6.89', 'enschede', 0, 1),
 (4692, 1569, 'Zwolle', '', '', 1, 0, 159, '52.52', '6.09', 'zwolle', 0, 1),
 (4693, 1569, 'Deventer', '', '', 1, 0, 159, '52.25', '6.20', 'deventer', 0, 1),
@@ -4992,7 +5024,8 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (4786, 1610, 'Saint Quentin', 'Sint Kwintens', '', 1, 0, 72, '49.85', '3.28', 'saint-quentin', 0, 1),
 (4787, 1610, 'Beauvais', '', '', 1, 0, 72, '49.43', '2.09', 'beauvais', 0, 1),
 (4788, 1610, 'Compiegne', '', '', 1, 0, 72, '49.41', '2.82', 'compiegne', 0, 1),
-(4789, 1611, 'Quito', '', '<p class="fr-tag" style="text-align: justify;">Soaring more than 2,800 metres above sea level, Ecuador’s capital is a city of superlatives, crowned by misty volcanic calderas, touting one of the world’s oldest UNESCO-titles and butting up neatly to the equator at the ‘Middle of the World’ (the monument here that marks 0 latitude). </p><p class="fr-tag" style="text-align: justify;">Ask any Quito tour guide and they’ll tell you to start your visit with a trip to the old town centre, where winding cobbled lanes rub shoulders with grand colonial homes and the aromatic smells of South American coffees issue forth from the multitudes of cafés and bars. Then, it’s off to the museums; from the sprawling galleries of the Casa de la Cultura, to the Museo del Banco Central—the El Dorado of pre-Columbian artworks. </p><p class="fr-tag" style="text-align: justify;">Also, don’t miss a jaunt up the Teleferico cable car, which transports passengers up to the peak of Pichincha to look down on the handsome faces of the Iglesia de la Compania de Jesus, the elegant Plaza Grande and the rugged surrounding hills, where more intrepid types will find hiking trails, biking routes and wildlife spotting galore.</p>', 1, 0, 60, '-0.19', '-78.50', 'quito', 0, 1),
+(4789, 1611, 'Quito', '', '<p class="fr-tag" style="text-align: justify;">Soaring more than 2,800 metres above sea level, Ecuador’s capital is a city of superlatives, crowned by misty volcanic calderas, touting one of the world’s oldest UNESCO-titles and butting up neatly to the equator at the ‘Middle of the World’ (the monument here that marks 0 latitude). </p><p class="fr-tag" style="text-align: justify;">Ask any Quito tour guide and they’ll tell you to start your visit with a trip to the old town centre, where winding cobbled lanes rub shoulders with grand colonial homes and the aromatic smells of South American coffees issue forth from the multitudes of cafés and bars. Then, it’s off to the museums; from the sprawling galleries of the Casa de la Cultura, to the Museo del Banco Central—the El Dorado of pre-Columbian artworks. </p><p class="fr-tag" style="text-align: justify;">Also, don’t miss a jaunt up the Teleferico cable car, which transports passengers up to the peak of Pichincha to look down on the handsome faces of the Iglesia de la Compania de Jesus, the elegant Plaza Grande and the rugged surrounding hills, where more intrepid types will find hiking trails, biking routes and wildlife spotting galore.</p>', 1, 0, 60, '-0.19', '-78.50', 'quito', 0, 1);
+INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
 (4790, 1612, 'Turin', '', '<p style="text-align: justify;">\n	Perched amidst the mountains of northern Piedmont, sits the stately and handsome town of Turin. Awash with Art Deco palaces and Baroque gems, this regal town was once the seat of the Italian monarchy, and, as any Turin tourist guide will be quick to disclose, also a powerhouse of economic and political resurgence in the post-war period.<br />\n	Just wandering (or more popularly biking) amidst Turin&rsquo;s aged streets, through the Via Roma and Via Po, and the cobbled piazzas that sit next to the riverside parks, will give visitors a taste of Turin&rsquo;s rich architectural makeup. Don&rsquo;t miss the iconic Mole Antonelliana, one of the continent&rsquo;s grandest engineering achievements, or, the mysterious Shroud of Turin, housed in the shadowy interior of the Cathedral of Saint John the Baptist.<br />\n	Come winter and Turin becomes a jump off point for skiing in the Italian Alps, or even as a base for further exploration into the French Alps and the hotspots north of the Cote d&#39;azur; a sport even more popular ever since Torino played host to the 2006 Winter Olympics.</p>\n', 1, 0, 104, '45.08', '7.68', 'turin', 0, 1),
 (4791, 1612, 'Novara', '', '', 1, 0, 104, '45.45', '8.62', 'novara', 0, 1),
 (4792, 1612, 'Alexandria', 'Alessandria, Allessandria, Alexandrie', '', 1, 0, 104, '44.92', '8.61', 'alexandria', 0, 1),
@@ -5015,15 +5048,14 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (4809, 1615, 'Las Lomas', '', '', 1, 0, 167, '-4.65', '-80.25', 'las-lomas', 0, 1),
 (4810, 1615, 'Morropon', '', '', 1, 0, 167, '-5.18', '-79.97', 'morropon', 0, 1),
 (4811, 1616, 'Jos', '', '', 1, 0, 157, '9.93', '8.89', 'jos', 0, 1),
-(4812, 1617, 'Atakpame', 'D\'Atakpamé', '', 1, 0, 207, '7.53', '1.12', 'atakpame', 0, 1);
-INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
+(4812, 1617, 'Atakpame', 'D''Atakpamé', '', 1, 0, 207, '7.53', '1.12', 'atakpame', 0, 1),
 (4813, 1617, 'Kpalime', 'Palimé', '', 1, 0, 207, '6.90', '0.63', 'kpalime', 0, 1),
 (4814, 1617, 'Notse', 'Nuatja', '', 1, 0, 207, '6.95', '1.17', 'notse', 0, 1),
 (4815, 1618, 'Pleven', 'Plévène, Plevna', '', 1, 0, 21, '43.42', '24.62', 'pleven', 0, 1),
 (4816, 1619, 'Pljevlja', 'Plevlja', '', 1, 0, 134, '43.36', '19.36', 'pljevlja', 0, 1),
 (4817, 1620, 'Plovdiv', '', '<p style="text-align: justify;">\n	Situated midway between the beaches of the Black Sea coast and the sprawling Bulgarian capital at Sofia, Plovdiv&rsquo;s amalgamation of exquisite Eastern architecture, enthralling cultural exhibitions, raw history, exciting nightlife and Balkan warmth strikes a neat balance between the hedonism of the seaside resorts and the urban energy of the country&rsquo;s largest metropolitan hub.<br />\n	What instantly hits most first-time visitors here is the exquisite and startlingly well-preserved historical veneer, centred on the winding web of cobbled roadways that converge on Old Plovdiv; a place where an ancient Roman amphitheatres rubs shoulders with sights like the Ottoman Dzumaya Mosque and the gorgeous St. Marina Orthodox Church. Perhaps the best way to take it all in would be a walking tour covering its comprehensive museums and landmarks, punctuated by breaks at the lovely bohemian cafes along the way. Then there&rsquo;s new Plovdiv and the surrounding districts, comprised of leafy parks, lingering monuments to Soviet Realism and lively Balkan shopping streets.<br />\n	What&rsquo;s more, if you&rsquo;re interested in exploring the greater region of south-central Bulgaria, then this one&rsquo;s the perfect base. Be sure to ask your Plovdiv tour guide about tips on reaching the formidable crumbling remnants of Assenova Krepost, or the aged, mysterious mountain monastery of Bachkovo&mdash;one of the oldest centres of Orthodox monks in all of Europe!</p>\n', 1, 0, 21, '42.15', '24.75', 'plovdiv', 0, 1),
 (4818, 1621, 'Pilsen', 'Pilzno', '', 1, 0, 53, '49.75', '13.37', 'pilsen', 0, 1),
-(4819, 1622, 'Podgorica', '', '<p class="fr-tag" style="text-align: justify;">An alluring mix of Ottoman traditionalism, Slavic boisterousness, Montenegrin pride and warming Adriatic temperatures, the city of Podgorica comes complete with the promise of bustling café culture, artistic indulgence and loads of historic immersion.</p><p class="fr-tag" style="text-align: justify;">The centre is a patchwork quilt formed by the historic Turkish town of <em>Stara Varoš</em>, where whitewashed Ottoman mosques rise suddenly from the corners of winding roadways, the meandering Ribnica River and a bustling new town. The <em>Nova Varoš</em> spans out along the humming shopping street of Hercegovačka and bubbling Republic Square, and is also the nerve centre of the city’s happening weekend nightlife scene. While exploring the various districts, be sure to have your Podgorica tour guide at hand to point out the mix of hotspots; from the modernist rises of the Millennium Bridge, to the onetime regal home of the nation’s royal family, King Nikola\'s Palace. And when you’re done touring, perhaps it’s time to break out to the Adriatic beaches at nearby Bar, to survey the national park surrounding the Skadar Lake, or to explore the old monasteries on the Moraca River just to the north.</p>', 1, 0, 134, '42.47', '19.28', 'podgorica', 0, 1),
+(4819, 1622, 'Podgorica', '', '<p class="fr-tag" style="text-align: justify;">An alluring mix of Ottoman traditionalism, Slavic boisterousness, Montenegrin pride and warming Adriatic temperatures, the city of Podgorica comes complete with the promise of bustling café culture, artistic indulgence and loads of historic immersion.</p><p class="fr-tag" style="text-align: justify;">The centre is a patchwork quilt formed by the historic Turkish town of <em>Stara Varoš</em>, where whitewashed Ottoman mosques rise suddenly from the corners of winding roadways, the meandering Ribnica River and a bustling new town. The <em>Nova Varoš</em> spans out along the humming shopping street of Hercegovačka and bubbling Republic Square, and is also the nerve centre of the city’s happening weekend nightlife scene. While exploring the various districts, be sure to have your Podgorica tour guide at hand to point out the mix of hotspots; from the modernist rises of the Millennium Bridge, to the onetime regal home of the nation’s royal family, King Nikola''s Palace. And when you’re done touring, perhaps it’s time to break out to the Adriatic beaches at nearby Bar, to survey the national park surrounding the Skadar Lake, or to explore the old monasteries on the Moraca River just to the north.</p>', 1, 0, 134, '42.47', '19.28', 'podgorica', 0, 1),
 (4820, 1623, 'Rzeszow', 'Zesiv', '', 1, 0, 172, '50.05', '22.00', 'rzeszow', 0, 1),
 (4821, 1623, 'Peremyshl', 'Przemy?l, Pzemysl', '', 1, 0, 172, '49.79', '22.78', 'peremyshl', 0, 1),
 (4822, 1623, 'Stalowa Wola', '', '', 1, 0, 172, '50.57', '22.05', 'stalowa-wola', 0, 1),
@@ -5075,7 +5107,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (4868, 1648, 'Aix en Provence', '', '', 1, 0, 72, '43.53', '5.44', 'aix-en-provence', 0, 1),
 (4869, 1648, 'Avignon', 'Avinhon', '', 1, 0, 72, '43.96', '4.81', 'avignon', 0, 1),
 (4870, 1648, 'Antibes', '', '', 1, 0, 72, '43.60', '7.12', 'antibes', 0, 1),
-(4871, 1648, 'Cannes', '', '<p class="fr-tag" style="text-align: justify;">Cannes curves its way around the shoreline of the French Riviera in a medley of dazzling white condominiums, unabashed luxury hotels and palm-dotted promenades; the turquoise waters of the Golfe de la Napoule shimmering and glittering in the Mediterranean sun in the foreground; the rising hills of the Alpes-Maritimes criss-crossed by James Bond roadways in the back. </p><p class="fr-tag" style="text-align: justify;">Every spring this star-studded cityscape of Chanel-clad fashionistas bursts onto the global stage when Hollywood moves in for a week, and its eponymous film festival showcases the cream of the international silver screen. For the rest of the year the celeb-spotters are just a little thinner on the ground but the soft beaches of La Croisette are no less speckled with bronzing bodies, the fine-dining joints no less meticulous in their creation of bouillabaisse, and the the winding helter-skelter of alleyways and squares in the Le Suquet no less juxtaposed with the bobbing outlines of millionaire yachts. </p><p class="fr-tag" style="text-align: justify;">And while the highlife certainly remains Cannes’ biggest draw, with its boulevards forever adorned with Maseratis and haute couture, there’s also a whole load of natural hotspots along the coastline and on the islands of the Med. A host of Cannes tour guides are at hand to reveal these wonders of the Côte d\'Azur.</p>', 1, 0, 72, '43.56', '7.02', 'cannes', 0, 1),
+(4871, 1648, 'Cannes', '', '<p class="fr-tag" style="text-align: justify;">Cannes curves its way around the shoreline of the French Riviera in a medley of dazzling white condominiums, unabashed luxury hotels and palm-dotted promenades; the turquoise waters of the Golfe de la Napoule shimmering and glittering in the Mediterranean sun in the foreground; the rising hills of the Alpes-Maritimes criss-crossed by James Bond roadways in the back. </p><p class="fr-tag" style="text-align: justify;">Every spring this star-studded cityscape of Chanel-clad fashionistas bursts onto the global stage when Hollywood moves in for a week, and its eponymous film festival showcases the cream of the international silver screen. For the rest of the year the celeb-spotters are just a little thinner on the ground but the soft beaches of La Croisette are no less speckled with bronzing bodies, the fine-dining joints no less meticulous in their creation of bouillabaisse, and the the winding helter-skelter of alleyways and squares in the Le Suquet no less juxtaposed with the bobbing outlines of millionaire yachts. </p><p class="fr-tag" style="text-align: justify;">And while the highlife certainly remains Cannes’ biggest draw, with its boulevards forever adorned with Maseratis and haute couture, there’s also a whole load of natural hotspots along the coastline and on the islands of the Med. A host of Cannes tour guides are at hand to reveal these wonders of the Côte d''Azur.</p>', 1, 0, 72, '43.56', '7.02', 'cannes', 0, 1),
 (4872, 1648, 'La Seyne sur Mer', '', '', 1, 0, 72, '43.11', '5.87', 'la-seyne-sur-mer', 0, 1),
 (4873, 1648, 'Frejus', '', '', 1, 0, 72, '43.45', '6.73', 'frejus', 0, 1),
 (4874, 1648, 'Arles', 'Arle', '', 1, 0, 72, '43.69', '4.63', 'arles', 0, 1),
@@ -5184,7 +5216,8 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (4977, 1677, 'Victoriaville', 'Athabasca', '', 1, 0, 35, '46.06', '-71.96', 'victoriaville', 0, 1),
 (4978, 1677, 'Salaberry de Valleyfield', 'Valleyfield', '', 1, 0, 35, '45.26', '-74.14', 'salaberry-de-valleyfield', 0, 1),
 (4979, 1677, 'Rimouski', '', '', 1, 0, 35, '48.44', '-68.54', 'rimouski', 0, 1),
-(4980, 1677, 'Sorel', '', '', 1, 0, 35, '46.05', '-73.14', 'sorel', 0, 1),
+(4980, 1677, 'Sorel', '', '', 1, 0, 35, '46.05', '-73.14', 'sorel', 0, 1);
+INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
 (4981, 1677, 'Alma', '', '', 1, 0, 35, '48.55', '-71.66', 'alma', 0, 1),
 (4982, 1677, 'Saint Georges', '', '', 1, 0, 35, '46.13', '-70.68', 'saint-georges', 0, 1),
 (4983, 1677, 'Buckingham', '', '', 1, 0, 35, '45.58', '-75.42', 'buckingham', 0, 1),
@@ -5249,8 +5282,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (5042, 1677, 'Waterloo', '', '', 1, 0, 35, '45.35', '-72.52', 'waterloo', 0, 1),
 (5043, 1677, 'Sainte Anne des Monts', '', '', 1, 0, 35, '49.12', '-66.48', 'sainte-anne-des-monts', 0, 1),
 (5044, 1677, 'Princeville', '', '', 1, 0, 35, '46.17', '-71.88', 'princeville', 0, 1),
-(5045, 1677, 'La Malbaie', '', '', 1, 0, 35, '47.65', '-70.17', 'la-malbaie', 0, 1);
-INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
+(5045, 1677, 'La Malbaie', '', '', 1, 0, 35, '47.65', '-70.17', 'la-malbaie', 0, 1),
 (5046, 1677, 'Maniwaki', '', '', 1, 0, 35, '46.37', '-75.97', 'maniwaki', 0, 1),
 (5047, 1677, 'La Pocatiere', '', '', 1, 0, 35, '47.40', '-70.01', 'la-pocatiere', 0, 1),
 (5048, 1677, 'Saint Cesaire', '', '', 1, 0, 35, '45.40', '-73.00', 'saint-cesaire', 0, 1),
@@ -5329,7 +5361,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (5121, 1688, 'Sittwe', '', '', 1, 0, 139, '20.14', '92.89', 'sittwe', 0, 1),
 (5122, 1688, 'Arakan', 'Sandoway', '', 1, 0, 139, '18.46', '94.37', 'arakan', 0, 1),
 (5123, 1689, 'Ram Allah', 'Ramallah', '', 1, 0, 175, '31.90', '35.20', 'ram-allah', 0, 1),
-(5124, 1690, 'Yangon', 'Rangoon, Rangun', '<p style="text-align: justify;">\n	Mystical, temple-peppered Yangon holds promise as one of the most immersive journeys into the east for any who make the trip, allowing a unique glimpse into this highly traditional corner of Southeast Asia. The city is now once more on the menu for tourists to the continent, offering its wealth of ancient Buddhist temples and curious colonial architecture for exploration, warmly complemented by a vibrant street life and friendly locals.<br />\n	Buddhism has been a key influence in shaping Yangon’s history, from the glistening dome shaped payas embellishing its landscape to the spiritual strength of the monks much later in 2007. The iconic image on Rangoon’s horizon,  Shwedagon Pagoda easily forms the beating heart of the city, being the source of legends that trace its existence back almost three millennia. Further, British influences lie scattered across Yangon, from the Railway Immigration Headquarters, and the Scott Market (also a great place to pick up knickknacks) to the Strand Hotel, its classy interiors having played host to the likes of Kipling and Maugham.<br />\n	Till recently Myanmar’s capital, Yangon has both old and new political sites aplenty, and your Yangon tour guide will be sure to show you the fortified complex of Aung San Suu Kyi\'s house, the honorific Martyrs\' Mausoleum as well as the home of revolutionary leader Aung San himself.   </p>\n', 1, 0, 139, '16.79', '96.15', 'yangon', 0, 1),
+(5124, 1690, 'Yangon', 'Rangoon, Rangun', '<p style="text-align: justify;">\n	Mystical, temple-peppered Yangon holds promise as one of the most immersive journeys into the east for any who make the trip, allowing a unique glimpse into this highly traditional corner of Southeast Asia. The city is now once more on the menu for tourists to the continent, offering its wealth of ancient Buddhist temples and curious colonial architecture for exploration, warmly complemented by a vibrant street life and friendly locals.<br />\n	Buddhism has been a key influence in shaping Yangon’s history, from the glistening dome shaped payas embellishing its landscape to the spiritual strength of the monks much later in 2007. The iconic image on Rangoon’s horizon,  Shwedagon Pagoda easily forms the beating heart of the city, being the source of legends that trace its existence back almost three millennia. Further, British influences lie scattered across Yangon, from the Railway Immigration Headquarters, and the Scott Market (also a great place to pick up knickknacks) to the Strand Hotel, its classy interiors having played host to the likes of Kipling and Maugham.<br />\n	Till recently Myanmar’s capital, Yangon has both old and new political sites aplenty, and your Yangon tour guide will be sure to show you the fortified complex of Aung San Suu Kyi''s house, the honorific Martyrs'' Mausoleum as well as the home of revolutionary leader Aung San himself.   </p>\n', 1, 0, 139, '16.79', '96.15', 'yangon', 0, 1),
 (5125, 1691, 'Rangpur', '', '', 1, 0, 18, '25.74', '89.25', 'rangpur', 1, 1),
 (5126, 1692, 'Rarotonga', 'Avarua', '', 1, 0, 42, '-21.20', '-159.76', 'rarotonga', 0, 1),
 (5127, 1693, 'Ras Al Khaimah', 'Ras al Khaymah', '<p class="fr-tag" style="text-align: justify;">While the UAE’s northernmost region is one of the country’s more off-the-beaten-track destinations, it’s still got all the booming developments, the ubiquitous modernist high-rises, and glitzy hotels expected of an Emirati province. All of this sits neatly between the wild ridges of the sandy Hajar Mountains, the scintillating surf of the Persian Gulf, and the rolling swathes of hinterland desert—peppered with sporadic oases of swaying palm and date trees. </p><p class="fr-tag" style="text-align: justify;">With such diversity in landscape, Ras al Khaimah is fast coming into its own as a tourist destination, catering to varied interests, from camel racing, water parks and ski clubs to golfing retreats and sun-kissed beaches that hug the Gulf. History buffs should head to the Old City, with its charming restored souq, and the National Museum housed in the bulwarks of the Al Hisn Fort. Sightseers will not want to miss the pearly domes of the newer Shaikh Zayed Mosque, or an evening of dining at the popular Al Qawassim Corniche. Ras Al Khaimah tour guides also recommend a jaunt to the beautiful Wadis that lurk in the backcountry around town, or the sheer cliffs of the Musandam Peninsula just across the border in Oman.</p>', 1, 0, 2, '25.79', '55.94', 'ras-al-khaimah', 0, 1),
@@ -5388,7 +5420,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (5180, 481, 'Malindi', '', '<p class="fr-tag" style="text-align: justify;">Washed over by the aquamarine shallows of the Indian Ocean halfway along the Kenyan coast, the town of Malindi plays host to some of the country’s most startling stretches of sand. Consequently, its ivory-white beaches in the shadow of overhanging cliffs, swaying coastal palm forests, ubiquitous seaside resorts and oodles of colourful coral reefs beneath the Indian Ocean’s swells make it a favoured destination for visitors from Europe, more so the Italians. </p><p class="fr-tag" style="text-align: justify;">Those eager to hit the sands would do well to ask their Malindi tour guide about attractions around the coast at Watamu, which is south of Malindi. Here, the Watamu Marine National Park is awash with the wild mangroves of Mida Creek, and guests can seek out the elusive green turtles or explore the ruins of old Gede. </p><p class="fr-tag" style="text-align: justify;">Closer to home, the Malindi Marine Reserve — arguably the oldest national park in all of Africa — offers up some great glass-bottomed boat viewing and diving opportunities. One can also visit one of a wealth of deserted Indian Ocean islands or even the Vasco de Gama Pillar. For those who prefer to stay on land, the spikey hoodoos of so-called Hell’s Kitchen at the Marafa Depression are not too far, and make for some seriously dramatic hikes.</p>', 1, 0, 109, '-3.21', '40.10', 'malindi', 0, 1),
 (5181, 481, 'Voi', '', '', 1, 0, 109, '-3.37', '38.57', 'voi', 0, 1),
 (5182, 481, 'Taveta', '', '', 1, 0, 109, '-3.40', '37.68', 'taveta', 0, 1),
-(5183, 1711, 'Riga', '', '<p class="fr-tag" style="text-align: justify;">Spread out over a series of islands where the mighty Latvian Daugava River meets the unforgiving swells of the icy Baltic Sea, the city of Riga is hailed as one of north-eastern Europe’s great cultural destinations. </p><p class="fr-tag" style="text-align: justify;">Its labyrinthine Old Town wows visitors with its stately mass of red-brick gothic churches, worn cobbled roadways and hidden squares that transform into a heady mix of boho bars and bubbling Baltic beer halls after dark. The major sites here coalesce close to one another, with the stately House of Blackheads (rebuilt to its former elegance following total destruction at the hands of the Nazis and the Soviets), St John\'s Church, and the soaring Germanic towers of St Peter\'s all within walking distance. </p><p class="fr-tag" style="text-align: justify;">Riga tour guides also often recommend making a jaunt through the startling exhibitions of the Museum of Occupations, or to the less-trodden roadways of the Central District, where leafy parks meet the shadow of the looming Freedom Monument. On the other side of town sits the Art Nouveau District, where the eccentric architectural styles of the likes of the famous Latvian architect Eisenstein can be best found on the streets of Elizabetes and Alberta.</p>', 1, 0, 129, '56.97', '24.13', 'riga', 0, 1),
+(5183, 1711, 'Riga', '', '<p class="fr-tag" style="text-align: justify;">Spread out over a series of islands where the mighty Latvian Daugava River meets the unforgiving swells of the icy Baltic Sea, the city of Riga is hailed as one of north-eastern Europe’s great cultural destinations. </p><p class="fr-tag" style="text-align: justify;">Its labyrinthine Old Town wows visitors with its stately mass of red-brick gothic churches, worn cobbled roadways and hidden squares that transform into a heady mix of boho bars and bubbling Baltic beer halls after dark. The major sites here coalesce close to one another, with the stately House of Blackheads (rebuilt to its former elegance following total destruction at the hands of the Nazis and the Soviets), St John''s Church, and the soaring Germanic towers of St Peter''s all within walking distance. </p><p class="fr-tag" style="text-align: justify;">Riga tour guides also often recommend making a jaunt through the startling exhibitions of the Museum of Occupations, or to the less-trodden roadways of the Central District, where leafy parks meet the shadow of the looming Freedom Monument. On the other side of town sits the Art Nouveau District, where the eccentric architectural styles of the likes of the famous Latvian architect Eisenstein can be best found on the streets of Elizabetes and Alberta.</p>', 1, 0, 129, '56.97', '24.13', 'riga', 0, 1),
 (5184, 1586, 'Ponta Grossa', '', '<p style="text-align: justify;">\n	Ponta Grossa, in the state of Paran&aacute;, Brazil, is well known for its high culture, academic atmosphere, and natural beauty. The city features a multitude of museums and theaters, public and private universities, and several natural parks and canyons.<br />\n	Your Ponta Grossa tour guide will tell you that most outstanding landmark in Ponta Grossa has to be Vila Velha, a park with a collection of trails and incredible sandstones formed by wind and water over the years. Vila Velha also features the Golden Lagoon and the Furnas, crater lakes linked by an underground river. Museums such as the Casa de Mem&oacute;ria Paran&aacute;, Epoch Museum, and Campos Gerais Museum, offer more intellectual options for tourists, and the Opera, Marxista, and Pax Theaters as well as the Culture Center City of Ponta Grossa bring forth the cultural entertainment dimension to the city. Dining in Ponta Grossa is spectacular, featuring a variety of foods. Be sure to visit one of the city&rsquo;s churrascarias for some of the best barbeque in South America. Ponta Grossa is one of the most well rounded cities in all of Brazil, offering dining and entertainment options for any combination of interests.&nbsp;</p>\n', 1, 0, 29, '-25.09', '-50.16', 'ponta-grossa', 0, 1),
 (5185, 1586, 'Cascavel', '', '', 1, 0, 29, '-24.96', '-53.46', 'cascavel', 0, 1),
 (5186, 1586, 'Guarapuava', '', '', 1, 0, 29, '-25.38', '-51.48', 'guarapuava', 0, 1),
@@ -5413,7 +5445,8 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (5205, 1712, 'Itaperuna', '', '', 1, 0, 29, '-21.21', '-41.89', 'itaperuna', 0, 1),
 (5206, 1715, 'Bariloche', 'San Carlos de Bariloche', '<p style="text-align: justify;">\n	Between the soaring glacial peaks of the Andes that loom above Bariloche all around, the deep blue swaths of Nahuel Huapi Lake, the curiously Germanic downtown architecture, the neo-gothic spires of San Carlos, and the thick fir forests that hug the banks of the lakes Gutierrez and Mascardi and Moreno, first timers to this city in the Patagonian hills could easily be mistaken in thinking that they&rsquo;d been transported from Latin Argentina to the towns of Alpine Europe.<br />\n	Of course, in such a dramatic setting it&rsquo;s the great outdoors that take centre stage for visitors here, with locals and travellers alike flocking to Bariloche for the ski centres at Cerro Catedral and Campanario. In the summer the crowds continue to flow in, with Bariloche tour guides offering fishing and kayaking on the lakes, hiking through the forests and mountain trekking to the Andean peaks.<br />\n	But the fun doesn&rsquo;t stop there either, because Bariloche is also famed for its mastery of chocolate making, boasting wide varieties of flavours and often laden with potent Patagonian boozes or local fruit fillings. And then there&rsquo;s the Argentinian &lsquo;Spring Break&rsquo;, when thousands of students from Buenos Aires descend on the clubs and pubs of happening Moreno strip.</p>\n', 1, 0, 10, '-41.14', '-71.32', 'bariloche', 0, 1),
 (5207, 1715, 'General Roca', '', '', 1, 0, 10, '-39.02', '-67.61', 'general-roca', 0, 1),
-(5208, 1715, 'Cipolletti', '', '', 1, 0, 10, '-38.93', '-67.98', 'cipolletti', 0, 1),
+(5208, 1715, 'Cipolletti', '', '', 1, 0, 10, '-38.93', '-67.98', 'cipolletti', 0, 1);
+INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
 (5209, 1715, 'Viedma', '', '', 1, 0, 10, '-40.81', '-63.00', 'viedma', 0, 1),
 (5210, 1716, 'Rivas', '', '<p class="fr-tag" style="text-align: justify;">Clinging to the western edge of Lake Nicaragua, the laid-back city of Rivas now figures as the traveller’s gateway to the pristine beaches and legendary surfing breaks of the nation’s southern Pacific coast. It is also a popular jump-off point for excursions to the soaring volcanic peaks and paradisiacal backcountry of Ometepe Island across the waters to the east. Nearby, at the La Flor Wildlife Reserve, Olive Ridley turtles share beach space with water sports enthusiasts, while the fishing village of San Juan del Sur elsewhere boasts some serene lakeside beaches, and a mouth-watering selection of Mesoamerican chicken grills.</p><p class="fr-tag" style="text-align: justify;">However, before making a beeline to the fascinating attractions that exist on the city’s peripheries, consult your Rivas tour guide about the colonial vibe of the town, as well as the pretty cathedral and central park that dominate the centre. Then don’t miss the exhibitions at the Museo de Antropologia, which include thousands of Aztec artifacts and relics from the newly excavated site of Quauhcapolca just to the west.</p>', 1, 0, 158, '11.44', '-85.82', 'rivas', 0, 1),
 (5211, 1717, 'Rivera', '', '', 1, 0, 221, '-30.90', '-55.56', 'rivera', 0, 1),
@@ -5435,8 +5468,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (5227, 1722, 'Stavanger Sandnes', 'Stavanger', '', 1, 0, 160, '58.97', '5.71', 'stavanger-sandnes', 0, 1),
 (5228, 1722, 'Haugesund', '', '', 1, 0, 160, '59.42', '5.27', 'haugesund', 0, 1),
 (5229, 1712, 'Rio de Janeiro', '', '<p style="text-align: justify;">\n	Brazil&rsquo;s second largest city is also without question its best known and most visited. Sprawled over 4,500 square kilometres of the South American eastern seaboard, Rio de Janeiro is famed for its long sandy stretches, dramatic mountain backdrop, energetic favela towns and vibrant way of life.<br />\n	To the front, the beaches of Ipanema and Copacabana bubble with life both day and night, the spots where the Brazilian locals thrive in the heat of the Latin sun. Away from the surf breaks and bikini-touting crowds, a cable car ride to the Sugar Loaf Mountain brings up magnificent views of the bay, the district of Tijuca highlights the greens with it&rsquo;s wild and wonderful forests, while perhaps the most iconic &lsquo;must see&rsquo; of them all is the statue of Christ the Redeemer. Found atop the Corcovado karst, this world famous sculpture has kept watch over the city, featuring as the kingpin of any Rio de Janeiro tour guide since its completion in 1931.<br />\n	The annual Carnaval is Rio&rsquo;s most lucrative attraction, drawing hundreds of thousands of tourists who time their visits to revel in the colour, energy and unbridled flamboyance of the city. Amidst the sea of cantinas, samba clubs and energetic day-to-day routines that dominate the beachfronts and lively inner-city districts, this is a city that always lives up to its name.</p>\n', 1, 0, 29, '-22.91', '-43.20', 'rio-de-janeiro', 0, 1),
-(5230, 1713, 'Mossoro', 'MoCoró', '', 1, 0, 29, '-5.19', '-37.34', 'mossoro', 0, 1);
-INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
+(5230, 1713, 'Mossoro', 'MoCoró', '', 1, 0, 29, '-5.19', '-37.34', 'mossoro', 0, 1),
 (5231, 1714, 'Porto Alegre', '', '<p style="text-align: justify;">\n	The last major city that visitors encounter as they head southwards out of Brazil is also one that seems uniquely different to the nation as a whole. The curious historical separatism that lingers here as a result of the gaucho culture has inspired a thriving and altogether divergent stream of artistic styles and city-living, with liberal politics, neo-classical art and relaxed vibes taking centre stage.<br />\n	Visitors enjoy verdant inner-city parks, a wealth of monumental statues and some of the best preserved Spanish colonial architecture left in Brazil, not to mention world-renowned views of the famous Gua&iacute;ba River sunset at dusk. But this city is far from compact, and guests looking to tick off all the boxes should be sure to ask their Porto Alegre tourist guide for ideas on how to travel between points of interest the best.<br />\n	Literature lovers should aim to arrive late in the year, when the city hosts the annual Brazilian Bookfair, a festival that currently attracts more than two million people every year. What&rsquo;s more, Porto Alegre is known for its particularly flamboyant Carnival season, and is one of the few places in the country where authentic gaucho culture can still be seen flourishing in the streets.</p>\n', 1, 0, 29, '-30.04', '-51.22', 'porto-alegre', 0, 1),
 (5232, 1714, 'Caxias do Sul', '', '', 1, 0, 29, '-29.18', '-51.17', 'caxias-do-sul', 0, 1),
 (5233, 1714, 'Pelotas', '', '', 1, 0, 29, '-31.76', '-52.34', 'pelotas', 0, 1),
@@ -5509,7 +5541,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (5300, 1766, 'Salto', '', '', 1, 0, 221, '-31.40', '-57.96', 'salto', 0, 1),
 (5301, 1767, 'Salzburg', 'Salzbourg', '<p style="text-align: justify;">\n	If we look at Salzburg&rsquo;s fascinating historical references, such as the fact that it`s the birthplace of Mozart, and was also a centre of late Illuminism, this enchanting city can definitely be considered a cultural landmark for both Austria, and Europe. Your Salzburg tourist guide will first arrange for a visit to the Old Town.&nbsp; Listed as a UNESCO World Heritage Site for its world famous excellently preserved Baroque architecture, this lovely area is best explored by foot.&nbsp; The Hohnsalzburg Fortress located on top of a hill offers lovely city views in addition to hosting concerts occasionally. Stroll into the Mirabell Palace and Gardens, famous for featuring in the movie `The Sound of Music. &nbsp;Located next to the Salzach River, the palace is surrounded by charming gardens and houses the beautiful wedding venue, Marble Hall. Schloss Hellbrunn is another place that also boasts of vast gardens and pretty fountains in addition to children parks and a zoo, providing entertainment for one and all. If you&rsquo;re up for more walking, the narrow street of Getreidegasse along the river provides an array of shops with old world charm.</p>\n', 1, 0, 12, '47.81', '13.04', 'salzburg', 0, 1),
 (5302, 1768, 'Zugdidi', '', '<p style="text-align: justify;">\n	Zugdidi, while not a high traffic tourist spot on its own, does see many visitors who pass through the city on route to Mestia in Svaneti. To go with the spirit of exploring the less explored, take some time off to explore this quaint town. The most prominent landmark is the Dadiani Museum. Once a castle, it houses historic collections including one of Napoleon&rsquo;s death masks.&nbsp; The enchanting gardens surrounding this castle are inviting to take a stroll along the lake amongst an extraordinary collection of trees. A huge local market stocking fresh produce and the Blachernae St. Virgin and Mantskhvar-kari churches are some of the other landmarks of Zugdidi .&nbsp; For a taste of authentic Georgian and Russian cuisines, check out Restaurant Diaroni and if you feel adventurous, order from the non-English menu or have your Zugdidi travel guide make a recommendation for you.&nbsp;</p>\n', 1, 0, 76, '42.50', '41.86', 'zugdidi', 0, 1),
-(5303, 1768, 'Poti', 'P\'ot\'i', '', 1, 0, 76, '42.15', '41.66', 'poti', 0, 1),
+(5303, 1768, 'Poti', 'P''ot''i', '', 1, 0, 76, '42.15', '41.66', 'poti', 0, 1),
 (5304, 1768, 'Senaki', 'Chakaja, Hakaja, Miha Chakaja, Mikha Tskhakaya, Tskhakaya', '', 1, 0, 76, '42.27', '42.06', 'senaki', 0, 1),
 (5305, 1769, 'al Fashir', 'Fashir, al Fasher, El Fasher', '', 1, 0, 188, '13.63', '25.35', 'al-fashir', 0, 1),
 (5306, 1770, 'Beit Lahiya', '', '', 1, 0, 175, '31.56', '34.50', 'beit-lahiya', 0, 1),
@@ -5526,7 +5558,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (5317, 1774, 'Samdrup Jongkhar', 'Samdrupjongkhar', '', 1, 0, 31, '26.81', '91.57', 'samdrup-jongkhar', 0, 1),
 (5318, 1775, 'Samsun', '', '', 1, 0, 214, '41.29', '36.33', 'samsun', 0, 1),
 (5319, 1775, 'Bafra', '', '', 1, 0, 214, '41.57', '35.89', 'bafra', 0, 1),
-(5320, 1776, 'Akhaltsikhe', 'Ahalcihe, Akhalts\'ikhe, Ahalicihe', '<p class="fr-tag" style="text-align: justify;">This charming little town set amidst the rugged, wild hills on the banks of the Potskhovi River on the southern edge of the country was once a centre of regional power for one of Georgia’s illustrious feudal dynasties. Today Akhaltsikhe still bears historical relics of its former greatness, albeit with a laid-back bucolic vibe. </p><p class="fr-tag" style="text-align: justify;">The historic core of the town rises up on the north side of the riverbanks around the main drag of Kostava Street. Here, it’s possible to explore the newly renovated complex of the 10<sup>th</sup> century Rabati Castle, containing amongst others, a museum along with churches, a mosque, and synagogue within its massive fortress. The attractions don’t stop there. This “off-the-beaten-track” town also offers up great access to the UNESCO Heritage Site at Vardzia, where the great churches of Tamar are hewn deep into the Georgian rock and the volcanic springs of the Borjomi Gorge. A little closer to home, your Akhaltsikhe tour guide will point out the enchanting Sapara Monastery and war torn Khertvisi Fortress on the hill.</p>', 1, 0, 76, '41.64', '42.98', 'akhaltsikhe', 0, 1),
+(5320, 1776, 'Akhaltsikhe', 'Ahalcihe, Akhalts''ikhe, Ahalicihe', '<p class="fr-tag" style="text-align: justify;">This charming little town set amidst the rugged, wild hills on the banks of the Potskhovi River on the southern edge of the country was once a centre of regional power for one of Georgia’s illustrious feudal dynasties. Today Akhaltsikhe still bears historical relics of its former greatness, albeit with a laid-back bucolic vibe. </p><p class="fr-tag" style="text-align: justify;">The historic core of the town rises up on the north side of the riverbanks around the main drag of Kostava Street. Here, it’s possible to explore the newly renovated complex of the 10<sup>th</sup> century Rabati Castle, containing amongst others, a museum along with churches, a mosque, and synagogue within its massive fortress. The attractions don’t stop there. This “off-the-beaten-track” town also offers up great access to the UNESCO Heritage Site at Vardzia, where the great churches of Tamar are hewn deep into the Georgian rock and the volcanic springs of the Borjomi Gorge. A little closer to home, your Akhaltsikhe tour guide will point out the enchanting Sapara Monastery and war torn Khertvisi Fortress on the hill.</p>', 1, 0, 76, '41.64', '42.98', 'akhaltsikhe', 0, 1),
 (5321, 1777, 'San Cristobal', '', '', 1, 0, 58, '18.42', '-70.11', 'san-cristobal', 0, 1),
 (5322, 1778, 'San Fernando', '', '', 1, 0, 215, '10.25', '-61.46', 'san-fernando', 0, 1),
 (5323, 1779, 'San Jose', '', '<p style="text-align: justify;">\n	San Jose is a city built on coffee. In the early 1800s it shouldered its way to the fore of Costa Rica as one of the agricultural and industrial hubs of the national trade, and without question the kingpin bean picker of the Central Valley. Consequently it&rsquo;s largely void in the ubiquitous &lsquo;must see&rsquo; colonial architecture of other major South American capitals, preferring to concentrate instead on its own wholly unique and more forward-thinking character.<br />\n	Ask your San Jose tour guide for some walking routes around the city, encompassing all the major metropolitan sites from the Plaza de la Cultura to the Parque Nacional, home to a myriad of monumental statues and points of interest related to Costa Rica&rsquo;s national history.<br />\n	Away from the cultural pursuits, San Jose is also known for its energetic and hedonistic nightlife, a time when the unassuming districts around downtown transform into hotspots of Latin jazz and folk music, bustling with locals and Costa Rican party goers until the early hours. There&rsquo;s also a burgeoning gastronomic scene; head to the restaurants at La Sabana and Paseo Colon for menus as colourful and varied as the exotic fruit and veg that goes into the dishes themselves.</p>\n', 1, 0, 47, '9.93', '-84.08', 'san-jose', 0, 1),
@@ -5624,7 +5656,8 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (5415, 1820, 'Sibu', '', '', 1, 0, 151, '2.30', '111.83', 'sibu', 0, 1),
 (5416, 1820, 'Kuching', 'Sarawak', '', 1, 0, 151, '1.55', '110.34', 'kuching', 0, 1),
 (5417, 1820, 'Miri', '', '<p class="fr-tag" style="text-align: justify;">Miri could fairly be described as Malaysian Borneo’s anchor in the modern world. Since 1910 it’s boomed, and boomed again with new discoveries of oil virtually every decade, which brought with them all the money necessary to construct and re-construct this well-to-do conglomeration of chic condominiums, shopping malls and multinational headquarters. </p><p class="fr-tag" style="text-align: justify;">However, Miri isn’t just another nouveau riche oil town. No sir, this one has a serious cultural backbone, with spots like the San Ching Tian Temple rubbing shoulders with petroleum museums and the fascinating pre-historic dig sites of the Niah Caves. Then there are the locals; a super-friendly mix of expat riggers, Chinese settlers and Malaysians that clusters on the sands of Taman Selera and the Esplanade with aromatic seafood curries and nasi dishes on the weekend. And let’s not forget the natural wonders that dominate the city’s peripheries (because no self-respecting Miri tour guide would!), ranging from the UNESCO-attested reaches of the Gunung Mulu National Park, to the natural lakes at Loagan Bunut and kaleidoscopic reefs of and Miri-Sibuti National Park.</p>', 1, 0, 151, '4.40', '113.97', 'miri', 0, 1),
-(5418, 1820, 'Bintulu', '', '', 1, 0, 151, '3.17', '113.03', 'bintulu', 0, 1),
+(5418, 1820, 'Bintulu', '', '', 1, 0, 151, '3.17', '113.03', 'bintulu', 0, 1);
+INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
 (5419, 1821, 'Cagliari', '', '<p class="fr-tag"  justify;">Standing firm on its precipitous and ancient bluffs above the Gulf of Cagliari, the city of the same name remains unquestionably one of the most dramatic and eye-watering to behold in all of Italy. At its foot, rings of colourful townhouses are masked by the gliding outlines of pearly-white yachts drifting over the Mediterranean, while the fortified pinnacle of Il Castello on high proudly presents its formidable rings of bulwarks and domes and red-tiled roofs for all to see. </p><p class="fr-tag"  justify;">The wealth of must-see attractions here coalesces around Cagliari’s higher levels, with the high-perched Rampart of Saint Remy, the Pisan Elephant Tower and the opulent marble faces of Saint Mary’s Cathedral all within walking distance of each other. Nearby, the town’s branches of the National Archaeology Museum and National Gallery cluster neatly on the edges of the Cittadella dei Musei. And let’s not forget this city’s perfect location at the extreme southern reaches of sun-kissed Sardinia either, because Cagliari tour guides are also quick to champion the paradisal beaches of Poetto and Chia, along with the volcanic ridges of San Pietro Island and the ancient UNESCO World Heritage-listed Su Nuraxi di Barumini to the north.</p>', 1, 0, 104, '39.22', '9.10', 'cagliari', 0, 1),
 (5420, 1821, 'Sassari', '', '', 1, 0, 104, '40.73', '8.56', 'sassari', 0, 1),
 (5421, 1821, 'Quartu Sant Elena', 'Quartu Santa Aleni', '', 1, 0, 104, '39.27', '9.15', 'quartu-sant-elena', 0, 1),
@@ -5661,8 +5694,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (5452, 1828, 'Boundiali', '', '', 1, 0, 41, '9.53', '-6.49', 'boundiali', 0, 1),
 (5453, 1828, 'Dapaong', 'Dapango', '', 1, 0, 207, '10.85', '0.21', 'dapaong', 0, 1),
 (5454, 1829, 'Savannakhet', '', '', 1, 0, 120, '16.57', '104.75', 'savannakhet', 0, 1),
-(5455, 1830, 'Celje', '', '<p style="text-align: justify;">\n	Celje is one of those places that inexplicably gets overlooked by tourists, giving anyone who discovers it the thrill of being in on a hidden secret. As one of Europe&rsquo;s most underrated treasures, Slovenia&rsquo;s third largest city is an enchanting compilation of historical architecture and picturesque views. The city&rsquo;s old castle beguilingly overlooks the peaceful Savinja River, and a winding footpath guides visitors to the 13th Century fortress. Cobblestone streets lead to Stari Grad Castle, as well as charmingly antiquated buildings and unique cultural spots, both highbrow and relatable; the Celje Regional Museum houses skulls of past nobles&rsquo; in glass jars, among far less cringe-worthy exhibits.<br />\n	As any Celje tour guide will tell you, the city is best seen on foot, as marveling at its&rsquo; beauty can become an entire day&rsquo;s activity in and of itself. Luckily the compact nature of Celje&rsquo;s layout has made it extremely pedestrian friendly, welcoming visitors to explore its&rsquo; breathtaking streetscapes and wondrous sites.</p>\n', 1, 0, 192, '46.24', '15.27', 'celje', 0, 1);
-INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
+(5455, 1830, 'Celje', '', '<p style="text-align: justify;">\n	Celje is one of those places that inexplicably gets overlooked by tourists, giving anyone who discovers it the thrill of being in on a hidden secret. As one of Europe&rsquo;s most underrated treasures, Slovenia&rsquo;s third largest city is an enchanting compilation of historical architecture and picturesque views. The city&rsquo;s old castle beguilingly overlooks the peaceful Savinja River, and a winding footpath guides visitors to the 13th Century fortress. Cobblestone streets lead to Stari Grad Castle, as well as charmingly antiquated buildings and unique cultural spots, both highbrow and relatable; the Celje Regional Museum houses skulls of past nobles&rsquo; in glass jars, among far less cringe-worthy exhibits.<br />\n	As any Celje tour guide will tell you, the city is best seen on foot, as marveling at its&rsquo; beauty can become an entire day&rsquo;s activity in and of itself. Luckily the compact nature of Celje&rsquo;s layout has made it extremely pedestrian friendly, welcoming visitors to explore its&rsquo; breathtaking streetscapes and wondrous sites.</p>\n', 1, 0, 192, '46.24', '15.27', 'celje', 0, 1),
 (5456, 1831, 'Dresden', 'Dresda, Dresde', '<p style="text-align: justify;">\n	This cultural powerhouse that straddles the join of the European East and West is known widely today as the focus of intense RAF bombing raids during WWII. However, any visitors who wander its Saxon downtown now, weaving their way between the cobbled streets, the opulent domes of the Baroque Frauenkirche and the palatial wings of the Zwinger, play witness to one of the continent&rsquo;s most ambitious and successful 20th century reconstruction projects.<br />\n	There&rsquo;s no denying that Dresden is a real artwork of a town. Just look at the neo-classical array adorning the Green Vault Museum, and don&rsquo;t even start on the treasures within; the emeralds; the malachite; the jewels. Don&rsquo;t miss the golden effigy of King August either, or the exquisite Baroque Quarter, or indeed that mind-blowing Opera House. Even the backdrop is beautiful, with the rolling fields and verdant forests of the Elbe Valley rising on the horizon.<br />\n	And once you&rsquo;re done with the history, why not get a taste of this town&rsquo;s more edgy underbelly? Ask your Dresden tour guide about the quirky cafes of the Altstadt, hit the vegetarian eateries of the boho Neustadt, or time your arrival to make the Dixieland Festival in May&mdash;the largest jazz celebration in all of Europe!</p>\n', 1, 0, 54, '51.05', '13.74', 'dresden', 0, 1),
 (5457, 1831, 'Leipzig', 'Lipsk', '', 1, 0, 54, '51.35', '12.40', 'leipzig', 0, 1),
 (5458, 1831, 'Chemnitz', 'Karl Marx Stadt', '', 1, 0, 54, '50.83', '12.92', 'chemnitz', 0, 1),
@@ -5829,7 +5861,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (5619, 1874, 'Oskemen', '', '', 1, 0, 119, '49.97', '82.61', 'oskemen', 0, 1),
 (5620, 1874, 'Semey', '', '', 1, 0, 119, '50.43', '80.27', 'semey', 0, 1),
 (5621, 1874, 'Riddir', 'Leninogor, Leninogorsk, Ridder', '', 1, 0, 119, '50.36', '83.52', 'riddir', 0, 1),
-(5622, 1874, 'Zyryanovsk', 'Ziryan, Zyrjanovsk, Zyr\'anovsk, Zyryan, Zyrjan', '', 1, 0, 119, '49.75', '84.26', 'zyryanovsk', 0, 1),
+(5622, 1874, 'Zyryanovsk', 'Ziryan, Zyrjanovsk, Zyr''anovsk, Zyryan, Zyrjan', '', 1, 0, 119, '49.75', '84.26', 'zyryanovsk', 0, 1),
 (5623, 1874, 'Ayagoz', 'Ajaguz, Ayaguz, Sergiopol', '', 1, 0, 119, '47.97', '80.43', 'ayagoz', 0, 1),
 (5624, 1876, 'Hithadhoo', '', '', 1, 0, 148, '-0.59', '73.08', 'hithadhoo', 0, 1),
 (5625, 1876, 'Feydhoo', '', '', 1, 0, 148, '-0.68', '73.13', 'feydhoo', 0, 1),
@@ -5866,7 +5898,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (5656, 1888, 'Sirajganj', 'Serajgonj', '', 1, 0, 18, '24.46', '89.70', 'sirajganj', 1, 1),
 (5657, 1889, 'Guliston', 'Gulistan', '', 1, 0, 222, '40.50', '68.79', 'guliston', 0, 1),
 (5658, 1889, 'Yangiyar', 'Yangiyer', '', 1, 0, 222, '40.29', '68.84', 'yangiyar', 0, 1),
-(5659, 1889, 'Sirdare', 'Syrdarja, Syrdar\'ya', '', 1, 0, 222, '40.84', '68.67', 'sirdare', 0, 1),
+(5659, 1889, 'Sirdare', 'Syrdarja, Syrdar''ya', '', 1, 0, 222, '40.84', '68.67', 'sirdare', 0, 1),
 (5660, 1890, 'Cizre', '', '', 1, 0, 214, '37.33', '42.20', 'cizre', 0, 1),
 (5661, 1890, 'Silopi', '', '', 1, 0, 214, '37.25', '42.48', 'silopi', 0, 1),
 (5662, 1890, 'Sirnak', '', '', 1, 0, 214, '37.52', '42.46', 'sirnak', 0, 1),
@@ -5880,7 +5912,8 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (5670, 1894, 'Naestved', '', '', 1, 0, 56, '55.23', '11.77', 'naestved', 0, 1),
 (5671, 1894, 'Koge', '', '', 1, 0, 56, '55.45', '12.18', 'koge', 0, 1),
 (5672, 1894, 'Slagelse', '', '', 1, 0, 56, '55.40', '11.37', 'slagelse', 0, 1),
-(5673, 1894, 'Holbaek', '', '', 1, 0, 56, '55.72', '11.72', 'holbaek', 0, 1),
+(5673, 1894, 'Holbaek', '', '', 1, 0, 56, '55.72', '11.72', 'holbaek', 0, 1);
+INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
 (5674, 1895, 'Malmo', 'Màlme', '<p style="text-align: justify;">\n	Perched on the very tip of the Swedish south, the city of Malmo was originally founded as a Danish port city, connecting Scandinavia with other economies across the Baltic Sea and the north coast of Germany. Today, its character is veraciously cosmopolitan, boasting countless constituent creeds and characters, and a real patchwork of influences from across the globe. This is evident in the proliferation of Turkish falafel joints, curry houses and Japanese restaurants that dot the area around Little Square in the Gamla Staden, not to mention the foray of accents and tongues that visitors will hear as they wander its streets!<br />\n	Malmo has also established itself as one of the hippest centres in Sweden, attracting great swathes of Copenhagen&rsquo;s boho students in the summer, who come across the colossal Oresund Bridge to enjoy the funky super clubs and quirky cafes of Mollevangstorget and Lilla Torg.<br />\n	Sightseers should be sure to ask their Malmo tourist guide for tips on the tri-square area in the centre, while other major monuments include the great Malmohus Castle, the architecturally-inspiring Turning Torso scraper, and a number of sprawling inner-city parks.</p>\n', 1, 0, 189, '55.61', '13.02', 'malmo', 0, 1),
 (5675, 1895, 'Helsingborg', 'Halsingborg, Hælsengbar', '<p style="text-align: justify;">\n	Helsingborg, Sweden is an idyllic arrangement of an old, wartime Europe province and trendy, modern destination. Located a stone&rsquo;s throw across the sound from Denmark, Helsingborg has been the site of many bloody battles fought over the skinny stretch of international water surrounding it. Today, that same sound sees no more activity than the repetitive 20-minute ferry ride circling happy travellers between Helsingor, Denmark and Helsingborg. The days of war and tension are long gone, leaving a rejuvenated, upscale waterfront to thrive amidst cobblestone streets and enchanting castle ruins.<br />\n	Antique architecture has provided a charming backdrop for the city&rsquo;s nightlife and foodie hotspots, while museums exploring both past and present find a happy niche amongst the varied streetscape. For the quintessential Helsingborg experience however, a Helsingborg tour guide will encourage all visitors to get on a tura. A local tradition of dining on ferryboats, tura is the perfect avenue to fully enmesh oneself in this city&rsquo;s culture as well as discover the dazzling coastal beauty of this must-see Swedish town.</p>\n', 1, 0, 189, '56.05', '12.70', 'helsingborg', 0, 1),
 (5676, 1895, 'Lund', 'Long', '<p style="text-align: justify;">\n	Humble, happy and quick-witted Lund is the academic powerhouse of southern Sweden, home to the country&rsquo;s largest university and an unrivalled conglomeration of Scandinavian literary and artistic luminaries. Its image as the Boston MA of Scania is carried on by the red-brick frontispieces and ivy-painted fa&ccedil;ades of the various institutions that pepper the town, all bustling day-to-day with the ebb and flow of learned folk and students.<br />\n	In many ways Lund itself is like the white-bearded professors that move in and out its myriad lecture halls, for it derives a certain measure of prestige from its ancient roots in the 12th century, when the travelling Danish King Canute first marked the spot. Today, that heritage lingers on, at every nook and cranny of the two-towered Lund Cathedral and its magnificent Romanesque decorations.<br />\n	If you&rsquo;ve come here to discover the energy of a real Swedish student town, then be sure to get the lowdown on the best drinking spots from your Lund tour guide, perhaps starting the night with a snappy shot of chilled Scandinavian vodka!</p>\n', 1, 0, 189, '55.71', '13.20', 'lund', 0, 1),
@@ -5898,8 +5931,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (5688, 1902, 'Dadiangas', '', '', 1, 0, 170, '6.11', '125.17', 'dadiangas', 0, 1),
 (5689, 1902, 'Cotabato', '', '', 1, 0, 170, '7.22', '124.25', 'cotabato', 0, 1),
 (5690, 1903, 'Eskilstuna', '', '', 1, 0, 189, '59.37', '16.51', 'eskilstuna', 0, 1),
-(5691, 1903, 'Nykoping', '', '', 1, 0, 189, '58.76', '17.02', 'nykoping', 0, 1);
-INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
+(5691, 1903, 'Nykoping', '', '', 1, 0, 189, '58.76', '17.02', 'nykoping', 0, 1),
 (5692, 1904, 'Beira', '', '', 1, 0, 152, '-19.83', '34.84', 'beira', 0, 1),
 (5693, 1905, 'Sofia', '', '<p style="text-align: justify;">\n	In the shadow of mighty Vitosha, the skyline of Bulgarian Sofia rises up like something out of a Tolstoy novel; romantic, rich, peppered with bulbous onion-domes and silhouetted by the looming shapes of Suppedaneum crosses and Byzantine builds. It&rsquo;s unquestionably one of the gems of the European east; a place where a lively local crowd wanders betwixt ageing Austro-Hungarian relics and the ruins of old Rome still linger beneath the streets.<br />\n	But, as any Sofia tourist guide will tell you, this city at the heart of the Balkans is not simply an ageing relic of the old Europe. Far from it. There are clubs, techno bars, rakia drinking houses and cool boho drives like the tree-shrouded Lodkite. Then there&rsquo;s the caf&eacute; culture; hip, happening and laden with the Bulgarian nouveau riche from morning to night.<br />\n	Today, Bulgaria&rsquo;s capital is also known as the gateway to the country&rsquo;s great outdoors, with many people opting to explore the Black Sea beaches in the east, or perhaps most notably, the budget pistes and ski fields of the nearby Balkan Mountains.</p>\n', 1, 0, 21, '42.69', '23.31', 'sofia', 0, 1),
 (5694, 1906, 'Sohag', 'Sawhaj, Suhag, Suhaj, Suhaj', '<p class="fr-tag" style="text-align: justify;">Situated on the fertile fringes of the Nile right in the heart of Egypt, Sohag is found sprawled out over the river’s western banks and several islands in a mishmash of Coptic Christian churches and soaring mosque minarets, energised by a booming university population and the bustling trading bazaars of Souq el-Qisareya. </p><p class="fr-tag" style="text-align: justify;">While the centre of town ticks over to the adhans of the Sidi Arif Mosque and the pious chants of the exquisite Church of the Holy Virgin, visitors weave their way between the tight-knit lanes to the iconic Red and White monasteries that linger alluringly on the peripheries here; the first with its curious Pharaonic architectural features, the latter with its elaborate mezzanines and brilliant 5<sup>th</sup> century façade. Sohag tour guides also usually recommend making a jaunt to the totemic archaeological area of Abydos on the edge of the desert to the south, which is considered by many to be one of the oldest ancient sites in the country, and the final resting place of the earliest of Egypt’s dynastic kings.</p>', 1, 0, 62, '26.55', '31.69', 'sohag', 0, 1),
@@ -5921,7 +5953,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (5710, 1913, 'Puerto Penasco', '', '', 1, 0, 150, '31.32', '-113.54', 'puerto-penasco', 0, 1),
 (5711, 1913, 'Heroica Caborca', 'Caborca', '', 1, 0, 150, '30.72', '-112.16', 'heroica-caborca', 0, 1),
 (5712, 1914, 'Sonsonate', '', '', 1, 0, 201, '13.72', '-89.73', 'sonsonate', 0, 1),
-(5713, 1915, 'Laascanood', 'Lasanod, Laas\'aanood, Las Anod, Laascaanood, Las Caanood, Las\'anod', '', 1, 0, 197, '8.48', '47.36', 'laascanood', 0, 1),
+(5713, 1915, 'Laascanood', 'Lasanod, Laas''aanood, Las Anod, Laascaanood, Las Caanood, Las''anod', '', 1, 0, 197, '8.48', '47.36', 'laascanood', 0, 1),
 (5714, 1916, 'Trondheim', 'Troandin, Roanddin, Nidaros, Trondhjem, Drontheim', '', 1, 0, 160, '63.44', '10.40', 'trondheim', 0, 1),
 (5715, 1917, 'Mercedes', '', '', 1, 0, 221, '-33.26', '-58.03', 'mercedes', 0, 1),
 (5716, 1919, 'Souk Ahras', 'Suq Ahras, Souq Ahras, Tagaste', '', 1, 0, 59, '36.29', '7.95', 'souk-ahras', 0, 1),
@@ -6008,7 +6040,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (5797, 1949, 'Suez', 'as Suways, Sues', '<p style="text-align: justify;">\n	Clustered haphazardly around the southern mouth of the Suez Canal, this namesake city is a tumultuous manifestation of Egyptian industry and mechanisation run amok. With most of its historic sights destroyed during the fracases of the 20th century, it&rsquo;s now a town of looming cranes, sprawling concrete complexes and traffic-laden roadways smothered; more of a fascinating image of the country in motion.<br />\n	While Suez is not a tourist haven, there are excellent seafood meals to indulge in, and Ahwas to visit and interact with the locals. Most Suez tour guides will recommend a jaunt to the bustling market squares of the Arbaeen District, where local desert dwellers come to tout their wares amidst the fray of the city. Others will direct travellers to the sprawling harboursides of Port Taufiq, where it&rsquo;s possible to watch colossal tankers gliding north from the Indian Ocean.</p>\n', 1, 0, 62, '29.98', '32.54', 'suez', 0, 1),
 (5798, 1950, 'Khujand', 'Khudzhand, Khodzhent, Leninabad, Khodzent, Chudjand, Hucand, Xujand', '', 1, 0, 209, '40.29', '69.62', 'khujand', 0, 1),
 (5799, 1950, 'Konibodom', 'Kanibadam', '', 1, 0, 209, '40.29', '70.43', 'konibodom', 0, 1),
-(5800, 1950, 'Uroteppa', 'Urotepa, Uratepa, Ura Tjube, Ura T\'ube, Ura Tiube', '', 1, 0, 209, '39.92', '69.00', 'uroteppa', 0, 1),
+(5800, 1950, 'Uroteppa', 'Urotepa, Uratepa, Ura Tjube, Ura T''ube, Ura Tiube', '', 1, 0, 209, '39.92', '69.00', 'uroteppa', 0, 1),
 (5801, 1950, 'Panjakent', 'Pancakent, Pendzhikent', '', 1, 0, 209, '39.50', '67.60', 'panjakent', 0, 1),
 (5802, 1951, 'Makasar', 'Ujungpandang, Makassar, Ujung Pandang, Macassar', '<p style="text-align: justify;">\n	Perched out on the very tip of southern Sulawesi, the sprawling city of Makassar is every inch the burgeoning Indonesian megalopolis. The town continues to sprout suburban leg after suburban leg, stretching out from its sixteenth century colonial core of Dutch fortresses and weathered spice docks into the jungles and wild inland hills all around.<br />\n	First time visitors should ask their Makassar tour guide about trips to the seventeenth century Fort Rotterdam, which stands right on the city&rsquo;s seafront as a lingering testimony to its former trading might, or perhaps excursions out to spot the cave art of some of the region&rsquo;s earliest natives. And once the history is done, modern Makassar awaits, booming forth from bubbling Panukkukang in streams of modern shopping malls and sprawling indoor theme parks.<br />\n	What&rsquo;s more, if you&rsquo;re looking to do a little of that ubiquitous Indonesian beach hunting, then there are the paradisiacal stretches on nearby Pulau Samalona and remote Pulau Khayangan to explore, not to mention the bustling food courts and earthy local warungs of Laguna closer to town.</p>\n', 1, 0, 96, '-5.14', '119.41', 'makasar', 0, 1),
 (5803, 1951, 'Pare Pare', 'Parepare', '', 1, 0, 96, '-3.87', '119.62', 'pare-pare', 0, 1),
@@ -6043,7 +6075,8 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (5832, 1968, 'Yekaterinburg', 'Jekaterinburg, Sverdlovsk', '', 1, 0, 183, '56.85', '60.60', 'yekaterinburg', 0, 1),
 (5833, 1968, 'Nizhniy Tagil', 'Niznij Tagil', '', 1, 0, 183, '57.92', '59.97', 'nizhniy-tagil', 0, 1),
 (5834, 1968, 'Kamensk Uralskiy', 'Kamensk Uralskij', '', 1, 0, 183, '56.41', '61.93', 'kamensk-uralskiy', 0, 1),
-(5835, 1968, 'Pervouralsk', '', '', 1, 0, 183, '56.91', '59.95', 'pervouralsk', 0, 1),
+(5835, 1968, 'Pervouralsk', '', '', 1, 0, 183, '56.91', '59.95', 'pervouralsk', 0, 1);
+INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
 (5836, 1968, 'Serov', '', '', 1, 0, 183, '59.61', '60.58', 'serov', 0, 1),
 (5837, 1969, 'Kielce', 'Kelcy, Keltsy', '', 1, 0, 172, '50.89', '20.65', 'kielce', 0, 1),
 (5838, 1969, 'Ostrowiec Swietokrzyski', 'Ostrovec, Ostrovets', '', 1, 0, 172, '50.95', '21.39', 'ostrowiec-swietokrzyski', 0, 1),
@@ -6052,7 +6085,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (5841, 1971, 'Esbjerg', '', '', 1, 0, 56, '55.47', '8.45', 'esbjerg', 0, 1),
 (5842, 1971, 'Kolding', '', '', 1, 0, 56, '55.52', '9.48', 'kolding', 0, 1),
 (5843, 1971, 'Vejle', '', '', 1, 0, 56, '55.71', '9.53', 'vejle', 0, 1),
-(5844, 1972, 'Kapan', 'Kafan, Baidan, Ghapan, Ghap\'an', '', 1, 0, 7, '39.20', '46.40', 'kapan', 0, 1),
+(5844, 1972, 'Kapan', 'Kafan, Baidan, Ghapan, Ghap''an', '', 1, 0, 7, '39.20', '46.40', 'kapan', 0, 1),
 (5845, 1972, 'Goris', '', '<p style="text-align: justify;">\n	The quaint town of Goris lies nestled in a valley surrounded by mountains and the Vararakn River. On the outskirts of the town is the Rock Forest, amazing rock formations created by the forces of nature. Locals inhabited these intriguing plains till very recently, as evidenced by the Old Khndzoresk Cave Village where the houses were originally constructed within the caves. Among other unique experiences, take a ride in the Tatev Aerial Tramway, the world&rsquo;s longest cable car in the village of Halidzor. This will transport you straight up and through time to the ninth century Tatev Monastery, its tall thick stoned wall a testament to the building capabilities at the time. Perhaps one of the most interesting sights is the Ughtasar Petroglyphs on top of the Ughtasar Mountain. With no real roads, your Goris tour Guide will need to commandeer a 4X4 to navigate the steep and rocky terrain to the top. Once there, the views are spectacular, as one takes in amazing rock configurations with ancient petroglyphs that are around four to seven thousand years old.</p>\n<p>\n	&nbsp;</p>\n', 1, 0, 7, '39.51', '46.33', 'goris', 0, 1),
 (5846, 1973, 'Nyiregyhaza', '', '', 1, 0, 95, '47.96', '21.72', 'nyiregyhaza', 0, 1),
 (5847, 1974, 'Villahermosa', '', '', 1, 0, 150, '17.99', '-92.93', 'villahermosa', 0, 1),
@@ -6077,8 +6110,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (5866, 1984, 'Madaoua', '', '', 1, 0, 155, '14.07', '5.96', 'madaoua', 0, 1),
 (5867, 1985, 'Taipei', '', '<p style="text-align: justify;">\n	What type of a holiday would you like? Relaxing, rigorous or religious? Culturally or gastronomically enriching? Taipei has it all for you! Lets start with the Longshan Temple, popular amongst locals who come here to pray for guidance to the Buddhist god Guanyin. The Baoan Temple and Confucius temple, places of historical value stand next to each other in the Dalondong area. Do pencil into your itinerary the National Palace Museum, Red House and of course, Huashan Creative Park, a charming converted warehouse area with galleries, pubs and restaurants where one catch a movie or a concert or even the farmers market on Sundays. When its time for a food break Din Tai Fung serving the best xiaolongbao (pork dumplings) or the Shilin night market hosting a massive underground food court with traditional Taiwanese cuisine is the place to be. The Shilin night market and many such markets spread all over the city also has a clothes and accessories section; for higher end shopping head to Taipei 101, also popular as the second tallest building in the world!&nbsp; Make time to for a hike to the Yangmingshan National Park to get sweeping city views and then soak off those tired muscles at the famous Xinbeitou Hot Springs. Another innovative way to get a view of Taipei from the top is to look through the glass floors of the Maokong Gondola that starts at the Taipei Zoo. There is just so much to experience; so much to do&hellip;</p>\n', 1, 0, 216, '25.02', '121.45', 'taipei', 0, 1),
 (5868, 1986, 'Taitung', '', '', 1, 0, 216, '22.76', '121.14', 'taitung', 0, 1),
-(5869, 1987, 'Tainan', '', '<p style="text-align: justify;">\n	As Taiwan&rsquo;s oldest city and imperial capital, Tainan is a one-stop shop for fully indulging in the culture and lifestyle of Taiwanese locals. Known as &ldquo;the City of Snacks,&rdquo; nothing is more innately authentic to the nation than Tainan&rsquo;s impressive culinary community. This city&rsquo;s ancient roots have led to a majority of its&rsquo; recipes being passed down from the Qing Dynasty, and you can trust age has done nothing to hinder the deliciousness of these traditional dishes. Snack carts, street vendors, and restaurants provide high quality grub at inexpensive prices; as your Tainan tour guide will tell you, its&rsquo; often the most run down establishments that serve the best Taiwanese treats. Once you know where to go, an oyster omelet is the city&rsquo;s trademark dish and not to be missed.<br />\n	Apart from eating, Tainan&rsquo;s night markets are an indescribably unique experience where the sunset opens food stalls, clothing shops, and eye-catching outdoor entertainment. All this wonder and we haven&rsquo;t even discussed the city&rsquo;s sites; so book a trip to Tainan and discover them for yourself.</p>\n', 1, 0, 216, '23.00', '120.19', 'tainan', 0, 1);
-INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
+(5869, 1987, 'Tainan', '', '<p style="text-align: justify;">\n	As Taiwan&rsquo;s oldest city and imperial capital, Tainan is a one-stop shop for fully indulging in the culture and lifestyle of Taiwanese locals. Known as &ldquo;the City of Snacks,&rdquo; nothing is more innately authentic to the nation than Tainan&rsquo;s impressive culinary community. This city&rsquo;s ancient roots have led to a majority of its&rsquo; recipes being passed down from the Qing Dynasty, and you can trust age has done nothing to hinder the deliciousness of these traditional dishes. Snack carts, street vendors, and restaurants provide high quality grub at inexpensive prices; as your Tainan tour guide will tell you, its&rsquo; often the most run down establishments that serve the best Taiwanese treats. Once you know where to go, an oyster omelet is the city&rsquo;s trademark dish and not to be missed.<br />\n	Apart from eating, Tainan&rsquo;s night markets are an indescribably unique experience where the sunset opens food stalls, clothing shops, and eye-catching outdoor entertainment. All this wonder and we haven&rsquo;t even discussed the city&rsquo;s sites; so book a trip to Tainan and discover them for yourself.</p>\n', 1, 0, 216, '23.00', '120.19', 'tainan', 0, 1),
 (5870, 1988, 'Taichung', '', '<p style="text-align: justify;">\n	Street food is big news in Taichung, Taiwan. With some of the most interesting street markets in the world and a penchant for experimental cuisine and wacky themed restaurants, Taichung is every food-lover&rsquo;s dream.&nbsp;<br />\n	Feng Chia Night Market, the biggest night market in Taiwan, is a fertile testing ground for the most innovative and unusual snacks. Visit Miyahuru (Gong Yuan Yan Ke), a pastry shop in the grand location of a refurbished hospital, for a snack in a quirky location and stop by the Fantasy Shop complex for a taste of the weird and the wonderful. An excellent venue to let all that food digest is undeniably the Taichung Metropolitan Opera House, best enjoyed with a cool glass of local Taichung wine.<br />\n	Your Taichung Tour guide listings will put you in the vicinity of Calligraphy Greenway, a beautiful square of green in the heart of the city that opens up in all directions to museums and galleries, one of these paths going past botanical gardens all the way to the picturesque LiChuan canal. And of course one can&rsquo;t miss a feel of the energetic vibe of the city at Taichung&rsquo;s lively nightlife and downtown shopping experience, easily at par with any major metropolis in the world.</p>\n', 1, 0, 216, '24.15', '120.68', 'taichung', 0, 1),
 (5871, 1989, 'Taizz', 'Taiz', '', 1, 0, 232, '13.60', '44.04', 'taizz', 0, 1),
 (5872, 1990, 'Talas', '', '', 1, 0, 110, '42.52', '72.24', 'talas', 0, 1),
@@ -6190,7 +6222,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (5978, 2022, 'Taounate', 'Tawnat', '', 1, 0, 131, '34.55', '-4.64', 'taounate', 0, 1),
 (5979, 2023, 'Tbilisi', 'Tiflis, Tbilissi', '<p style="text-align: justify;">\n	The city of Tbilisi is more than just the nation&rsquo;s capital; it&rsquo;s here that the Georgia&rsquo;s major universities, political machinery, cultural institutions and historical wealth all agglomerate, fusing together to create a surprisingly energetic cityscape in the depths of Eastern Europe&rsquo;s Caucasus.<br />\n	The social heart of the city is found compact and clustered right in the middle of the steep banks and dramatic cliff bluffs of the Mtkvari River valley. Visitors here can look forward to wander the Old Town&rsquo;s cobbled streets amidst quaint and traditional architecture in the ever-looming shadow of the formidable Narikala Fortress that sits atop the hill to the south. Your Tbilisi tour guide will ensure you do not miss the much-fought over historical hotspot, the Metekhi Church, the site where the Persians and Mongols both vied for control of the city in times gone by.<br />\n	Away from the central district it&rsquo;s possible to follow in the footsteps of some of Europe&rsquo;s great literary luminaries (think Pushkin and Dumas), with a dip in the world-famous Abanotubani sulphur baths, or an exploration of the riches of local Georgian history at the well-stocked museums on offer.</p>\n', 1, 0, 76, '41.72', '44.79', 'tbilisi', 0, 1),
 (5980, 2024, 'Tebessa', 'Tibissah, Tbessa, Tébessa, Theveste', '', 1, 0, 59, '35.41', '8.12', 'tebessa', 0, 1),
-(5981, 2024, 'Bir El Ater', 'Bir al \'Itir, Bir el Ater', '', 1, 0, 59, '34.75', '8.05', 'bir-el-ater', 0, 1),
+(5981, 2024, 'Bir El Ater', 'Bir al ''Itir, Bir el Ater', '', 1, 0, 59, '34.75', '8.05', 'bir-el-ater', 0, 1),
 (5982, 2024, 'Cheria', '', '', 1, 0, 59, '35.28', '7.75', 'cheria', 0, 1),
 (5983, 2024, 'Ouenza', 'al Winzah, El Wanza', '', 1, 0, 59, '35.96', '8.12', 'ouenza', 0, 1),
 (5984, 2025, 'Tehran', '', '<p style="text-align: justify;">\n	Any travellers interested in piercing right into the heart of this truly enigmatic nation of the Arabian Middle East, or in discovering the truth of all the political machinations that click over here like clockwork, would do well to give the sprawling megacity of Tehran a fair share of their time.<br />\n	The city sits nestled under the snow-capped ridges of the dramatic Alborz Mountain Range, bubbling up in a series of high-rise districts and sprawling neighbourhoods. Today it plays host to a wealth of cultural institutions, art galleries, that timely metro system, the sprawling bazaars of Bazar-e Bozorg, the majestic palaces of the Rose Gardens, looming artworks like the Azadi Monument, and an overarching, unflappable drive for the new and cutting-edge.<br />\n	If you&rsquo;re interested in experiencing the city like a local, then be sure to ask your Tehran tourist guide about the popular cinemas, the parks of the centre or the walking trails that lead from the city to the hills, and perhaps about a social jaunt to the pistes of the nearby Tochal or Dizin ski resorts.</p>\n', 1, 0, 102, '35.67', '51.43', 'tehran', 0, 1),
@@ -6221,7 +6253,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (6009, 2032, 'Cleveland (Tennessee)', '', '', 1, 0, 220, '35.18', '-84.87', 'cleveland-tennessee', 0, 1),
 (6010, 2033, 'Kuala Terengganu', '', '', 1, 0, 151, '5.33', '103.14', 'kuala-terengganu', 0, 1),
 (6011, 2033, 'Dungun', '', '', 1, 0, 151, '4.75', '103.40', 'dungun', 0, 1),
-(6012, 2035, 'Ternopil', 'Ternopol\', Tarnopol', '', 1, 0, 218, '49.55', '25.58', 'ternopil', 0, 1),
+(6012, 2035, 'Ternopil', 'Ternopol'', Tarnopol', '', 1, 0, 218, '49.55', '25.58', 'ternopil', 0, 1),
 (6013, 2036, 'Tete', '', '', 1, 0, 152, '-16.17', '33.58', 'tete', 0, 1),
 (6014, 2037, 'Tetovo', '', '', 1, 0, 137, '42.01', '20.97', 'tetovo', 0, 1),
 (6015, 2038, 'Houston', '', '', 1, 0, 220, '29.77', '-95.39', 'houston', 0, 1),
@@ -6303,7 +6335,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (6091, 2039, 'Veymandhoo', '', '', 1, 0, 148, '2.18', '73.38', 'veymandhoo', 0, 1),
 (6092, 2039, 'Thimarafushi', '', '', 1, 0, 148, '2.20', '73.15', 'thimarafushi', 0, 1),
 (6093, 2040, 'Thies', '', '', 1, 0, 196, '14.81', '-16.93', 'thies', 0, 1),
-(6094, 2040, 'Mbour', 'M\'bour', '', 1, 0, 196, '14.43', '-16.97', 'mbour', 0, 1),
+(6094, 2040, 'Mbour', 'M''bour', '', 1, 0, 196, '14.43', '-16.97', 'mbour', 0, 1),
 (6095, 2041, 'Thimphu', '', '<p style="text-align: justify;">\n	Nestled in the low-lying greenery of the eastern Himalayan foothills, the city of Timphu derives much of its character from the surrounding valley that is its namesake. The central metropolitan area is accessible by only a handful of roads that wind and bend their way around the nearby cliffs and crags, adding a certain remote charm and isolated mystery to this city in the hills.<br />\n	Thimphu is also a relatively new city, and was only declared the capital in 1961, demonstrating a&nbsp;&nbsp; juxtaposition of ancient traditions with modern development. Accordingly, the composition of its architecture has moved from the timber used at the government and religious seat of Tashichho Dzong, to concretised brand-new shopping complexes, and there is a noticeable renaissance underway in the gastronomy and hospitality scenes too.<br />\n	While host to museums and monasteries eloquently chronicle its Buddhist heritage, many travellers however seek out the services of a Thimphu tourist guide simply to help them discover the best outdoorsy trails and activities. Indeed, adventure travel remains the region&rsquo;s major pull, offering everything from mountain treks to rock climbing on this much less-visited end of the Himalaya range.</p>\n', 1, 0, 31, '27.45', '89.67', 'thimphu', 0, 1),
 (6096, 2042, 'Frauenfeld', '', '', 1, 0, 40, '47.56', '8.89', 'frauenfeld', 0, 1),
 (6097, 2043, 'Erfurt', '', '', 1, 0, 54, '50.99', '11.03', 'erfurt', 0, 1),
@@ -6313,7 +6345,8 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (6101, 2043, 'Nordhausen', '', '', 1, 0, 54, '51.51', '10.79', 'nordhausen', 0, 1),
 (6102, 2043, 'Eisenach', '', '', 1, 0, 54, '50.98', '10.31', 'eisenach', 0, 1),
 (6103, 2045, 'Tiaret', 'Tiyarat, Tihert, Tagdempt', '', 1, 0, 59, '35.38', '1.32', 'tiaret', 0, 1),
-(6104, 2045, 'Sougueur', 'Sugar', '', 1, 0, 59, '35.20', '1.50', 'sougueur', 0, 1),
+(6104, 2045, 'Sougueur', 'Sugar', '', 1, 0, 59, '35.20', '1.50', 'sougueur', 0, 1);
+INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
 (6105, 2045, 'Ksar Chellala', 'Qasr as Sillalah, Reibell', '', 1, 0, 59, '35.21', '2.30', 'ksar-chellala', 0, 1),
 (6106, 2047, 'Lugano', 'Lauis', '', 1, 0, 40, '46.01', '8.94', 'lugano', 0, 1),
 (6107, 2048, 'Rio Grande', '', '', 1, 0, 10, '-53.78', '-67.70', 'rio-grande', 0, 1),
@@ -6330,12 +6363,11 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (6118, 2052, 'Timisoara', 'Temesvár, Temeschburg, Temisvar, Temeschwar, Temesvar', '', 1, 0, 181, '45.76', '21.23', 'timisoara', 0, 1),
 (6119, 2052, 'Lugoj', 'Lugos, Lugosch', '', 1, 0, 181, '45.69', '21.91', 'lugoj', 0, 1),
 (6120, 2053, 'Tindouf', '', '', 1, 0, 59, '27.67', '-8.15', 'tindouf', 0, 1),
-(6121, 2054, 'Kolea', 'al Qull\'ah, Koléa', '', 1, 0, 59, '36.63', '2.77', 'kolea', 0, 1),
+(6121, 2054, 'Kolea', 'al Qull''ah, Koléa', '', 1, 0, 59, '36.63', '2.77', 'kolea', 0, 1),
 (6122, 2054, 'Cherchell', 'Sirsall, Shirshall, Shershell, Caesarea', '', 1, 0, 59, '36.61', '2.19', 'cherchell', 0, 1),
 (6123, 2055, 'Tirana', '', '<p style="text-align: justify;">\n	From humble beginnings in 1614 as the site of a bakery, a hamam (Turkish bath), a mosque and little else, Tirana, Albania, has grown into a flourishing capital city.</p>\n<p style="text-align: justify;">\n	Gradually coming out of its many years of slumber, Tirana is transforming but taking care not to forget its important history. Home to a staggering 56 cultural monuments, including the Et&rsquo; Hem Bay Mosque which dates back to the 1780s, the city is home to Albania&rsquo;s National Archeological, Science and History museum. On the outskirts of the city, you can experience the natural beauty of Tirana from up to 1230km above sea level in a Dajti Express cable car. Take advantage of a Tirana tour guide and spend a day trawling the boutique shops of this unique city before choosing from the many bistros serving up the city&rsquo;s fine cuisine which includes the Albanian delicacy of Pa&ccedil;e, a stew made from Sheep&rsquo;s head.&nbsp;</p>\n<p style="text-align: justify;">\n	Increasingly popular with many a visitor looking for a peaceful and historically rich getaway, get a flavour of Tirana&rsquo;s vibrant hues at the nightlife hotspots that reflect the local modern culture of this unique city.</p>\n', 1, 0, 6, '41.33', '19.82', 'tirana', 0, 1),
 (6124, 2056, 'Tiraspol', '', '', 1, 0, 133, '46.85', '29.63', 'tiraspol', 0, 1),
-(6125, 2057, 'Zuwarat', 'Zouérate, Zouérat, Tazadit, Zouirat, Zoueratt, Azwirat', '', 1, 0, 144, '22.73', '-12.49', 'zuwarat', 0, 1);
-INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
+(6125, 2057, 'Zuwarat', 'Zouérate, Zouérat, Tazadit, Zouirat, Zoueratt, Azwirat', '', 1, 0, 144, '22.73', '-12.49', 'zuwarat', 0, 1),
 (6126, 2058, 'Innsbruck', 'Dispruch', '<p class="fr-tag" style="text-align: justify;">In the summer, wisps of white thread along the ridges that shroud Innsbruck on all sides, capping off the craggy massifs that cascade towards the meadows of edelweiss and Alpine pastures at the valley bottom. In the town itself, a chocolate box of treats distracts ramblers before their walks to the regal tombs of the Hofkirche, the great rococo edifices of the Hapsburg Hofburg, the fiery façades of the Goldenes Dachl. In the streets, Stiegl and Mohrenbräu slosh in steins, Innsbruck tour guides herald Klimt and Troger at the Ferdinandeum, and beer gardens overflow with schnitzels, schnapps and hiking shoes fresh from the crags. </p><p class="fr-tag" style="text-align: justify;">Come winter, the whole Inn Valley retreats beneath a covering of ice and snow and glaciers shimmer on the mountaintops. The Hungerburg funicular and Nordkettenbahnen rattle away, beckoning skiers once more with the promise of pistes aplenty at Kaunertal and Stubaier. In the town, icicles serrate the apses of baroque buildings, the cobblestones freeze up and locals have excited discussions about who will dominate the jumps at the Begisel stadium this year. Snow gathers as the après party continues on; Innsbruck is alive.</p>', 1, 0, 12, '47.28', '11.41', 'innsbruck', 0, 1),
 (6127, 2059, 'Tissemssilt', 'Tisamsilt, Tissemsilt, Tissemselt', '', 1, 0, 59, '35.62', '1.81', 'tissemssilt', 0, 1),
 (6128, 2060, 'Tizi Ouzou', 'Tizi Wazu, Tizi Wezzu', '', 1, 0, 59, '36.72', '4.05', 'tizi-ouzou', 0, 1),
@@ -6349,12 +6381,12 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (6136, 2063, 'Soanierana Ivongo', '', '', 1, 0, 135, '-16.92', '49.57', 'soanierana-ivongo', 0, 1),
 (6137, 2063, 'Vavatenina', '', '', 1, 0, 135, '-17.47', '49.19', 'vavatenina', 0, 1),
 (6138, 2063, 'Moramanga', '', '', 1, 0, 135, '-18.94', '48.22', 'moramanga', 0, 1),
-(6139, 2063, 'Anosibe Anala', 'Anosibe An\'la', '', 1, 0, 135, '-19.43', '48.20', 'anosibe-anala', 0, 1),
+(6139, 2063, 'Anosibe Anala', 'Anosibe An''la', '', 1, 0, 135, '-19.43', '48.20', 'anosibe-anala', 0, 1),
 (6140, 1798, 'Chapeco', 'Xapecó', '', 1, 0, 29, '-27.10', '-52.64', 'chapeco', 0, 1),
 (6141, 1798, 'Lages', 'Lajes', '', 1, 0, 29, '-27.81', '-50.31', 'lages', 0, 1),
 (6142, 1798, 'Jaragua do Sul', '', '', 1, 0, 29, '-26.48', '-49.10', 'jaragua-do-sul', 0, 1),
 (6143, 2065, 'Utsunomiya', '', '', 1, 0, 108, '36.56', '139.89', 'utsunomiya', 0, 1),
-(6144, 2066, 'Burco', 'Burao, Bur\'o', '', 1, 0, 197, '9.52', '45.54', 'burco', 0, 1),
+(6144, 2066, 'Burco', 'Burao, Bur''o', '', 1, 0, 197, '9.52', '45.54', 'burco', 0, 1),
 (6145, 2067, 'Tokat', '', '', 1, 0, 214, '40.30', '36.56', 'tokat', 0, 1),
 (6146, 2068, 'Tokushima', '', '', 1, 0, 108, '34.07', '134.55', 'tokushima', 0, 1),
 (6147, 2069, 'Tokyo', '', '<p style="text-align: justify;">\n	Japan&rsquo;s capital is like no other city in the world. Manhattan&rsquo;s bright lights with an edgier culture, the chaos of Marrakech with an added chicness, and the prestige of Paris with a tranquil Asian flair; Tokyo is absolutely dazzling. In a city where sake-driven karaoke and Zen meditation exist side by side on neon-lit streets, it&rsquo;s hard to imagine a personality Tokyo doesn&rsquo;t deliver to. Colorful confectioneries sweeten up any visit, while the world&rsquo;s largest fish market provides the city with picture-perfect sushi. But Tokyo&rsquo;s beauty doesn&rsquo;t end with its&rsquo; gastro delights; progressive clothing boutiques and extravagant electronic stores entice sidewalk travelers with their innovatively modern designs.<br />\n	Your helpful Tokyo tour guide will remind you that the city&rsquo;s advanced public transportation system covers 100 routes throughout the metropolis, taking visitors to its&rsquo; oddly artsy red light district and transporting them back to the Imperial Palace&rsquo;s majestic castle, all in a day. Fear not for the other 364 days- there&rsquo;s plenty of Tokyo&rsquo;s treasures to keep any traveller happy.&nbsp;</p>\n', 1, 0, 108, '35.67', '139.77', 'tokyo', 0, 1),
@@ -6413,7 +6445,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (6200, 2095, 'Tulcea', '', '', 1, 0, 181, '45.19', '28.80', 'tulcea', 0, 1),
 (6201, 2096, 'Tulkarm', '', '', 1, 0, 175, '32.32', '35.04', 'tulkarm', 0, 1),
 (6202, 2097, 'Tumbes', '', '', 1, 0, 167, '-3.57', '-80.46', 'tumbes', 0, 1),
-(6203, 2098, 'Ambato', '', '<p class="fr-tag" style="text-align: justify;">Earthquakes seem to keep on rattling the ground up here in the high Ecuadorian Andes, but Ambato—though razed and razed again (most recently in 1949)—sturdily maintains its stance betwixt the mist-clad peaks and billowing volcanic calderas of Tungurahua Province. </p><p class="fr-tag" style="text-align: justify;">First established at the behest of the Spanish monarchy as a mountain outpost, Ambato was rebuilt virtually entirely following the destruction of the 40s. Consequently, the centre is now largely a cascade of apartment blocks dressed in utilitarian modernity, with only flecks of the city’s original raison d\'être remaining; from a bustling marketplace bursting with a kaleidoscope of cultivated flowers (one of Ambato’s biggest trades), to a neo-classical frontispiece determined to mimic the former fabled opulence of La Catedral. The town also embraces its cultural heritage with the epithet of the “Land of the Juans”, their prominent figures proudly depicted in its museums and parks. </p><p class="fr-tag" style="text-align: justify;">If you are hitting town in early February then ask your Ambato tour guide about the Carnival arrangements, which often see booming crowds clustering in the streets of Atocha district and Miraflores, sipping cinnamon-doused colada moradas and beset by plumes of carnations to boot!</p>', 1, 0, 60, '-1.24', '-78.62', 'ambato', 0, 1),
+(6203, 2098, 'Ambato', '', '<p class="fr-tag" style="text-align: justify;">Earthquakes seem to keep on rattling the ground up here in the high Ecuadorian Andes, but Ambato—though razed and razed again (most recently in 1949)—sturdily maintains its stance betwixt the mist-clad peaks and billowing volcanic calderas of Tungurahua Province. </p><p class="fr-tag" style="text-align: justify;">First established at the behest of the Spanish monarchy as a mountain outpost, Ambato was rebuilt virtually entirely following the destruction of the 40s. Consequently, the centre is now largely a cascade of apartment blocks dressed in utilitarian modernity, with only flecks of the city’s original raison d''être remaining; from a bustling marketplace bursting with a kaleidoscope of cultivated flowers (one of Ambato’s biggest trades), to a neo-classical frontispiece determined to mimic the former fabled opulence of La Catedral. The town also embraces its cultural heritage with the epithet of the “Land of the Juans”, their prominent figures proudly depicted in its museums and parks. </p><p class="fr-tag" style="text-align: justify;">If you are hitting town in early February then ask your Ambato tour guide about the Carnival arrangements, which often see booming crowds clustering in the streets of Atocha district and Miraflores, sipping cinnamon-doused colada moradas and beset by plumes of carnations to boot!</p>', 1, 0, 60, '-1.24', '-78.62', 'ambato', 0, 1),
 (6204, 2099, 'Tunis', 'Tounis, Túnez', '<p style="text-align: justify;">\n	It was from these dry and arid coastlands on the very tip of North Africa that the great kings and queens of Carthage contended with the might of the Roman Empire. It was here that the Arab Caliphates of the region established their trading foothold on the Mediterranean Sea. Today though, Tunis revels in a relative touristic obscurity that makes it one of the truly raw and engaging off-the-beaten-track destinations in the country, where visitors can wander ancient ruins and savour one of Tunisia&rsquo;s liveliest and most local towns.<br />\n	Be sure to head for the Medina, where a maze of ancient alleyways sprout mosques, hammams, palaces and a bubbling souk selling camel skin products from the same shelves as hand-crafted jewellery and trinkets. Then there&rsquo;s Tunis&rsquo; famous French cafes, with their strong coffee and Casablanca-esque vibe arranged along the tree lined boulevards of Avenue Bourguiba in the newer part of town.<br />\n	Soon enough, your Tunis tourist guide will point you to the most important must see of the city lying just to its north, within easy reach on the TGM trains from Tunis. This is the site of ancient Carthage, where the Roman invaders made their African home, and the where the sprawling Antonin Baths, the famous water cisterns and alluringly dilapidated amphitheatre can still be discovered in all their glory.</p>\n', 1, 0, 212, '36.84', '10.22', 'tunis', 0, 1),
 (6205, 2100, 'Nicosia (Turkish controlled area)', '', '', 1, 0, 52, '35.18', '33.37', 'nicosia-turkish-controlled-area', 0, 1),
 (6206, 2100, 'Famagusta', '', '<p style="text-align: justify;">\n	Located in northern Cyprus, Famagusta&rsquo;s old city is a wonderfully preserved collection of medieval and renaissance buildings. Canon balls still remain in the fortification&rsquo;s walls, remnants of the 1950s&rsquo; Turkish siege and reminding tourists&rsquo; of the city&rsquo;s combined beauty and warfare. In addition to an abundance of historical sights, the Old Town holds souvenir stores specializing in the nation&rsquo;s handcrafted Lefkara lacework, as well as an exciting sampling of pubs and cafes. The modern neighborhood&rsquo;s Salamis Street houses a thriving strip of bars and eateries, often visited for a dose of authentic Famagusta nightlife.<br />\n	It should be noted that public transportation and bicycle rentals are not readily available. For tourists, renting a car or taking a taxi are optimal ways to see the city. While Famagusta is small and easily toured on foot, crossing into neighborhoods quarantined by the UN or Turkish Army can lead to arrest; these areas are clearly marked and easily avoided, but solo travellers may feel more cautious with a Famagusta tour guide escorting them through town.</p>\n', 1, 0, 52, '35.11', '33.94', 'famagusta', 0, 1),
@@ -6483,7 +6515,8 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (6270, 2130, 'Allahabad', '', '<p class="fr-tag" style="text-align: justify;">India’s second-oldest city marks some seriously sacred ground for Hindus, placed as it is at the confluence of the mighty Ganga (the Ganges), and the mythical Yamuna and Sarasvati rivers. It is thought that Lord Brahma himself landed on earth in Allahabad and designated it the hallowed pilgrimage destination it is known so famously as today. Indeed, the great Kumbh Mela held every twelfth year is the world’s largest religious festival and human gathering; the last one in 2013 was the subject of study by a team from Harvard for its remarkable execution of urban planning and administration! </p><p class="fr-tag" style="text-align: justify;">Go ahead and take that refreshing dip at the sacred Triveni Sangam (confluence of the rivers) pairing it with a visit to the Hindu temples and mystical ashrams on the pilgrimage route. Allahabad tour guides also have of exquisite Raj era architecture up their sleeve, along with one formidable Mughal fortess, the ancestral home of the Nehru clan and the enchanting Khusro Bagh—the resting place of imperial luminaries of the sub-continent. </p><p class="fr-tag" style="text-align: justify;">Through this sightseeing and cultural immersion, keep an eye out for the city’s bustling market areas to indulge in colourful handicrafts as well as food stalls overflowing with trademark spicy snacks from chaat and samosas to calming chai teas.</p>', 1, 0, 100, '25.45', '81.84', 'allahabad', 0, 1),
 (6271, 2130, 'Aligarh', '', '', 1, 0, 100, '27.89', '78.06', 'aligarh', 0, 1),
 (6272, 2130, 'Moradabad', '', '', 1, 0, 100, '28.84', '78.76', 'moradabad', 0, 1),
-(6273, 2130, 'Bareilly', '', '', 1, 0, 100, '28.36', '79.41', 'bareilly', 0, 1),
+(6273, 2130, 'Bareilly', '', '', 1, 0, 100, '28.36', '79.41', 'bareilly', 0, 1);
+INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
 (6274, 2130, 'Gorakhpur', '', '', 1, 0, 100, '26.76', '83.36', 'gorakhpur', 0, 1),
 (6275, 2130, 'Noida', '', '<p style="text-align: justify;">\n	The New Okhla Industrial Development Authority or NOIDA as it is commonly called is a fairly new urban centre just under 30 years old. It is the most popular location for businesses looking to escape the high costs and disruption that a large city like Delhi can bring. The town has been planned excellently that translates into manageable traffic, well lit and well planned roads and good quality general infrastructure. Giant malls, offices, apartments and hotels scattered across the city give it a hospitable vibe though safety can be an issue.<br />\n	The Special Economic Zone status provided to the city, as any Noida city guide will tell you has contributed to the Global IT heavyweights such as Dell, IBM and Fujitsu basing their offices here as well as many other multinationals. Major TV Studios and News corporations have also set up in the city and as have heavy industry majors such as Samsung, Ericsson and Alstom. With the city also host to an F1 Grand Prix, any visitor will feel the buzz of visiting such a fast paced and vibrant metropolis.</p>\n', 1, 0, 100, '28.58', '77.33', 'noida', 0, 1),
 (6276, 2130, 'Saharanpur', '', '', 1, 0, 100, '29.97', '77.54', 'saharanpur', 0, 1),
@@ -6518,8 +6551,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (6305, 2131, 'Haldwani', '', '', 1, 0, 100, '29.23', '79.52', 'haldwani', 0, 1),
 (6306, 2131, 'Kashipur', '', '', 1, 0, 100, '29.22', '78.96', 'kashipur', 0, 1),
 (6307, 2131, 'Roorkee', '', '', 1, 0, 100, '29.87', '77.89', 'roorkee', 0, 1),
-(6308, 2132, 'Uummannaq', 'Umanak', '', 1, 0, 81, '70.69', '-52.17', 'uummannaq', 0, 1);
-INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
+(6308, 2132, 'Uummannaq', 'Umanak', '', 1, 0, 81, '70.69', '-52.17', 'uummannaq', 0, 1),
 (6309, 2133, 'Helsinki', 'Helsingfors, Helsset', '<p style="text-align: justify;">\n	Cool, calm and collected Helsinki draws travellers with the promise of a laid-back metropolitan experience complete with a pervasive caf&eacute; culture, concealed beneath a grand architectural veneer that&rsquo;s informed by the historic influences of Russian Tsardom and Swedish imperialism alike. What&rsquo;s more, the city is set over a series of fragmented landmasses that jut their way out dramatically into the cold swells of the northern Baltic, making it one of Europe&rsquo;s most attractive maritime capitals.<br />\n	Be certain to start your travels here by quizzing your Helsinki tour guide about the major must see sights of the downtown, starting by checking off the sprawling Senate Square, the iconic Lutheran Cathedral and glorious Uspenski Church of Kruununhaka, before moving out to case the pretty parks of T&auml;htitorninvuoren, the chiselled Rock Church, or the UNESCO-attested districts that bulge from the banks of Suomenlinna&mdash;one of the most breath-taking island fortresses in the world.<br />\n	And once the sightseeing&rsquo;s over, it&rsquo;s time to get local, stripping off for a classic Finnish sauna session, or chartering a boat to take you around the craggy coves and bubbling summertime beaches of Hietaniemi. Or maybe you&rsquo;d prefer a dose of culture at the National Museum of Finland or the Heureka Science Centre, washed down with a potent swig of chilly vodka at the Arctic Icebar on Yliopistonkatu?</p>\n', 1, 0, 67, '60.17', '24.94', 'helsinki', 0, 1),
 (6310, 2133, 'Hyvinkaa', 'Hyvinge', '', 1, 0, 67, '60.64', '24.87', 'hyvinkaa', 0, 1),
 (6311, 2134, 'Ulaangom', 'Ulan Gom, Oulangom', '', 1, 0, 140, '49.99', '92.06', 'ulaangom', 0, 1),
@@ -6565,7 +6597,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (6351, 2153, 'Skovde', '', '', 1, 0, 189, '58.38', '13.84', 'skovde', 0, 1),
 (6352, 2153, 'Uddevalla', '', '', 1, 0, 189, '58.35', '11.93', 'uddevalla', 0, 1),
 (6353, 2153, 'Lidkoping', '', '', 1, 0, 189, '58.51', '13.16', 'lidkoping', 0, 1),
-(6354, 2154, 'Vatican City', '', '<p class="fr-tag" style="text-align: justify;">Never before has such a small area commanded the minds of so many, nor controlled so much in the way of priceless art and architecture. But command it does, and one need only stroll down to the colonnaded plaza of St Peter\'s Square come Easter to see it; the colossal crowds of Catholics craning upwards for a glance at the Pope; the gilded Swiss Guard shining in the sun; the vermillion suits of the cardinals all in a row. </p><p class="fr-tag" style="text-align: justify;">There’s no denying the Vatican’s cultural clout. There are treasures here that no self-respecting history or heritage lover could possibly deem to pass over, and the sprawling rooms of the state museum remain unquestionably some of the most loaded on the globe, touting Caravaggio, Da Vinci and Raphael to name a few. The wonders don’t stop there either (indeed they hardly stop at all), because Vatican City tour guides also lead visitors through the Sistine Chapel, famously adorned with the <em>The Last Judgement</em> by Michelangelo. There is then the cavernous interior of St Peter\'s Basilica, where the tomb of the eponymous apostle lurks in the sepulchres below, and the mighty dome of Giacomo della Porta and Fontana rises to the very roof of the Eternal City above.</p>', 1, 0, 223, '41.90', '12.46', 'vatican-city', 0, 1),
+(6354, 2154, 'Vatican City', '', '<p class="fr-tag" style="text-align: justify;">Never before has such a small area commanded the minds of so many, nor controlled so much in the way of priceless art and architecture. But command it does, and one need only stroll down to the colonnaded plaza of St Peter''s Square come Easter to see it; the colossal crowds of Catholics craning upwards for a glance at the Pope; the gilded Swiss Guard shining in the sun; the vermillion suits of the cardinals all in a row. </p><p class="fr-tag" style="text-align: justify;">There’s no denying the Vatican’s cultural clout. There are treasures here that no self-respecting history or heritage lover could possibly deem to pass over, and the sprawling rooms of the state museum remain unquestionably some of the most loaded on the globe, touting Caravaggio, Da Vinci and Raphael to name a few. The wonders don’t stop there either (indeed they hardly stop at all), because Vatican City tour guides also lead visitors through the Sistine Chapel, famously adorned with the <em>The Last Judgement</em> by Michelangelo. There is then the cavernous interior of St Peter''s Basilica, where the tomb of the eponymous apostle lurks in the sepulchres below, and the mighty dome of Giacomo della Porta and Fontana rises to the very roof of the Eternal City above.</p>', 1, 0, 223, '41.90', '12.46', 'vatican-city', 0, 1),
 (6355, 2155, 'Lausanne', '', '', 1, 0, 40, '46.52', '6.62', 'lausanne', 0, 1),
 (6356, 2155, 'Yverdon', 'Yverdon les Bains, Ifferten', '', 1, 0, 40, '46.79', '6.63', 'yverdon', 0, 1),
 (6357, 2155, 'Montreux', '', '', 1, 0, 40, '46.45', '6.88', 'montreux', 0, 1),
@@ -6688,10 +6720,11 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (6474, 2188, 'Orestias', '', '', 1, 0, 86, '41.50', '26.53', 'orestias', 0, 1),
 (6475, 2189, 'Voronezh', 'Voronez', '', 1, 0, 183, '51.72', '39.26', 'voronezh', 0, 1),
 (6476, 2190, 'Vratsa', 'Vraca', '', 1, 0, 21, '43.22', '23.56', 'vratsa', 0, 1),
-(6477, 2191, 'Focsani', '', '', 1, 0, 181, '45.70', '27.18', 'focsani', 0, 1),
+(6477, 2191, 'Focsani', '', '', 1, 0, 181, '45.70', '27.18', 'focsani', 0, 1);
+INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
 (6478, 2192, 'Jihlava', 'Iglau, Iglawa', '', 1, 0, 53, '49.40', '15.58', 'jihlava', 0, 1),
 (6479, 2192, 'Trebitsch', 'Třebíč, Trebic', '', 1, 0, 53, '49.22', '15.87', 'trebitsch', 0, 1),
-(6480, 2193, 'Dakhla', 'Villa Cisneros, ad Dakhla, ad Dahla', '<p class="fr-tag" style="text-align: justify;">This small sliver of sandy land that pokes its way out from the edge of Western Sahara is hallowed ground for adventure sportsters the world over, famed primarily for the strong Atlantic breezes that brush its windswept dunes and golden beaches. But while kite surfers and windsurfers continue to flock to the town’s rustic guesthouses and hostels, and Dakhla tour guides continue to tout some of the top seaside activities in North Africa, there is also another dimension to the place that lies a little more hidden. Alive with the historic and cultural influences of the Berbers, the colonial French and Spanish, the Arabs and the Mauritanians alike, the town also exudes an earthy and folksy vibe, with chatty locals sipping spearmint green teas in smoky patisseries and makeshift bazaars awash with Atlantic seafood and African crafts alike. Nearby, travellers will also discover the wild environs of the Cintra Bay, and the wondrous coastal stretches of the Banc d\'Arguin National Park that a cacophonous array of migratory bird species call home.</p>', 1, 0, 63, '23.71', '-15.93', 'dakhla', 0, 1),
+(6480, 2193, 'Dakhla', 'Villa Cisneros, ad Dakhla, ad Dahla', '<p class="fr-tag" style="text-align: justify;">This small sliver of sandy land that pokes its way out from the edge of Western Sahara is hallowed ground for adventure sportsters the world over, famed primarily for the strong Atlantic breezes that brush its windswept dunes and golden beaches. But while kite surfers and windsurfers continue to flock to the town’s rustic guesthouses and hostels, and Dakhla tour guides continue to tout some of the top seaside activities in North Africa, there is also another dimension to the place that lies a little more hidden. Alive with the historic and cultural influences of the Berbers, the colonial French and Spanish, the Arabs and the Mauritanians alike, the town also exudes an earthy and folksy vibe, with chatty locals sipping spearmint green teas in smoky patisseries and makeshift bazaars awash with Atlantic seafood and African crafts alike. Nearby, travellers will also discover the wild environs of the Cintra Bay, and the wondrous coastal stretches of the Banc d''Arguin National Park that a cacophonous array of migratory bird species call home.</p>', 1, 0, 63, '23.71', '-15.93', 'dakhla', 0, 1),
 (6481, 2194, 'Ubari', '', '', 1, 0, 130, '26.59', '12.76', 'ubari', 0, 1),
 (6482, 2195, 'Hamilton', 'Kirikiriroa', '', 1, 0, 164, '-37.78', '175.28', 'hamilton', 0, 1),
 (6483, 2195, 'Pukekohe', '', '', 1, 0, 164, '-37.19', '174.95', 'pukekohe', 0, 1),
@@ -6734,8 +6767,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (6520, 2197, 'Wrexham', 'Wrexham Maelor, Wrecsam', '', 1, 0, 74, '53.05', '-3.00', 'wrexham', 0, 1),
 (6521, 2197, 'Bridgend', 'Pen y bont ar Ogwr, Pen y bont ar Ogwr', '', 1, 0, 74, '51.51', '-3.58', 'bridgend', 0, 1),
 (6522, 2197, 'Pontypool', 'Pontypwl, Pont y p?l', '', 1, 0, 74, '51.70', '-3.04', 'pontypool', 0, 1),
-(6523, 2197, 'Aberdare', '', '', 1, 0, 74, '51.72', '-3.46', 'aberdare', 0, 1);
-INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
+(6523, 2197, 'Aberdare', '', '', 1, 0, 74, '51.72', '-3.46', 'aberdare', 0, 1),
 (6524, 2197, 'Colwyn Bay', 'Bae Colwyn', '', 1, 0, 74, '53.31', '-3.75', 'colwyn-bay', 0, 1),
 (6525, 2197, 'Aberystwyth', '', '', 1, 0, 74, '52.42', '-4.09', 'aberystwyth', 0, 1),
 (6526, 2198, 'Wangdue', '', '<p class="fr-tag" style="text-align: justify;">This mystical conglomeration of white-washed temples and earthy woodwork homes on the edge of the Black Mountains of central Bhutan has long been a place shrouded in legend, known for its deep religiosity and authentic breed of Vajrayana Buddhism. It’s also the gateway to a beautiful corner of the Himalaya, awash with verdant valleys and sweeping, forest-clad hills.</p><p class="fr-tag" style="text-align: justify;"><span style="line-height: 16.7999992370605px; font-size: 1em; background-color: initial;">Most Wangdue tour guides will point first time visitors here straight to the Wangdue Dzong, sitting high on its perch in the Bhutanese mountains, laden with historic relics of the old Buddhist order. The road there will take travellers through some breath-taking scenery, encompassing sections of the rugged Phobjikha Valley, and offering up access to the exquisite Gangtey Monastery.</span></p><p class="fr-tag" style="text-align: justify;">The town of Wangdue itself is a charming affair of makeshift mountain homes that comes alive each year with the Black-neck Crane Festival, when locals celebrate the return of these elegant and endangered birds to their section of wild, Western Bhutan.</p>', 1, 0, 31, '27.48', '89.90', 'wangdue', 0, 1),
@@ -6867,7 +6899,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (6652, 2230, 'Casper', '', '', 1, 0, 220, '42.83', '-106.33', 'casper', 0, 1),
 (6653, 2231, 'Xaignabury', 'Sayabury, Sayaboury, Xaignaburi, Muang Xaignabouri, Xaignabouli', '', 1, 0, 120, '19.20', '101.48', 'xaignabury', 0, 1),
 (6654, 1845, 'Ankang', 'Xingan', '', 1, 0, 45, '32.68', '109.02', 'ankang', 0, 1),
-(6655, 1845, 'Yanan', 'Yan\'an', '', 1, 0, 45, '36.60', '109.47', 'yanan', 0, 1),
+(6655, 1845, 'Yanan', 'Yan''an', '', 1, 0, 45, '36.60', '109.47', 'yanan', 0, 1),
 (6656, 1845, 'Yulin (Shaanxi)', '', '', 1, 0, 45, '38.29', '109.74', 'yulin-shaanxi', 0, 1),
 (6657, 1848, 'Taian', 'Taishan', '', 1, 0, 45, '36.20', '117.12', 'taian', 0, 1),
 (6658, 1848, 'Yantai', 'Chefu, Chefoo, Zhifu', '', 1, 0, 45, '37.53', '121.40', 'yantai', 0, 1),
@@ -6910,7 +6942,8 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (6695, 2264, 'Whitehorse', '', '', 1, 0, 35, '60.73', '-135.05', 'whitehorse', 0, 1),
 (6696, 1848, 'Zouxian', '', '', 1, 0, 45, '35.41', '116.94', 'zouxian', 0, 1),
 (6697, 1848, 'Weihai', '', '', 1, 0, 45, '37.50', '122.10', 'weihai', 0, 1),
-(6698, 1848, 'Laiyang', '', '', 1, 0, 45, '36.97', '120.70', 'laiyang', 0, 1),
+(6698, 1848, 'Laiyang', '', '', 1, 0, 45, '36.97', '120.70', 'laiyang', 0, 1);
+INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
 (6699, 1848, 'Jiaozhou', 'Jiaoxian', '', 1, 0, 45, '36.29', '120.00', 'jiaozhou', 0, 1),
 (6700, 1848, 'Gaomi', '', '', 1, 0, 45, '36.39', '119.75', 'gaomi', 0, 1),
 (6701, 1848, 'Laiwu', '', '', 1, 0, 45, '36.20', '117.66', 'laiwu', 0, 1),
@@ -6930,7 +6963,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (6715, 2269, 'Kolobrzeg', 'Kolberg', '', 1, 0, 172, '54.19', '15.57', 'kolobrzeg', 0, 1),
 (6716, 2270, 'Zadar', 'Zara, Iadera', '<p style="text-align: justify;">\n	Most visitors to Croatia head to the sun-soaked south coast, but take a trip north instead and you&rsquo;ll find yourself in Zadar, a vibrant Croatian city with beautiful architecture and a charming sea front.<br />\n	Once part of the Roman Empire, Zadar has a well-preserved historic old town, replete with Roman ruins, medieval churches and cathedrals along with the museums and libraries that tell their story.&nbsp; This cultural gem of a city has also been endowed with a musical inheritance best experienced with a musical evening at the preromanic St Donatus Church amidst the splendour of its artistic interiors.<br />\n	By far the most unusual attraction in Zadar is the Sea Organ and Sun Salutation, a man-made organ overlooking the city harbour that works with a unique light display to create a sight-and-sound spectacle like no other, best experienced at sunset.<br />\n	Consult your Zadar tour guide to discover that there&rsquo;s so much more; national parks, nature reserves, canyons and lakes extend out to islands waiting to be explored. This action packed itinerary is gastronomically complemented by Zadar&rsquo;s famous Dalmatian cuisine and a cafe culture; you don&rsquo;t have to go far to find a place to rest your feet and enjoy a cup of coffee.</p>\n', 1, 0, 93, '44.12', '15.24', 'zadar', 0, 1),
 (6717, 2271, 'Soyo', 'Santo António do Zaire', '', 1, 0, 8, '-6.13', '12.37', 'soyo', 0, 1),
-(6718, 2271, 'Mbanza Congo', 'Mbanza, M\'banza Congo, Sao Salvador, Sao Salvador do Congo', '', 1, 0, 8, '-6.27', '14.24', 'mbanza-congo', 0, 1),
+(6718, 2271, 'Mbanza Congo', 'Mbanza, M''banza Congo, Sao Salvador, Sao Salvador do Congo', '', 1, 0, 8, '-6.27', '14.24', 'mbanza-congo', 0, 1),
 (6719, 2272, 'Uzhhorod', 'Ungvár, Uzhgorod, Uzgorod', '', 1, 0, 218, '48.62', '22.30', 'uzhhorod', 0, 1),
 (6720, 2272, 'Mukacheve', 'Munkács, Mukacevo, Mukachevo', '', 1, 0, 218, '48.45', '22.72', 'mukacheve', 0, 1),
 (6721, 2273, 'Nagykanizsa', '', '', 1, 0, 95, '46.46', '16.99', 'nagykanizsa', 0, 1),
@@ -6951,8 +6984,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (6736, 2281, 'Enerhodar', 'Energodar', '', 1, 0, 218, '47.50', '34.47', 'enerhodar', 0, 1),
 (6737, 2282, 'Uliastai', '', '', 1, 0, 140, '47.74', '96.84', 'uliastai', 0, 1),
 (6738, 2283, 'Terneuzen', '', '', 1, 0, 159, '51.33', '3.84', 'terneuzen', 0, 1),
-(6739, 2283, 'Middelburg', 'Arnemuiden', '', 1, 0, 159, '51.50', '3.61', 'middelburg', 0, 1);
-INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
+(6739, 2283, 'Middelburg', 'Arnemuiden', '', 1, 0, 159, '51.50', '3.61', 'middelburg', 0, 1),
 (6740, 2285, 'Yuanlin', '', '', 1, 0, 216, '23.96', '120.55', 'yuanlin', 0, 1),
 (6741, 1848, 'Anqiu', '', '', 1, 0, 45, '36.43', '119.19', 'anqiu', 0, 1),
 (6742, 1848, 'Tengzhou', 'Tengxian', '', 1, 0, 45, '35.09', '117.15', 'tengzhou', 0, 1),
@@ -7116,9 +7148,9 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (6900, 2221, 'Willemstad', '', '', 1, 0, 50, '12.10', '-68.93', 'willemstad', 0, 1),
 (6901, 1808, 'Santo Domingo', '', '<p class="fr-tag" style="text-align: justify;">Standing on the edge of the shimmering Caribbean Sea just a short jaunt away from the Dominican Republic’s most celebrated stretches of sand and coral reef, the island’s capital represents the perfect fusion of the historical New World and the region’s happening modern edge. Consequently, Santo Domingo a place where ageing Spanish fortresses rub shoulders with bachata and merengue bars, and traditional bulgur wheat broths are served at roadside holes-in-the-wall, all while fashionistas cruise by in their Prada frocks and Gucci sunglasses.</p><p class="fr-tag" style="text-align: justify;">Most Santo Domingo tour guides will point first-time visitors straight to the tight-knit streets of the UNESCO-attested Colonial Zone, where the oldest European cathedral in the Americas still stands. A treasure house of colonial buildings best explored by foot, don’t miss on the stunning Alcázar de Colón and a walk down Calle deLas Damas where the formidable medieval bulwarks of La Fortaleza await amongst others. Of course, there are museums here too, and before hitting the beaches around Boca Chica and Punta Cana to the east, travellers would do well to explore the acclaimed Museo de las Casas Reales and the Museo Naval de las Atarazanas. And at night, why not head down to the Malecon, where bars and shopping boutiques complement a stroll along the waterfront.</p>', 1, 0, 58, '18.48', '-69.91', 'santo-domingo', 0, 1),
 (6902, 2284, 'Zestaphoni', 'Zestaponi, Zestafoni, Kvirili', '', 1, 0, 76, '42.11', '43.01', 'zestaphoni', 0, 1),
-(6903, 2091, 'Tskaltubo', 'Tskhaltubo, Chaltubo, Ts\'qaltubo', '', 1, 0, 76, '42.33', '42.60', 'tskaltubo', 0, 1),
+(6903, 2091, 'Tskaltubo', 'Tskhaltubo, Chaltubo, Ts''qaltubo', '', 1, 0, 76, '42.33', '42.60', 'tskaltubo', 0, 1),
 (6904, 709, 'Gibraltar', '', '<p style="text-align: justify;">\n	Jutting out dramatically into the Mediterranean straits between Spain and Morocco, this enclave of British territory has long been a bastion of fortification, much-coveted by the region&rsquo;s incumbent military and much-hated by its many invaders since it was first garrisoned in the Middle Ages.<br />\n	Today crossing into Gibraltar is an experience in itself, with visitors required to traverse the landing strip of the region&rsquo;s airport, passing below the shadow of the great rocky promontory that soars overhead. But the surrealism doesn&rsquo;t stop there; while the town itself is peppered with classic red phone boxes and English tearooms to boot, a cable Car ride to the Top of the Rock promises all encompassing views of two continents, two bodies of water and three countries, along with an introduction to its famed population of Barbary macaques. Touring the top of the eponymous limestone Rock of Gibraltar is a must, and guests should ask their Gibraltar tourist guide for tips on the various excursions out to the Pillars of Hercules, the formidable Moorish castle on the rock&rsquo;s eastern ridge or the labyrinth of the Great Siege Tunnels running below.</p>\n', 1, 0, 80, '36.14', '-5.35', 'gibraltar', 0, 1),
-(6905, 1680, 'Quetzaltenango', '', '<p class="fr-tag" style="text-align: justify;">Quetzaltenango was once the very theatre of action where conquistador Spain clashed with the Maya K\'iche. Ever since, it stands as a veritable microcosm of the myriad cultures that have moved between the coffee-rich valleys of the Guatemalan Western Highlands. In the town’s heart (Zona One), a curiously congruent mishmash of Germanic blocks, Belle Epoque edifices, Gothic facades and Spanish colonialism creates an eclectic veneer that keeps travellers guessing (particular gems include the neo-classical Municipal Theatre and the structures lining Central Park). And just when visitors thought it was all over, Zona One gives way to the hubbub of Zona Three, where craft sellers in sprawling marketplaces try in vain to mimic the relics of the Museo Ixkik, cafes thrum with the chatter of ex-pat students fresh from Spanish class, and footballs bounce around leafy Zoologico Minerva. Be sure to allow some time for explorations on the peripheries of town too, where Quiche and Mam tribal villages bake in the sun, and Quetzaltenango tour guides lead expeditions down, to the Pacific swells, or up, to the fuming heights of the Santa Maria Volcano.</p>', 1, 0, 87, '14.84', '-91.53', 'quetzaltenango', 0, 1),
+(6905, 1680, 'Quetzaltenango', '', '<p class="fr-tag" style="text-align: justify;">Quetzaltenango was once the very theatre of action where conquistador Spain clashed with the Maya K''iche. Ever since, it stands as a veritable microcosm of the myriad cultures that have moved between the coffee-rich valleys of the Guatemalan Western Highlands. In the town’s heart (Zona One), a curiously congruent mishmash of Germanic blocks, Belle Epoque edifices, Gothic facades and Spanish colonialism creates an eclectic veneer that keeps travellers guessing (particular gems include the neo-classical Municipal Theatre and the structures lining Central Park). And just when visitors thought it was all over, Zona One gives way to the hubbub of Zona Three, where craft sellers in sprawling marketplaces try in vain to mimic the relics of the Museo Ixkik, cafes thrum with the chatter of ex-pat students fresh from Spanish class, and footballs bounce around leafy Zoologico Minerva. Be sure to allow some time for explorations on the peripheries of town too, where Quiche and Mam tribal villages bake in the sun, and Quetzaltenango tour guides lead expeditions down, to the Pacific swells, or up, to the fuming heights of the Santa Maria Volcano.</p>', 1, 0, 87, '14.84', '-91.53', 'quetzaltenango', 0, 1),
 (6906, 1875, 'Siguatepeque', '', '', 1, 0, 92, '14.60', '-87.84', 'siguatepeque', 0, 1),
 (6907, 1050, 'Kingston', '', '<p class="fr-tag" style="text-align: justify;">Between the urban sprawl of New Kingston and the throbbing heart of the historic downtown, this energetic island capital thrums to the fruity tunes of steel drums and the nostalgic offbeats of Bob Marley reggae. And, it’s all backed up by the aromas of Jamaican jerky and fried saltfish, washed down with a hefty dose of local Appleton Rum or the ubiquitous Red Stripe beer. </p><p class="fr-tag" style="text-align: justify;">The action of the old town focuses on the Parade, where rickety buses rumble their way past corrugated rum shacks. Here, visitors will also find the fantastic National Gallery and a wealth of historic townhouses. And then why not quiz your Kingston tour guide about the legendary pirate haunts of old Port Royal — the onetime stomping grounds of Henry Morgan and company — or the crumbling remnants of the old colonial forts?</p><p class="fr-tag" style="text-align: justify;">When you’re done wandering the shabby-chic streets of the old centre, head out to New Kingston for a glimpse of this island’s booming modernism. Here, new hotel complexes rub shoulders with celebrated institutions, and die-hard pilgrims on the reggae trail can seek out some of the best exhibitions on Bob Marley in the world.</p>', 1, 0, 106, '17.99', '-76.80', 'kingston', 0, 1),
 (6908, 1646, 'Pristina', '', '', 1, 0, 231, '42.65', '21.17', 'pristina', 0, 1),
@@ -7138,7 +7170,8 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (6922, 1336, 'Moknine', '', '', 1, 0, 212, '35.65', '10.96', 'moknine', 0, 1),
 (6923, 2101, 'Turks and Caicos Islands', '', '', 1, 0, 205, '21.50', '-71.52', 'turks-and-caicos-islands', 0, 1),
 (6924, 1755, 'Saint Thomas', '', '', 1, 0, 227, '-64.88', '18.33', 'saint-thomas', 0, 1),
-(6925, 481, 'Masai Mara', '', '<p style="text-align: justify;">\n	Adjoining the vast stretches of the Serengeti National Park, the Masai Mara Reserve is one of Kenya&rsquo;s most famous natural areas. With a fantastic concentration of wildlife, visitors can easily spot an abundance of giraffes, wildebeest and zebras amongst many others galloping over the shrub-dotted grasslands throughout the year. The Masai River flowing through further fosters crocodiles and hippos along its riverbanks, its forests home to an amazing array of bird species. Yet it&rsquo;s the resident population of carnivores that makes this one so special&mdash;from the ferocious plains lion, to the elusive spotted leopard.<br />\n	A great many visitors opt to schedule their visit to coincide with the Great Migration of July and October, when the Serengeti&rsquo;s vast populations of wildebeest descend on the Kenyan plains in search of pasture, churning and transforming the environment all around as they go. While game drives, walking safaris and hot air balloons are amazing ways of exploring the reserve&rsquo;s bounties with your Maasai Mara tourist guide, don&rsquo;t miss a cultural tour to learn more about the distinctive and hospitable Maasai people, who currently manage the area, its conservation and protection.</p>\n', 1, 0, 109, '-1.49', '35.14', 'masai-mara', 0, 1),
+(6925, 481, 'Masai Mara', '', '<p style="text-align: justify;">\n	Adjoining the vast stretches of the Serengeti National Park, the Masai Mara Reserve is one of Kenya&rsquo;s most famous natural areas. With a fantastic concentration of wildlife, visitors can easily spot an abundance of giraffes, wildebeest and zebras amongst many others galloping over the shrub-dotted grasslands throughout the year. The Masai River flowing through further fosters crocodiles and hippos along its riverbanks, its forests home to an amazing array of bird species. Yet it&rsquo;s the resident population of carnivores that makes this one so special&mdash;from the ferocious plains lion, to the elusive spotted leopard.<br />\n	A great many visitors opt to schedule their visit to coincide with the Great Migration of July and October, when the Serengeti&rsquo;s vast populations of wildebeest descend on the Kenyan plains in search of pasture, churning and transforming the environment all around as they go. While game drives, walking safaris and hot air balloons are amazing ways of exploring the reserve&rsquo;s bounties with your Maasai Mara tourist guide, don&rsquo;t miss a cultural tour to learn more about the distinctive and hospitable Maasai people, who currently manage the area, its conservation and protection.</p>\n', 1, 0, 109, '-1.49', '35.14', 'masai-mara', 0, 1);
+INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
 (6926, 2306, 'Goa', 'Panaji, Panjim', '<p style="text-align: justify;">\n	Calm, quaint, post-colonial Panjim pokes its white-washed walls and rooftops above the canopies of the palms forests and acacia trees on the verdant banks of the great Mandovi River. Here it symbolises the affluent, laid-back charm of Indian Goa as a whole, a city where wide boulevards, tree-lined avenues and old Portuguese architecture rub shoulders with the bright and brilliant Hindu temple complexes of Mahalaxmi and Maruti.&nbsp;<br />\n	Panjim&rsquo;s undisputed pi&egrave;ce de r&eacute;sistance is its sprawling historical downtown district, the post-colonial Fontainhas. Here the instantly-recognisable fa&ccedil;ade of the gleaming 16th century Church of Our Lady of the Immaculate Conception stands watch over the city, while the winding cobbled streets and curious European architecture does well to transport visitors far from the typical Indian cityscape. What&rsquo;s more, from the bustling main street of Avenida Dom Joao Castro to the hidden side roads of Sao Tome, Panjim offers up all the classic seafood delights of Goa (think fish curries and coconut crab), along with a healthy array of international foods to suit the city&rsquo;s overarching style.<br />\n	Many Panjim tour guides will also recommend taking one of the popular day trips out of the city, perhaps to the golden sands of the Miramar and Dona Paula beach, or the UNESCO-attested colonial spot of Old Goa just to the north.</p>\n', 1, 0, 100, '15.49', '73.82', 'goa', 0, 1),
 (6927, 744, 'Shenzhen', '', '<p style="text-align: justify;">\n	This booming manufacturing powerhouse just to the north of Hong Kong was once just a sleepy village on the South China Sea. Today, it shimmers with the glitter of modernist high-rises, ticks over to the mechanised hum of metro trains and beats with all the endless energy you&rsquo;d expect of one of the nation&rsquo;s richest and fastest-growing megalopolises.<br />\n	For travellers, this bustling town offers up some of China&rsquo;s most famous theme parks&mdash;ranging from the Vegas-esque Window of The World, complete with its Eiffel Tower and Giza Pyramid effigies, and its to the seemingly endless Happy Valley. These are matched by the city&rsquo;s cultural offering, which throws up Splendid China and the Folk Culture village and the prestigious collections of the Shenzhen Museum. Then there are the parks, famed throughout China and sprawled out over Lianhua Mountain and the flower gardens of Futian District.<br />\n	Naturally there&rsquo;s also a hugely eclectic range of activities to pursue elsewhere in the city, and visitors eager to make the most of Hong Kong&rsquo;s sister city should ask their Shenzen tourist guide about breaking out to the beautiful beaches of the Dapeng Bay, the sprawling expat friendly shopping complexes of Luohu, or the unique settings at Dafen Oil Painting Village, where hundreds of artists are commissioned to churn out works ranging from originals to mostly replicas of the great masters.</p>\n', 1, 0, 45, '22.55', '114.1', 'shenzhen', 0, 1),
 (6928, 744, 'Zhuhai', '', '', 1, 0, 45, '22.26', '113.57', 'zhuhai', 0, 1),
@@ -7146,8 +7179,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (6930, 114, 'Ronda', '', '', 1, 0, 65, '36.74', '-5.16', 'ronda', 0, 1),
 (6931, 1535, 'Niagara Falls', 'Horseshoe Falls', '<p class="fr-tag" style="text-align: justify;">Divided from its American brother of the same name by the gushing cataracts of the Niagara River, this town of twinkling casino lights, family hotels and happy-go-lucky amusement parks continues to reign as one of Ontario’s biggest holidaying destinations. </p><p class="fr-tag" style="text-align: justify;">In the past, Niagara Falls has styled itself as one of North America’s honeymoon capitals, with romantic voyages on the iconic Maid of the Mist to the very foot of the Horseshoe Falls themselves, and a wealth of Vegas-style wedding houses, theatres, museums and galleries in the city’s all-new arts district around Queen Street. But alongside the couples come family holidaymakers in droves; eager to spy out the dramatic views from the Queen Victoria Park, ride the winding slides of the town’s various waterparks, soar to the top of the Skylon Tower, or wander between the Ferris wheels of Clifton Hill. Niagara Falls tour guides advice planning a visit in the summer, which is when the falls are at their best—unfrozen, running full-force and illuminated with pyrotechnics and light shows several nights of the week.</p>', 1, 0, 35, '43.08', '-79.07', 'niagara-falls', 0, 1),
 (6932, 1535, 'Saint Jacobs', 'St Jacobs', '', 1, 0, 35, '43.54', '-80.55', 'saint-jacobs', 0, 1),
-(6933, 1995, 'Mahabalipuram', 'Mamallapuram', '', 1, 0, 100, '12.62', '80.2', 'mahabalipuram', 0, 1);
-INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
+(6933, 1995, 'Mahabalipuram', 'Mamallapuram', '', 1, 0, 100, '12.62', '80.2', 'mahabalipuram', 0, 1),
 (6934, 2213, 'Gansbaai', '', '<p style="text-align: justify;">\n	With its eye-popping setting between the roaring swells of the South African Cape and the sweeping Fynbos-clad hills of the Overberg District, it&rsquo;s hardly surprising that Gansbaai has emerged as the premiere outdoorsy destination around Cape Town in recent decades, offering everything from whale watching to caving, shark diving to off-road tractor drives.<br />\n	Trekking opportunities abound, and anyone looking to do a little exploring should ask their Gansbaai tourist guide about excursions to the Klipgat Caves near De Kelders, or hiking outings to the windswept heaths and hills that loom all around. Many visitors opt to make the trek to nearby Danger Point Peninsula, where the wrecks of various ships lay rusting beneath the swells, now inhabited by an octagonal lighthouse and harems of seals. Close by, the rugged rises of Dyer Island play host to babbling crowds of African penguins and curious Cape fur seals by the thousand, and the occasional ominous drifting fin of a great white shark at the well named Shark Alley.<br />\n	But adventure sports aside, this little enclave of the Western Cape has its moments of rugged beauty, its picturesque coastline from the seaside village of Franskraal to the white sands of Pearly beach idyllic for fishing, pubbing and relaxing days of sun and sand.&nbsp;</p>\n', 1, 0, 234, '-34.58', '19.35', 'gansbaai', 0, 1),
 (6935, 1259, 'Macerata', '', '', 1, 0, 104, '43.3', '13.45', 'macerata', 0, 1),
 (6936, 1259, 'Fermo', '', '', 1, 0, 104, '43.15', '13.71', 'fermo', 0, 1),
@@ -7219,7 +7251,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (7004, 2336, 'Monte San Valentin', 'Monte San Clemente', '', 1, 0, 43, '-46.35', '-73.2', 'monte-san-valentin', 0, 1),
 (7005, 2337, 'Ojos del Salado', '', '', 1, 0, 43, '-27.06', '-68.32', 'ojos-del-salado', 0, 1),
 (7006, 2338, 'Mount Semeru', 'Semeru, Mahameru', '', 1, 0, 96, '-8.6', '112.55', 'mount-semeru', 0, 1),
-(7007, 2339, 'Ritacuba Blanco', 'Ritak\'uwa', '', 1, 0, 46, '6.29', '-72.17', 'ritacuba-blanco', 0, 1),
+(7007, 2339, 'Ritacuba Blanco', 'Ritak''uwa', '', 1, 0, 46, '6.29', '-72.17', 'ritacuba-blanco', 0, 1),
 (7008, 386, 'Mount Whitney', '', '', 1, 0, 220, '36.34', '-118.17', 'mount-whitney', 0, 1),
 (7009, 2340, 'Leticia', '', '', 1, 0, 46, '-4.21', '-69.93', 'leticia', 0, 1),
 (7010, 2345, 'Galapagos Islands', '', '<p style="text-align: justify;">\n	The renowned Galapagos Islands lie almost 1000km off the coast of South America and belong to the country of Ecuador.<br />\n	This small archipelago comprising 19 islands altogether can boast of playing an astounding role in the formulation of Charles Darwin&rsquo;s theories of natural selection and evolution. Created by volcanoes violently erupting from the sea, the flora and fauna found in the Galapagos evolved independently and isolated across different islands. Truly like no other place on earth, the Galapagos Islands draw in eco-tourists from all over the world. The best way to explore all of the islands, including the smaller outlying ones is by cruise boat.<br />\n	The vibrant marine life around the islands is perfect for scuba diving and snorkelling and the Galapagos is home to the world&rsquo;s two premier diving destinations, Darwin Island and Wolf Island. Of course fishing and surfing in the crystal clear waters is also popular as is swimming and kayaking. On dry land horse-back riding is a great way to traverse the rugged terrain of the highlands and can be arranged with a Galapagos Islands tour guide.</p>\n', 1, 0, 60, '-.66', '-90.55', 'galapagos-islands', 0, 1),
@@ -7247,13 +7279,14 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (7032, 2352, 'Montego Bay', '', '<p style="text-align: justify;">\n	The touristic kingpin of Jamaica&rsquo;s northern coast is a town alive with bubbling Caribbean rum joints, pandemonius Spring Breaker clubs, luxurious hotel complexes and a host of traffic-laden downtown roads that tick over to the off-beats of Marley reggae and the fruity sounds of steel-drum jazz alike. On all sides it&rsquo;s encompassed by some of the island&rsquo;s most famous beaches, where turquoise waters lap onto coral-white sand, and sunbathers rub shoulders with swaying coconut palms to boot.<br />\n	Of course, there are all the ubiquitous Caribbean pastimes to enjoy; from diving amidst the colourful array of tropical fish, to exploring the picture-postcard coastal stretches from Negril, to Ochos Rios in the east. But, there&rsquo;s also something edgy about MoBay, and visitors looking to really enjoy this town for all its got should be sure to ask their Montego Bay tour guide about the bustling bars and ingenious cuisine that can be sampled at its &lsquo;Hip Strip&rsquo;, or the Georgian remnants of colonialism that now watch over a veritable fray of local marketplaces and caf&eacute; gardens around heady Sam Sharpe Square.</p>\n', 1, 0, 106, '18.47', '-77.91', 'montego-bay', 0, 1),
 (7033, 2353, 'Ocho Rios', '', '', 1, 0, 106, '18.42', '-77.11', 'ocho-rios', 0, 1),
 (7034, 2354, 'Dead Sea', '', '<p style="text-align: justify;">\n	The Dead Sea, a treasure chest of minerals and salts is world famous for its rejuvenating and restorative powers. Its dark glistening water and stony beaches are the lowest point on the face of the earth, with water so salty that no living organism or plant can survive. The healing powers of the Dead Sea encourage many a person to float in the sea or have their bodies encased in mud baking in the unrelenting heat of the sun. Luxurious hotels dot the coastline, their own private beaches leading to the Dead Sea with fantastic spas offering therapeutic treatments. Rich in ecotourism this remarkable area needs the guidance of a professional Dead Sea tour guide to explore the Ein Gedi Nature Reserve filled with hiking trails within a terrain of desert landscapes and oasis&rsquo; that are abundant with beautiful wild flowers and cascading waterfalls. The Qumran caves where the Dead Sea and other ancient scrolls were discovered offer one an insight in to the early days of Christianity. This region is still part of the pilgrimage route for Christians; though the breath-taking monasteries carved into the desert cliffs are definitely worth a visit for one and all.</p>\n', 1, 0, 98, '31.33', '35.5', 'dead-sea', 0, 1),
-(7035, 2027, 'Jaffa', '', '<p class="fr-tag" style="text-align: justify;">This historic enclave of Arabic life on the fringes of booming Tel Aviv rises from the cusp of the Mediterranean Sea in a dusty show of old adobe port buildings, pretty, palm-peppered streets and sun-kissed stone squares. Concealed between its tight-knit lanes lies a veritable wealth of cultural hotspots, and earthy local craft boutiques, all set to the billowing smoke clouds of shisha pipes and the woody aromas of freshly-mixed hummus mezze. </p><p class="fr-tag" style="text-align: justify;">It’s a good idea to start by casing out the old town from a distance, checking its magnificent profile from the Tel Aviv Promenade to the north. Then, dive into the centre and weave between the artsy Zodiac alleyways, complete with their hidden arabesque architecture and wealth of regional trinketry. Afterwards, follow the route Napoleon is reported to have taken in 1799—up the steps of Kikar Kedumim to the grand tower of St Peter\'s Church. Perhaps there will be time to quiz your Jaffa tourist guide on shopping tips at the bustling souk Hapishpeshim, or take a break over a meal of shakshuka (eggs poached in tomato sauce and vegetables).</p>', 1, 0, 98, '32.08', '34.8', 'jaffa', 0, 1),
+(7035, 2027, 'Jaffa', '', '<p class="fr-tag" style="text-align: justify;">This historic enclave of Arabic life on the fringes of booming Tel Aviv rises from the cusp of the Mediterranean Sea in a dusty show of old adobe port buildings, pretty, palm-peppered streets and sun-kissed stone squares. Concealed between its tight-knit lanes lies a veritable wealth of cultural hotspots, and earthy local craft boutiques, all set to the billowing smoke clouds of shisha pipes and the woody aromas of freshly-mixed hummus mezze. </p><p class="fr-tag" style="text-align: justify;">It’s a good idea to start by casing out the old town from a distance, checking its magnificent profile from the Tel Aviv Promenade to the north. Then, dive into the centre and weave between the artsy Zodiac alleyways, complete with their hidden arabesque architecture and wealth of regional trinketry. Afterwards, follow the route Napoleon is reported to have taken in 1799—up the steps of Kikar Kedumim to the grand tower of St Peter''s Church. Perhaps there will be time to quiz your Jaffa tourist guide on shopping tips at the bustling souk Hapishpeshim, or take a break over a meal of shakshuka (eggs poached in tomato sauce and vegetables).</p>', 1, 0, 98, '32.08', '34.8', 'jaffa', 0, 1),
 (7036, 2355, 'Helena', '', '', 1, 0, 220, '46.56', '-112.04', 'helena', 0, 1),
 (7037, 2355, 'Seeley Lake', '', '', 1, 0, 220, '47.17', '-113.47', 'seeley-lake', 0, 1),
 (7038, 2355, 'Craig', '', '', 1, 0, 220, '47.08', '-111.96', 'craig', 0, 1),
 (7039, 724, 'Bled', '', '<p style="text-align: justify;">\n	Slovenia&rsquo;s most popular resort town is nothing short of fairy-tale; a place that looks as if it was constructed from stage directions in a Disney romance, or lifted straight from the poetic musings of Lord Byron. Gothic church spires rise from clusters of fir and spruce and oak, all encompassed by a ring of azure blue water, watched over by a dramatic medieval castle high on the precipices of the Julian Alps, and insulated from the world outside by snow-tipped peaks and endless swathes of majestic Slovenian forestry.<br />\n	Today, people from all over Europe flock here in the summer to stroll by the banks of the lake, watching as Bled&rsquo;s iconic punting boats navigate clusters of gliding ducks on the water&rsquo;s surface. There are then the cultural musts recommended by any Bled tour guide, the great Grad upon the hill, and the fascinating Church of the Assumption on Slovenia&rsquo;s only island. A short distance away, the Triglav National Park transforms the scenery into magical countryside, replete with lakes, gorges and waterfalls. Come winter, and the town is host to some of Slovenia&rsquo;s best skiing, complete with a chairlift direct from the town and night-time floodlights for after-dark piste riding.</p>\n', 1, 0, 192, '46.37', '14.11', 'bled', 0, 1),
 (7040, 1516, 'Piran', '', '<p class="fr-tag" style="text-align: justify;">Perched out in the swells of the Adriatic, the pretty little town of Piran is a veritable gem of the Slovenian Coast and Karst region, drawing a booming crowd of visitors during its lengthy high season every year to prove it. </p><p class="fr-tag" style="text-align: justify;">Medieval homes, churches and squares abound in the historic town, knit together by tight alleys that centre on the charming Tartinijev trg. This beating heart of Piran is adorned with the magnificent gothic frontispiece of the so-called Venetian House and the honorific statue to Giuseppe Tartini; both standing testimony to this city’s indelible Latin character and deep Italian roots. 15<sup>th</sup> century fortifications wind their way into the hills above town, where a stroll makes it possible to survey the glistening waters of the Adriatic, peppered with the white specks of sailing yachts, or the grand Renaissance tower that marks the city’s Church of St. George. </p><p class="fr-tag" style="text-align: justify;">Of course, there are plenty of opportunities to sample fresh Adriatic seafood, rustic Italian pizzas or truffle-infused pastas out of Istria to the south, as well as join the locals for a swim around the promenades of the old town, all the above highly recommended by any Piran tour guide.</p>', 1, 0, 192, '45.53', '13.57', 'piran', 0, 1),
-(7041, 1625, 'Ptuj', '', '<p class="fr-tag" style="text-align: justify;">For Slovenia this is where it all began; a humble, half-hamlet of a town perched on a mound by the edge of the meandering Drava River. It’s thought that Celtic tribes were settled here by the Iron Age, eventually drawing the eye of Flavian emperors and Slavic princes, which goes a long way to explaining Ptuj’s veritable overload of historical wonders and cultural gems for a city of its size! </p><p class="fr-tag" style="text-align: justify;">Of course, the interest is centred on the citadel itself, at the horseshoe-shaped Ptuj Castle, shrouded by pines and pretty red-tiled buildings. This is a great place to case out the curious Austro-Hungarian flavour of the city’s later history, and offers exquisite panoramas over the town centre and the Styrian plains. Back down on the Slovenski trg (the city’s central square), Ptuj tourist guides point out the Roman monolith of the Orpheus Monument from the 2<sup>nd</sup> century, marked and scratched now after millennia of epochs. Nearby, along the Presernova Ulica stands the acclaimed Ptuj Regional Museum, which chronicles the story of this aged settlement from pre-history to the modern day, while shrines to Mithras (a curious Persian import to the region) pepper the monasteries on the outskirts of town.</p><p class="fr-tag" style="text-align: justify;">But the past aside, Ptuj locals have also been known to impress their visitors with their spas, and displays of carnival and dance, not to mention some of the oldest wine labels in the country and a medley of Slovene buckwheat and curd cheese rolls to satisfy every foodie’s desire!</p>', 1, 0, 192, '46.25', '15.85', 'ptuj', 0, 1),
+(7041, 1625, 'Ptuj', '', '<p class="fr-tag" style="text-align: justify;">For Slovenia this is where it all began; a humble, half-hamlet of a town perched on a mound by the edge of the meandering Drava River. It’s thought that Celtic tribes were settled here by the Iron Age, eventually drawing the eye of Flavian emperors and Slavic princes, which goes a long way to explaining Ptuj’s veritable overload of historical wonders and cultural gems for a city of its size! </p><p class="fr-tag" style="text-align: justify;">Of course, the interest is centred on the citadel itself, at the horseshoe-shaped Ptuj Castle, shrouded by pines and pretty red-tiled buildings. This is a great place to case out the curious Austro-Hungarian flavour of the city’s later history, and offers exquisite panoramas over the town centre and the Styrian plains. Back down on the Slovenski trg (the city’s central square), Ptuj tourist guides point out the Roman monolith of the Orpheus Monument from the 2<sup>nd</sup> century, marked and scratched now after millennia of epochs. Nearby, along the Presernova Ulica stands the acclaimed Ptuj Regional Museum, which chronicles the story of this aged settlement from pre-history to the modern day, while shrines to Mithras (a curious Persian import to the region) pepper the monasteries on the outskirts of town.</p><p class="fr-tag" style="text-align: justify;">But the past aside, Ptuj locals have also been known to impress their visitors with their spas, and displays of carnival and dance, not to mention some of the oldest wine labels in the country and a medley of Slovene buckwheat and curd cheese rolls to satisfy every foodie’s desire!</p>', 1, 0, 192, '46.25', '15.85', 'ptuj', 0, 1);
+INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
 (7042, 2356, 'Postojna', '', '<p class="fr-tag" style="text-align: justify;">Cavern upon cavern and tunnel upon tunnel run their way deep into the Slovenian underground around the city of Postojna, forming the country’s second largest cave system, and the single deepest, publicly-accessible system on the planet. First discovered in the early 19<sup>th </sup>century, this fascinating subterrane is loaded with colossal stalactites and karst rock formations, and affords visitors a remarkable glimpse of geological phenomena in action. History abounds throughout the caverns too, and guests can still ride the old railway lines though the passages, see burn marks from the Second World War and witness graffiti from the before the 19<sup>th</sup> century. </p><p class="fr-tag" style="text-align: justify;">Away from the underground system, Postojna tour guides are also at hand to show visitors the mighty Predjama Castle, nestled in its own gaping cave mouth just to the north. And in the town itself there are classic Slovene eateries to enjoy, serving up Hungarian goulash, Slavic dumplings and frothy beer; framed by the quaint red-tiled roofs of the historic buildings all around and the looming peaks of the Dinaric Alps in the distance.</p>', 1, 0, 192, '45.78', '14.22', 'postojna', 0, 1),
 (7043, 724, 'Skofja Loka', '', '', 1, 0, 192, '46.17', '14.31', 'skofja-loka', 0, 1),
 (7044, 2335, 'Lombok', '', '<p style="text-align: justify;">\n	Often described as an untainted version of Bali, it&rsquo;s hard to find a reason <em>not</em> to visit Lombok. This Indonesian island offers local food and pristine scenery, without the tourist-driven commerce and built-up attractions of Bali. While resorts and luxury hotels are certainly available, engulfing yourself in the indigenous vibe via homestay is a preferred mode of lodging among frequent visitors. Lombok&rsquo;s Sasak people are welcoming locals and homestays often include a fishing lesson or farming demonstration, as well as perfectly acceptable amenities. After a peek into the Sasak lifestyle, a visit to one of Lombak&rsquo;s beaches is mandatory. Surfers head to Bangko-Bangko for the big waves, while a 15-minute boat ride to Gili Nanggu brings tourists to colorful reefs and dream-worthy beaches.<br />\n	Enjoy the stunning landscapes of this exotic island by hiking up Mount Rinjani, the second highest volcano in Indonesia in addition to discovering its paradisiacal waterfalls, lush forests and endless paddy fields<br />\n	Your Lombok tour guide familiar with the local setup would suggest not to depend on public transportation, as it can be unreliable on the island. Taxis and cars are common options, or you can opt to travel as the locals do, hitting the open island road via motorcycle!</p>\n', 1, 0, 96, '-8.57', '116.35', 'lombok', 0, 1),
@@ -7262,8 +7295,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (7047, 2358, 'Guernsey', '', '', 1, 0, 78, '49.45', '-2.55', 'guernsey', 0, 1),
 (7048, 2359, 'Kiunga', '', '', 1, 0, 169, '-6.12', '141.3', 'kiunga', 0, 1),
 (7049, 2359, 'Tabubil', '', '', 1, 0, 169, '-5.28', '141.23', 'tabubil', 0, 1),
-(7050, 2360, 'Alotau', '', '', 1, 0, 169, '-10.32', '150.43', 'alotau', 0, 1);
-INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
+(7050, 2360, 'Alotau', '', '', 1, 0, 169, '-10.32', '150.43', 'alotau', 0, 1),
 (7051, 1431, 'Miramichi', '', '<p style="text-align: justify;">\n	Happy, tranquil Miramichi is a town with elegant bridges and wide roads. Located by the wide Mirimichi River, world famous for its salmon fishing, the city spells heaven for outdoor sports enthusiasts in all seasons. The Miramichi river itself is at the heart of all the action, from sailing in the warm waters of Miramichi Bay or having a go at river tubing, to strolling down the boardwalk at Ritchie wharf watching the tall ships go by; all best experienced in the summer.</p>\n<p style="text-align: justify;">\n	Interactive museums and heritage sites bring the past alive in a most lively and entertaining way.&nbsp; A Miramichi visitor guide will recommend a boat trip to Beaubears Island, where in 1773 the island&rsquo;s first ship, the Miramichi, was built. A trip to Middle Island tells the story of the Irish immigrants while the French Fort Cove&rsquo;s natural surroundings provide the perfect setting for a narrative about the &ldquo;Headless Nun&rdquo;</p>\n<p style="text-align: justify;">\n	The summer months are packed with festivals and events.&nbsp; As &ldquo;Canada&rsquo;s Irish Capital&rdquo; lots of singing and dancing goes on in Miramichi with an eclectic variety of summer festivals.&nbsp; There&rsquo;s the Festival of Tall Ships and the Dragon Boat Festival for people who enjoy boats.&nbsp; Singers and dancers will love the Pow Wow, Rock n Roll, Irish, Scottish and Folksong Festivals. &nbsp;</p>\n', 1, 0, 35, '47.02', '-65.18', 'miramichi', 0, 1),
 (7052, 1548, 'Gopalpur', '', '', 1, 0, 100, '19.27', '84.92', 'gopalpur', 0, 1),
 (7053, 1548, 'Taptapani', '', '', 1, 0, 100, '19.30', '84.24', 'taptapani', 0, 1),
@@ -7300,7 +7332,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (7085, 760, 'Bhuj', '', '<p style="text-align: justify;">\n	The erstwhile capital of the princely state of Kutch, Bhuj is a city with roots dating back thousands of years to the Harrapan civilisation. Traditional narrow alleyways, colourful markets renowned for their signature handicrafts and architecture typical of the state of Gujarat define this city&rsquo;s outer appearance. Yet it is the resilient character of its people that makes for its most endearing feature; ravaged by earthquake in 2001, this incredible city has bounced back to build itself into a vibrant metropolis. The white marble structure of the reconstructed Swami Narayan temple stands out as an exemplary example, its magnificence outshining any other in its vicinity. The Hamirsar lake lies just across, lining up along its shores, museums, temples and the royal Pragmahal Palace, making it the natural focal point of the city. Your Bhuj tour guide will take you to the Bhujiyo hills for panoramic views of the city; but for a &ldquo;once in a lifetime&rdquo; kind of experience, a moonlit camel safari at the salt deserts of the Rann of Kutch gives the visit magical hues.&nbsp;</p>\n', 1, 0, 100, '23.27', '69.67', 'bhuj', 0, 1),
 (7086, 2371, 'Henties Bay', '', '', 1, 0, 153, '-22.12', '14.28', 'henties-bay', 0, 1),
 (7087, 1455, 'Mykonos', '', '', 1, 0, 86, '37.45', '25.35', 'mykonos', 0, 1),
-(7088, 1851, 'Xi\'an', '', '', 1, 0, 45, '34.16', '108.54', 'xian', 0, 1),
+(7088, 1851, 'Xi''an', '', '', 1, 0, 45, '34.16', '108.54', 'xian', 0, 1),
 (7089, 2197, 'Snowdonia', '', '<p class="fr-tag" style="text-align: justify;">Eulogised by Wordsworth and fodder for Welsh poets since time immemorial, the mountains of Snowdonia rise high to the very roof of the green country, chiselled and formed in a rugged cacophony of rocky ridges and moss-clad stone. Below, the hills of Gwynedd roll away into the distance, peppered with ancient sheep farms, misty groves of chestnut trees, highland lakes and lichen-dotted castles still ringing with the clash of steel on steel and the spectres of rebellious princes—a land lost to legend and myth, tradition and folklore. </p><p class="fr-tag" style="text-align: justify;">In Beddgelert, the faithful hound of Llywelyn the Great lies resting, watched over by the Tolkein-esque ruins of Dinas Emrys, where the bones of ancient dragons fester beneath the earth. At Porthmadog, Snowdonia tour guides tell tales of slate mines and copper pits on the rattling tracks of the Fftestiniog steam railway while Harlech exhibits the mighty bulwarks of English Edward standing strong over the beaches of Tremadog Bay. Meanwhile, sleepy Capel Curig sits awash with hikers and ramblers, necks craned skywards to the windswept ridges of Cadair Idris, serrated Glyder Fawr and rock-ribbed Tryfan of the Ogwen Valley. The intrepid types feel right at home here, mountain biking around Coed-y-Brenin, bouncing around the Llechwedd Caverns, or climbing right up to Snowdon itself, a backbone of rifts and stone and sheer-cut cliffs that form the summit of the entire Wales.</p>', 1, 0, 74, '53.08', '-4.08', 'snowdonia', 0, 1),
 (7090, 2372, 'Komodo Island', '', '<p style="text-align: justify;">\n	You&rsquo;d think that somewhere with a name like Komodo Island was pretty easy to sum up. But Easter Island isn&rsquo;t all about Easter, and there are no whales in Wales! Put simply, Komodo is much more than just the famed home of the elusive lizard that roams and basks on its sandy coast and jungle floors, it&rsquo;s an untrodden land of pink-hued beaches and crystal clear diving waters, rugged coastal cliffs and hidden inland villages of curious, thought-provoking locals&mdash;a veritable gem of the Nusa Tenggara that&rsquo;s like no other island within reach.<br />\n	If you have come here to spot the formidable beast that is the island&rsquo;s namesake, then be sure to ask your Komodo Island tour guide for details about the various dragon tours that depart from nearby Lombok on a regular basis, or the organised trekking excursions out of Flores Island in the east. If not, then consider one of the many diving packages that explore the coves and inlets of Komodo&rsquo;s untouched shoreline, or perhaps a sea kayaking trip out into the swells of the Flores Sea.&nbsp;</p>\n', 1, 0, 96, '-8.55', '119.45', 'komodo-island', 0, 1),
 (7091, 2373, 'Nias Island', '', '', 1, 0, 96, '1.1', '97.5', 'nias-island', 0, 1),
@@ -7352,7 +7384,8 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (7140, 692, 'Kliptown', '', '', 1, 0, 234, '-26.28', '27.89', 'kliptown', 0, 1),
 (7141, 2378, 'Monteverde', '', '', 1, 0, 47, '10.19', '-84.49', 'monteverde', 0, 1),
 (7142, 458, 'Chitwan', '', '<p style="text-align: justify;">\n	Beneath the sea of shala trees and chir pines that spring up en masse from this sprawling national park on the cusp of the Nepalese Himalayas, visitors flock to seek out some of the continent&rsquo;s most elusive species of wildlife; the formidable one-horned rhinoceros; the kaleidoscopic white-throated kingfisher; the galumphing Asian elephant, and most notably, the critically endangered Bengali tiger.<br />\n	Start your Chitwan visit by heading to the visitor&rsquo;s centre at Sauraha, where the displays and sessions provide a good introduction to the natural history of the region. Then, sign up for one of the ubiquitous elephant safaris that plunge deep into the thickets and jungles of the park, searching for the famous wildlife that abounds there. Or why not have your Chitwan tour guide take you canoeing down the Narayani River for a sighting of a riot of bird species perched high above the crocodiles and gharials sunning themselves along its banks. Trekking trails abound too in the Chepang area, where one is amply rewarded with stunning views of mountains and raw natural beauty.<br />\n	Amidst the nature, there&rsquo;s also the colourful Hindu pilgrimage site of bikram baba to see, and the curious tribal Tharu villages, with their rustic bamboo walls and endearing local folk.</p>\n', 1, 0, 161, '27.58', '84.5', 'chitwan', 0, 1),
-(7143, 2379, 'George Town', '', '', 1, 0, 151, '5.42', '100.32', 'george-town', 0, 1),
+(7143, 2379, 'George Town', '', '', 1, 0, 151, '5.42', '100.32', 'george-town', 0, 1);
+INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
 (7144, 2380, 'Flores Island', '', '<p class="fr-tag" style="text-align: justify;">With its glorious beds of blooming tropical flowers, endless wealth of hidden beaches, colossal crater lakes, soaring volcanic mountains, great swaths of misty inland jungle and untouched coastal stretches of Komodo dragon stomping ground, it’s easy to see why this elongated island at the heart of the Indonesian Nusa Tenggara archipelago remains an intrepid traveller’s dream come true. </p><p class="fr-tag" style="text-align: justify;">For most visitors the first stop in this wild land will be Labuan Bajo, where the lion’s share of boats from Bali and the west dock. Here, a cascade of Flores Island tour guides<strong> </strong>can offer excursions to the various natural wonders that abound throughout the region, from the three coloured lakes at Mount Kelimutu and the mountain treks of Poco Ranaka, to the terraced rice fields of Ruteng and the legendary sands of the Komodo National Park. There’s also plenty of scope for making some explorative scuba diving excursions to the reefs of Maumere, soothing hiked-out muscles in the hot springs at Blidit, and swigging traditional ginger coffees in the regional capital at Ende.</p>', 1, 0, 96, '-8.40', '121.23', 'flores-island', 0, 1),
 (7145, 1223, 'Camden (Maine)', '', '', 1, 0, 220, '44.21', '-69.06', 'camden-maine', 0, 1),
 (7146, 2381, 'Longyearbyen', '', '', 1, 0, 160, '78.22', '15.65', 'longyearbyen', 0, 1),
@@ -7365,10 +7398,9 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (7153, 2385, 'Hunza', '', '<p class="fr-tag" style="text-align: justify;">Concurrent with the claims of the local Hunzakuts that they are directly descended from the soldiers of Alexander the Great, there’s little question that the territory they occupy in this high-perched region of the Hindu Kush is suitably glorious and awesome to play host to such mythical heroes. The Hunza valley enchants with mindboggling vistas of snow-tipped Himalayan peaks and rugged ridges, cut-through by roaring mountain rivers and sweeping terraces of verdant rice paddies. In such a wild land, it’s hardly surprising that outdoorsy pursuits have taken centre stage, with travellers heading here to hike between the looming summits of Rakaposhi and Ultar Sar, or over the metamorphic glacier of Batura. Culture also abounds, and guests can spy out the old watchtowers and fortress walls that cling to the hillsides of Ganish Village, and the ancient Buddha carvings that pepper the cliffs of Kargah. Also, be sure not to leave without asking your Hunza tour guide about the local cuisine—a healthy mishmash of legumes and earthy barleys, washed down with herbal tea.</p>', 1, 0, 171, '36.32', '74.65', 'hunza', 0, 1),
 (7154, 2385, 'Skardu', '', '<p class="fr-tag" style="text-align: justify;">There’s no question about it: Skardu is all about the mountains. For nearly two centuries intrepid types have flocked to this valley town on the edge of the old Silk Road to gather their gear before heading out to case the famous trails of the mighty Karakoram peaks, or to explore the verdant pastures of the Shigar Valley; enfolded in its ring of snow-tipped summits and endless fields of fruit laden groves. </p><p class="fr-tag" style="text-align: justify;">Naturally, the setting makes for a wealth of natural wonders, and mountains aside, visitors here can also discover the high-perched freshwater lakes of Kachura and Sadpara, not to mention the mighty snaking meanders of the iconic Indus River. However, as any Skardu tourist guide is quick to note, the town itself is not without its attractions; boasting the fascinating Kharpocho Fort, a smattering of ancient Buddhist carvings and Chinese-cum-Tibetan-cum-Pakistani eateries, appeasing the mountain appetite with spicy tandoori curries and earthy stir fries.</p>', 1, 0, 171, '35.3', '75.62', 'skardu', 0, 1),
 (7155, 2355, 'Lincoln (Montana)', '', '', 1, 0, 220, '46.96', '-112.67', 'lincoln-montana', 0, 1),
-(7156, 1455, 'Delos', '', '', 1, 0, 86, '37.39', '25.27', 'delos', 0, 1);
-INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
+(7156, 1455, 'Delos', '', '', 1, 0, 86, '37.39', '25.27', 'delos', 0, 1),
 (7157, 2386, 'Plitvice Lakes', '', '<p class="fr-tag" style="text-align: justify;">Stepped terraces of moss-covered limestone edge their way out over looming cliffs, spouting cataracts of water into the shimmering, aquamarine pools below. Karsts of soaring dolomite rise to the left and right, draped in stringy vines and decorated with blooming clusters of orchids. In the distance, the foothills of the Dinaric Alps and the craggy faces of the Velebit Range swell from the earth in bursts of verdant spruce and fir forests. Welcome to the Plitvice Lakes of central Croatia—one of the oldest natural UNESCO attractions on the planet. </p><p class="fr-tag" style="text-align: justify;">This conglomeration of 16 variously-hued lakes of algae green and glacial blue connected by countless gushing waterfalls, represents one of the country’s most popular attractions, and is a veritable must on the way south from Zagreb through to Zadar on the Adriatic coast. Be sure to consult your Plitvice Lakes tour guide on the major sights of the area, which include the Veliki Splat waterfall, the winding cave complexes of the cascades, and the hiking trails that meander between the upper and lower lake areas of the national park.</p>', 1, 0, 93, '44.88', '15.62', 'plitvice-lakes', 0, 1),
-(7158, 627, 'Stratford-upon-Avon', '', '<p class="fr-tag" style="text-align: justify;">Hallowed ground for literary buffs and followers of the legendary bard, Stratford-upon-Avon is famed right across the globe as the birthplace of William Shakespeare. Its lingering specter seems to move still between the quaint, white-washed, timber-touched homes and cottages that coalesce around the city’s centre, the cosy coffee shops and Tudor residences that line the meandering banks of its eponymous river, and the hidden side-streets where the thatched roofs of Anne Hathaway’s cottage and the great man’s birthplace itself stand neatly lined-up between the verdant woodlands of the Warwickshire countryside. </p><p class="fr-tag" style="text-align: justify;">Given the totemic figure who emerged from this charming village of Middle England, it’s hardly surprising that most Stratford-upon-Avon tour guides recommend a jaunt to the theatres of the Royal Shakespeare Company, where King Lear laments his losses and Hamlet wrestles with the human psyche right throughout the year. There’s also a darker side to this village, with ghost tours now weaving between its shady alleyways and creaky public houses after dark, revealing tales of the more macabre kind at spooky spots like the Shrieve\'s House on Sheep Street. Afterwards, be sure to case out the lively pubs, where hearty English fare is washed down with homebrewed ales.</p>', 1, 0, 74, '+52.19', '-1.71', 'stratford-upon-avon', 0, 1),
+(7158, 627, 'Stratford-upon-Avon', '', '<p class="fr-tag" style="text-align: justify;">Hallowed ground for literary buffs and followers of the legendary bard, Stratford-upon-Avon is famed right across the globe as the birthplace of William Shakespeare. Its lingering specter seems to move still between the quaint, white-washed, timber-touched homes and cottages that coalesce around the city’s centre, the cosy coffee shops and Tudor residences that line the meandering banks of its eponymous river, and the hidden side-streets where the thatched roofs of Anne Hathaway’s cottage and the great man’s birthplace itself stand neatly lined-up between the verdant woodlands of the Warwickshire countryside. </p><p class="fr-tag" style="text-align: justify;">Given the totemic figure who emerged from this charming village of Middle England, it’s hardly surprising that most Stratford-upon-Avon tour guides recommend a jaunt to the theatres of the Royal Shakespeare Company, where King Lear laments his losses and Hamlet wrestles with the human psyche right throughout the year. There’s also a darker side to this village, with ghost tours now weaving between its shady alleyways and creaky public houses after dark, revealing tales of the more macabre kind at spooky spots like the Shrieve''s House on Sheep Street. Afterwards, be sure to case out the lively pubs, where hearty English fare is washed down with homebrewed ales.</p>', 1, 0, 74, '+52.19', '-1.71', 'stratford-upon-avon', 0, 1),
 (7159, 692, 'Soweto', '', '<p style="text-align: justify;">\n	Jutting out from the southwestern edge of Johannesburg, the tin-roof houses and winding dusty lanes of Soweto&rsquo;s various districts sprawl their way across the South African landscape. Since emerging as one of the focal points of opposition to apartheid in the 80s and the cradle of the Soweto Uprising in 1976, the site has been a fascinating reminder of this country&rsquo;s visceral, recent history.<br />\n	Consequently, a great many tourists out of Johannesburg visit the South Western Township, most taking one of the popular accredited tours of the area by jeep or minibus. Others head into town independently, taking the Jo&rsquo;burg city rail to Vilakazi Street, that is home to many of its major sights, from the old homes of Desmond Tutu and Madiba, to the fantastic Mandela Family Museum.<br />\n	There is then the &ldquo;must do&rdquo; visit to the Hector Pietersen Museum, which details the political upheaval that struck the area throughout apartheid and honours those who died in the Soweto Uprising. Soweto tour guides also recommend that visitors take some time to wander the streets and imbibe its sights and smells, enjoy the famous walls of artistic murals as well as soak in the earthy character of a traditional shebeen tavern.</p>\n', 1, 0, 234, '-26.27', '27.86', 'soweto', 0, 1),
 (7160, 1159, 'Kruger National Park', '', '<p style="text-align: justify;">\n	The undisputed gem of South Africa&rsquo;s safari crown, the Kruger National Park sprawls itself over 19,000 square kilometres of savannah, hill and bush land in the country&rsquo;s north-eastern corner, where it offers up perhaps the most comprehensive array of adventure holiday opportunities and accommodation options on the continent.<br />\n	Playing host to the much coveted Big 5 game and so much more, it&rsquo;s easy to see why Kruger continues to figure as one of the most popular wildlife-spotting destinations in East Africa, attracting visitors in search of the famous plains lion, the colossal African elephant, the speckled leopard, the deceptively dangerous buffalo and the endangered black rhino.<br />\n	Before arriving, be sure to quiz your Kruger National Park tour guide on the best accommodation and excursion options for you, because there are tailor-made trips for every type of traveller here, from budget, rugged camping stays on the Sabi Sands to unashamed luxury at the various honeymoon lodges and hotels that spring up from the grasses of Kruger itself.</p>\n', 1, 0, 234, '-24.01', '31.48', 'kruger-national-park', 0, 1),
 (7161, 627, 'Arundel', '', '', 1, 0, 74, '50.84', '-.55', 'arundel', 0, 1),
@@ -7382,7 +7414,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (7170, 423, 'Penha Garcia', '', '', 1, 0, 176, '40.04', '-7.02', 'penha-garcia', 0, 1),
 (7171, 2388, 'Sierra de Gredos', '', '', 1, 0, 65, '40.3', '-5.08', 'sierra-de-gredos', 0, 1),
 (7172, 2388, 'Sierra de Bejar', '', '', 1, 0, 65, '40.17', '-5.44', 'sierra-de-bejar', 0, 1),
-(7173, 2354, 'Masada', '', '<p class="fr-tag" style="text-align: justify;">Breath taking, dramatic, mythical and eerie are all great adjectives for describing this soaring desert bluff that rises into the sky between the Dead Sea and Judaean Desert in eastern Israel. It’s hardly surprising that the ancient fortress of Masada at the top continues to reign as one of the country’s most fascinating UNESCO sites. </p><p class="fr-tag" style="text-align: justify;">The historian Josephus Flavius reported that it was here in 73 AD that nearly 1,000 Jews committed mass suicide rather than be captured by the Roman army. Poetry dedicated to the struggle for control of this ancient acropolis is said to have inspired more recent Jewish movements, as well as respresent the defiant resilience of the Jewish State in the face of foreign invaders. </p><p class="fr-tag" style="text-align: justify;">Visitors are now invited to explore such archaeological treasures as Herod\'s palace complex and a series of other recovered buildings, which range from bathhouses to granaries. Masada tour guides also often recommended the Masada Museum, which hosts excellent and informative exhibitions. Most visitors to Masada, however, come primarily for the views and skip the cable car ride to the top in favour of the so-called Snake Path or Roman Ramp hiking routes.</p>', 1, 0, 98, '32.68', '35.6', 'masada', 0, 1),
+(7173, 2354, 'Masada', '', '<p class="fr-tag" style="text-align: justify;">Breath taking, dramatic, mythical and eerie are all great adjectives for describing this soaring desert bluff that rises into the sky between the Dead Sea and Judaean Desert in eastern Israel. It’s hardly surprising that the ancient fortress of Masada at the top continues to reign as one of the country’s most fascinating UNESCO sites. </p><p class="fr-tag" style="text-align: justify;">The historian Josephus Flavius reported that it was here in 73 AD that nearly 1,000 Jews committed mass suicide rather than be captured by the Roman army. Poetry dedicated to the struggle for control of this ancient acropolis is said to have inspired more recent Jewish movements, as well as respresent the defiant resilience of the Jewish State in the face of foreign invaders. </p><p class="fr-tag" style="text-align: justify;">Visitors are now invited to explore such archaeological treasures as Herod''s palace complex and a series of other recovered buildings, which range from bathhouses to granaries. Masada tour guides also often recommended the Masada Museum, which hosts excellent and informative exhibitions. Most visitors to Masada, however, come primarily for the views and skip the cable car ride to the top in favour of the so-called Snake Path or Roman Ramp hiking routes.</p>', 1, 0, 98, '32.68', '35.6', 'masada', 0, 1),
 (7174, 1905, 'Rila Monastery', '', '<p class="fr-tag" style="text-align: justify;">Hemmed in by the verdant spruce and fir forests of the Rila Mountains in the very heartland of south-western Bulgaria, this exquisite piece of pre-Ottoman architecture represents one of the country’s most striking and definitive of national symbols. Built to honour the teachings of St Ivan of Rila sometime in the 10<sup>th</sup> century, the Rila Monastery now bears a UNESCO title for its central importance to the enduring religious identity of the Bulgarian state and the continuation of the Eastern Orthodox faith through the tumult of Ottoman imperialism in the region. For many visitors however, the complex is simply an aesthetic wonder to behold; rising fortress like from between misty peaks in a cacophony of medieval frescos and reconstructed 15<sup>th</sup> century architecture. Guests today are invited to follow their Rila Monastery tour guide through the various wings of the complex, weaving between the arched cloisters in the courtyard, the looming Hrelyo’s Tower and the exquisite Cathedral of Our Lady of the Assumption, where walls of whittled iconostasis peer down mysteriously from above.</p>', 1, 0, 21, '42.08', '23.2', 'rila-monastery', 0, 1),
 (7175, 2390, 'Paro', '', '<p style="text-align: justify;">\n	Linked to the high Himalayas of Tibet by the lingering trodden paths of ancient traders and pilgrims alike, the entire Paro Valley in which the town of the same name sits, is oft-hailed as one of the most picturesque in the entire nation. Jagged peaks frame it from the north, cloud-covered, tree-clad hills rise on all sides, and the gushing flow of the Paro River provides the endless natural backing track.<br />\n	As the home of Bhutan&rsquo;s only international airport, it&rsquo;s hardly surprising that Paro is on the rise, with new clusters of hotels and shops popping up around its old town core every year. But the charm stands firm, and visitors can still wander amidst the adobe-cum-timber homes that seem to juxtapose Alpine and Oriental in equal measure, or head to the monastery of Rinpung Dzong, a focal point of local Buddhist worship since the 15th century.<br />\n	A little away from the centre, and Paro tour guides lead visitors to the soaring temple tops of Taktsang (Tiger&rsquo;s Nest) Monastery, perched precariously on a steep cliff above the Paro valley.</p>\n', 1, 0, 31, '27.43', '89.42', 'paro', 0, 1),
 (7176, 2391, 'Tobago', '', '', 1, 0, 215, '11', '-60', 'tobago', 0, 1),
@@ -7519,7 +7551,8 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (7311, 1612, 'Nizza Monferrato', '', '', 1, 0, 104, '44.77', '8.35', 'nizza-monferrato', 0, 1),
 (7312, 910, 'Jombang', '', '', 1, 0, 96, '-7.47', '112.23', 'jombang', 0, 1),
 (7313, 569, 'Teotihuacán', '', '', 1, 0, 150, '19.69', '-98.84', 'teotihuacn', 0, 1),
-(7314, 221, 'Mucugê', '', '', 1, 0, 29, '-13.01', '-41.37', 'mucug', 0, 1),
+(7314, 221, 'Mucugê', '', '', 1, 0, 29, '-13.01', '-41.37', 'mucug', 0, 1);
+INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
 (7315, 221, 'Chapada Diamantina National Park', '', '<p class="fr-tag" style="text-align: justify;">Chiselled bluffs of windswept limestone rise overhead, and precipitous cliffs draped in a shroud of mossy grass serrate the horizon; flat-topped plateaus lie peppered with lichen-dotted rocks and gnarled thorn bushes sway in the highland breezes. All the while, the elusive silhouettes of Brazilian jaguars and armoured armadillos weave between the cactus groves, Snakes hiss, and tropical birds issue a cacophony of squawks and sounds into the orchid-scented air. </p><p class="fr-tag" style="text-align: justify;">In a land of such majestic natural beauty, it’s hardly surprising that the Brazilian government has chosen to treasure this region’s environmental wonders over its subterranean wealth of diamonds and gold. Where mechanised mines were once planned, travellers can now hike meandering trails to eye-watering sights like the Cachoeira da Fumaca, the highest waterfall in the country that spouts plumes of mist and steam across the ridges of the Sincora Range. Others enlist a Chapada Diamantina National Park tour guide from the charming town of Lencois to help them case out the deep caverns of Lapa Doce, or the mirror-like pool of Poco Encantado, or then simply lose themselves between the soaring canyons and waterways of Cachoeira do Buracao—wildlife spotting, stargazing and entirely given over to the indelible call of the wild.</p>', 1, 0, 29, '-12.88', '-41.37', 'chapada-diamantina-national-park', 0, 1),
 (7316, 2430, 'Krabi', '', '<p class="fr-tag" style="text-align: justify;">Heralded as the gateway to the pristine beaches, jungle-dressed karst cliffs and secluded seaside enclaves of Thailand’s magnificent Andaman Coast, the town of Krabi has risen to become one of the country’s best-equipped and most serviceable touristic centres. But it’s not all about the ubiquitous homestays, hostels, traditional Siamese massage parlours and heady expat hangouts here (although these do exist ad infinitum). Between the tarmacked roadways and bustling piers of Krabi port, there is also a curious contemporary art museum, and two sprawling night markets churning out steaming soya milk teas and sticky southern rice dishes to explore. And before you leave urban life behind for the beaches of Ao Nang and Had Yao, or the cliff-climbing heaven of Railay and nearby Ton Sai, be sure to ask your Krabi tour guide for tips on trekking to the viewpoints of the Tiger CaveTemple, or longboat excursions to the looming limestone monoliths of Khao Kanab Nam in the north.</p>', 1, 0, 208, '8.06', '98.92', 'krabi', 0, 1),
 (7317, 2431, 'Rodriguez', '', '', 1, 0, 170, '14.72', '121.12', 'rodriguez', 0, 1),
@@ -7535,8 +7568,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (7327, 1214, 'Puerto  Williams City', 'Dientes de Navarino', '', 1, 0, 43, '-54.56', '-67.37', 'puerto-williams-city', 0, 1),
 (7328, 2371, 'Walvis Bay', '', '', 1, 0, 153, '-22.95', '14.51', 'walvis-bay', 0, 1),
 (7329, 2216, 'Jordan', '', '', 1, 0, 170, '10.36', '122.36', 'jordan', 0, 1),
-(7330, 2440, 'Arima', '', '', 1, 0, 215, '10.37', '-61.16', 'arima', 0, 1);
-INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
+(7330, 2440, 'Arima', '', '', 1, 0, 215, '10.37', '-61.16', 'arima', 0, 1),
 (7331, 2441, 'Mikumi National Park', '', '<p class="fr-tag" style="text-align: justify;">Within its natural compression between the Udzungwa and Uluguru peaks, the Mikumi National Park unfolds rolling savannah plains, leaning groves of baobab trees, misty rock ridges and endless swaths of wild, untouched Tanzanian backcountry. Joined at the base with the legendary UNESCO Selous Game Reserve, and easily accessible from nearby Morogoro and Dar es Salaam on the coast, the park is hailed as one of most well-rounded safari spots in the country—parading everything from wandering packs of lions and galloping zebra herds, to galumphing elephants and the iconic African wildebeest. Indeed, as any Mikumi National Park tour guide is quick to note, the veritable wealth of bird and animal life that clusters around the lands of the Mkata Flood Plain has given the reserve a reputation for reliable wildlife viewing that rivals even the most celebrated enclaves of the Great Rift Valley. Lodging here is a smattering of lodges and campsites in the park that offer prime viewing, while keeping crowds at a relatively pleasant low.</p>', 1, 0, 217, '-7.2', '37.13', 'mikumi-national-park', 0, 1),
 (7332, 858, 'Stanley (Idaho)', '', '', 1, 0, 220, '44.22', '-114.93', 'stanley-idaho', 0, 1),
 (7333, 1997, 'Usambara Mountains', '', '', 1, 0, 217, '-4.45', '38.30', 'usambara-mountains', 0, 1),
@@ -7554,7 +7586,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (7345, 1482, 'Lieksa', '', '', 1, 0, 67, '63.19', '30.01', 'lieksa', 0, 1),
 (7346, 2395, 'Alajuela', '', '<p class="fr-tag"  justify;">A far cry from the bustling touristic surfing towns of the Pacific coast or the energetic streets of San Jose, Alajuela is the ideal destination for any traveller eager to catch a glimpse of authentic and local Costa Rican life. It’s a place where farmers still come to tout their vegetables at bustling food markets and tanned geriatrics smoke cheroots between the old Spanish Cathedral, the charming baroque faces of the Iglesia de la Agonía, and the hallowed old home of the national hero, Juan Santamaria.</p><p class="fr-tag"  justify;">What’s more, this charming provincial town also forms the gateway to the greater Alajuela region, where visitors are invited to wander between rolling fields of coffee plantations, seek out the company of sloths in the Juan Castro Blanco National Park, or gawp at the sulphurous and mist-clad calderas of the Poas Volcano. Elsewhere, Alajuela tour guides also recommend trips to the hot springs of Tabacon, or the magnificent cataracts of La Fortuna to the north and the breath-taking hiking trails around the Rio Celeste.</p>', 1, 0, 47, '10.01', '-84.13', 'alajuela', 0, 1),
 (7347, 386, 'Mount Shasta', '', '', 1, 0, 220, '41.24', '-122.11', 'mount-shasta', 0, 1),
-(7348, 770, 'Binyamina-Giv\'at Ada', '', '', 1, 0, 98, '32.31', '34.56', 'binyamina-givat-ada', 0, 1),
+(7348, 770, 'Binyamina-Giv''at Ada', '', '', 1, 0, 98, '32.31', '34.56', 'binyamina-givat-ada', 0, 1),
 (7349, 2443, 'Edole', '', '', 1, 0, 129, '57.02', '21.69', 'edole', 0, 1),
 (7350, 2444, 'Bocanegra', '', '', 1, 0, 167, '-12.01', '-77.12', 'bocanegra', 0, 1),
 (7351, 1710, 'Lake Nakuru National Park', '', '<p class="fr-tag" style="text-align: justify;">Seen from above, Kenya’s Lake Nakuru National Park would look something like a patchwork quilt of blue, earthy greens, browns and dusty yellow. Its land is interspersed also with swaths of flamingo pink, specks of rhino grey, clusters of leopard print, as well as moving pockets of zebra black-and-white. This is after all, a place rich in wildlife.</p><p class="fr-tag" style="text-align: justify;">The national park is so famed for its flora and fauna, that it attracts more than 300,000 visitors every year, many of whom hope to catch a glimpse of some of Africa’s most endangered species. Other visitors come to immerse themselves in the rugged land of plankton-peppered lakes, rolling savannah and looming ridges, to camp amidst Kenya’s wild backcountry, and survey the majesty of it all from Baboon Cliff or Lion Hill. </p><p class="fr-tag" style="text-align: justify;">What’s more, as any Lake Nakuru National Park tour guide will tell you, this area is also one of the continent’s prime bird-watching centres, known for its numerous indigenous fliers, which include African fish eagles, long-legged herons, and even yellow-billed storks.</p>', 1, 0, 109, '-.22', '36.05', 'lake-nakuru-national-park', 0, 1),
@@ -7576,7 +7608,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (7367, 1682, 'Bacalar', '', '', 1, 0, 150, '18.40', '-88.23', 'bacalar', 0, 1),
 (7368, 157, 'Sedona', '', '', 1, 0, 220, '34.51', '-111.47', 'sedona', 0, 1),
 (7369, 1102, 'Isandlwana battlefield', 'Isandhlwana', '', 1, 0, 234, '-28.33', '30.67', 'isandlwana-battlefield', 0, 1),
-(7370, 1102, 'Rorke\'s drift battlefield', 'Rorkes drift battlefield', '', 1, 0, 234, '-28.21', '30.32', 'rorkes-drift-battlefield', 0, 1),
+(7370, 1102, 'Rorke''s drift battlefield', 'Rorkes drift battlefield', '', 1, 0, 234, '-28.21', '30.32', 'rorkes-drift-battlefield', 0, 1),
 (7371, 1102, 'Blood River Battlefield', '', '', 1, 0, 234, '-28.16', '30.44', 'blood-river-battlefield', 0, 1),
 (7372, 1102, 'Spion Kop', 'Spioenkop', '', 1, 0, 234, '-28.65', '29.52', 'spion-kop', 0, 1),
 (7373, 1102, 'Ladysmith', '', '', 1, 0, 234, '-28.56', '29.78', 'ladysmith', 0, 1),
@@ -7593,7 +7625,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (7384, 2216, 'Buenavista', '', '', 1, 0, 170, '10.7', '122.63', 'buenavista', 0, 1),
 (7385, 2216, 'San Lorenzo', '', '', 1, 0, 170, '10.65', '122.72', 'san-lorenzo', 0, 1),
 (7386, 2216, 'Sibunag', '', '', 1, 0, 170, '10.5', '122.67', 'sibunag', 0, 1),
-(7387, 1710, 'Samburu', '', '<p class="fr-tag" style="text-align: justify;">Once the fabled home of Elsa the lioness—you know, the one from <i>Born Free</i>—Samburu County now plays host to the sprawling Samburu National Reserve. The park dominates no less than 165 square kilometres of land on the banks of the Ewaso Ng\'iro River, some five hours by car from the country’s capital at Nairobi.</p><p class="fr-tag" style="text-align: justify;">Traditionally, it has been seen as something of an off-the-beaten-track safari spot, boasting the big cats and elephants aplenty, along with other unique creatures, like the long-necked gerenuk, or the curious oryx antelope. And when travellers tire of Samburu’s own offering, there’s always the Buffalo Springs and Shaba reserves next door!</p><p class="fr-tag" style="text-align: justify;">But wildlife is by no means this park’s only draw, and visitors heading to its wild savannahs should ask their Samburu tour guide about taking a so-called ‘culture safari’, bringing them face-to-face with the fierce warriors and earthy nomadic Samburu people, who’ve occupied this corner of the Kenyan Rift Valley for centuries.</p>', 1, 0, 109, '1.17', '36.67', 'samburu', 0, 1),
+(7387, 1710, 'Samburu', '', '<p class="fr-tag" style="text-align: justify;">Once the fabled home of Elsa the lioness—you know, the one from <i>Born Free</i>—Samburu County now plays host to the sprawling Samburu National Reserve. The park dominates no less than 165 square kilometres of land on the banks of the Ewaso Ng''iro River, some five hours by car from the country’s capital at Nairobi.</p><p class="fr-tag" style="text-align: justify;">Traditionally, it has been seen as something of an off-the-beaten-track safari spot, boasting the big cats and elephants aplenty, along with other unique creatures, like the long-necked gerenuk, or the curious oryx antelope. And when travellers tire of Samburu’s own offering, there’s always the Buffalo Springs and Shaba reserves next door!</p><p class="fr-tag" style="text-align: justify;">But wildlife is by no means this park’s only draw, and visitors heading to its wild savannahs should ask their Samburu tour guide about taking a so-called ‘culture safari’, bringing them face-to-face with the fierce warriors and earthy nomadic Samburu people, who’ve occupied this corner of the Kenyan Rift Valley for centuries.</p>', 1, 0, 109, '1.17', '36.67', 'samburu', 0, 1),
 (7388, 2447, 'Banjul', '', '', 1, 0, 82, '13.27', '-16.34', 'banjul', 0, 1),
 (7389, 626, 'Casalecchio di Reno', '', '', 1, 0, 104, '44.48', '11.28', 'casalecchio-di-reno', 0, 1),
 (7390, 851, 'Nishinomiya', '', '', 1, 0, 108, '34.74', '135.34', 'nishinomiya', 0, 1),
@@ -7604,7 +7636,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (7395, 1586, 'Tibagi', '', '', 1, 0, 29, '-24.30', '-50.24', 'tibagi', 0, 1),
 (7396, 2448, 'Tivat', '', '', 1, 0, 134, '42.43', '18.70', 'tivat', 0, 1),
 (7397, 1477, 'Vila Nova de Gaia', 'Gaia', '', 1, 0, 176, '41.8', '-8.37', 'vila-nova-de-gaia', 0, 1),
-(7398, 2216, 'Boracay', '', '<p class="fr-tag" style="text-align: justify;">Boracay is every inch the tropical paradise you have been led to believe; a place where elongated beaches of chalky white sands slope their way down into the aquamarine waters of the Tablas Strait; leaning palms sway lightly in the balmy trade winds; coconut sellers wander between the glistening bodies of sunbathers, and bamboo shacks edge their way out over the scintillating surfaces of the shore. </p><p class="fr-tag" style="text-align: justify;">Today, the island’s action is all centred on the appropriately named White Beach, where Boracay tour guides often direct visitors to focus their stay. Here, five-star all-inclusives rub shoulders with bubbling cocktail bars and Southeast Asian food shacks, and clusters of shaded deck chairs spill out onto the shimmering sands. Paraws dot the seascape, offering rentals to circumnavigate the island, or even a drop off to the more secluded Diniwid Beach next door. At night, the four kilometre long beachside boulevard nearby transforms into a hedonistic haven, attracting revellers to its pub crawls and thumping live music haunts.</p><p class="fr-tag" style="text-align: justify;">Elsewhere on the island and travellers can still seek out Boracay’s less-trodden enclaves, which do still exist between the legendary kite surfing spots of Bulabog Beach, the rugged cliffs of Ariel\'s Point, the multi-coloured montages at the dive spots around Crocodile Island, the shadowy caverns of the so-called Bat Cave, and the Robinson Crusoe stretches at Balinghai.</p>', 1, 0, 170, '11.58', '121.55', 'boracay', 0, 1),
+(7398, 2216, 'Boracay', '', '<p class="fr-tag" style="text-align: justify;">Boracay is every inch the tropical paradise you have been led to believe; a place where elongated beaches of chalky white sands slope their way down into the aquamarine waters of the Tablas Strait; leaning palms sway lightly in the balmy trade winds; coconut sellers wander between the glistening bodies of sunbathers, and bamboo shacks edge their way out over the scintillating surfaces of the shore. </p><p class="fr-tag" style="text-align: justify;">Today, the island’s action is all centred on the appropriately named White Beach, where Boracay tour guides often direct visitors to focus their stay. Here, five-star all-inclusives rub shoulders with bubbling cocktail bars and Southeast Asian food shacks, and clusters of shaded deck chairs spill out onto the shimmering sands. Paraws dot the seascape, offering rentals to circumnavigate the island, or even a drop off to the more secluded Diniwid Beach next door. At night, the four kilometre long beachside boulevard nearby transforms into a hedonistic haven, attracting revellers to its pub crawls and thumping live music haunts.</p><p class="fr-tag" style="text-align: justify;">Elsewhere on the island and travellers can still seek out Boracay’s less-trodden enclaves, which do still exist between the legendary kite surfing spots of Bulabog Beach, the rugged cliffs of Ariel''s Point, the multi-coloured montages at the dive spots around Crocodile Island, the shadowy caverns of the so-called Bat Cave, and the Robinson Crusoe stretches at Balinghai.</p>', 1, 0, 170, '11.58', '121.55', 'boracay', 0, 1),
 (7399, 2038, 'Portland (Texas)', '', '', 1, 0, 220, '27.53', '-97.19', 'portland-texas', 0, 1),
 (7400, 410, 'Soufrière', '', '', 1, 0, 122, '13.85', '-61.06', 'soufrire', 0, 1),
 (7401, 81, 'Sutton-Alpine', 'Sutton ', '', 1, 0, 220, '61.42', '-148.59', 'sutton-alpine', 0, 1),
@@ -7626,7 +7658,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (7417, 2455, 'Tozeur', '', '', 1, 0, 212, '33.92', '8.13', 'tozeur', 0, 1),
 (7418, 2456, 'Djerba', '', '', 1, 0, 212, '33.78', '10.88', 'djerba', 0, 1),
 (7419, 2131, 'Kotdwara', '', '', 1, 0, 100, '29.75', '78.53', 'kotdwara', 0, 1),
-(7420, 2457, 'Ra\'anana', '', '', 1, 0, 98, '32.18', '34.87', 'raanana', 0, 1),
+(7420, 2457, 'Ra''anana', '', '', 1, 0, 98, '32.18', '34.87', 'raanana', 0, 1),
 (7421, 2458, 'Selous Game Reserve', '', '', 1, 0, 217, '-9', '37.4', 'selous-game-reserve', 0, 1),
 (7422, 2459, 'Ruaha National Park', '', '<p class="fr-tag" style="text-align: justify;">Edging ever closer to the prize for Africa’s largest national park, Ruaha now sprawls a mega 20,000 kilometres over Tanzania’s central plateaus. Between its borders run herds of dainty sable antelope, formidable buffaloes and an estimated 10,000 individual elephants, not to mention elusive cheetahs, a cacophonous mix of birdlife and marauding packs of African wild dogs besides. But wildlife isn’t this park’s only pull; the loyal following of safari goers it now commands is also due to its wondrous backcountry, which oscillates between lush riparian wetlands on the edge of the Mzombe and Mwagusi Rivers, sun-caked savannah and rising highland ridges—all peppered with clusters of looming baobabs and spiralling palms. Today, Ruaha National Park tour guides can recommend a number of different lodges, campsites and safari outfitters, which range from self-catering cabins on the cusp of the park’s boundaries to makeshift tented spots right in the heart of the wilds.</p>', 1, 0, 217, '-7.5', '35', 'ruaha-national-park', 0, 1),
 (7423, 507, 'Cotopaxi National Park', '', '', 1, 0, 60, '-0.68', '-78.43', 'cotopaxi-national-park', 0, 1),
@@ -7694,7 +7726,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (7485, 2472, 'Struga', '', '', 1, 0, 137, '41.10', '20.40', 'struga', 0, 1),
 (7486, 994, 'Hampi', '', '', 1, 0, 100, '15.34', '76.46', 'hampi', 0, 1),
 (7487, 1287, 'Siwa Oasis', '', '<p class="fr-tag" style="text-align: justify;">Encompassed on all sides by the dusty, windswept dunes of the western Egyptian desert, this elongated stretch of oasis land oozes points of historical interest from every ancient crumbling temple façade, subterranean tomb and looming remnant of the old salt-brick fortress. </p><p class="fr-tag" style="text-align: justify;">Many travellers visit the Siwa Oasis to follow in the footsteps of Alexander the Great, who arrived to seek the blessing of the ancient oracle in the second half of the 4<sup>th</sup> century BC. And if it’s the history you came for (and most people do), then be sure to ask your Siwa Oasis tour guide about the other major must see sights that pepper the area—the hot spring fed Cleopatra’s pool and the crumbling remains of the Pharaonic Temple of Amun, as well as the tomb-dotted ridges of the Ptolemaic Mountain of the Dead.</p><p class="fr-tag" style="text-align: justify;">For the intrepid, the Great Sand Sea opens up a gamut of adventure sports from sand boarding and safaris to quad biking in the desert. Back at Shali, Siwa’s main town, a compact house museum, earthy Berber markets, and a range of charming modern hamlets around a blooming canopy of palm and olive trees wait to be explored.</p>', 1, 0, 62, '29.11', '25.33', 'siwa-oasis', 0, 1),
-(7488, 41, 'Wadi Rum', '', '<p class="fr-tag" style="text-align: justify;">By day, the dusty swaths of the great Wadi Rum play host to the clapping hoofs of wandering Bedouin camel herds and the wild whistles of sandy breezes that squeeze their way through the various bluffs of the Jebel hills. By night, the stars twinkle overhead, stark and untainted by metropolitan light, and an eerie celestial glow filters its way through the rocky gorges and the looming hoodoos of the land, making this ancient canyon like nowhere else on earth. </p><p class="fr-tag" style="text-align: justify;">Wadi Rum is famed as the historical stomping ground of Lawrence of Arabia, and hailed as one of the finest eco tourist destinations in all of Jordan. Accordingly, visitors flock here to glimpse the crumbling remains of what is thought to be the old colonel’s former home in the desert, or to scale the various limestone ridges under the tutelage of local Wadi Rum tour guides. Others simply come to marvel at the gravity-defying geological formations that abound throughout the region, from the legendary Seven Pillars of Wisdom, to the great Umm Fruth Rock Bridge and the Khaz\'ali Canyon, complete with its wealth of ancient Nabataean cave paintings.</p>', 1, 0, 107, '29.58', '35.42', 'wadi-rum', 0, 1),
+(7488, 41, 'Wadi Rum', '', '<p class="fr-tag" style="text-align: justify;">By day, the dusty swaths of the great Wadi Rum play host to the clapping hoofs of wandering Bedouin camel herds and the wild whistles of sandy breezes that squeeze their way through the various bluffs of the Jebel hills. By night, the stars twinkle overhead, stark and untainted by metropolitan light, and an eerie celestial glow filters its way through the rocky gorges and the looming hoodoos of the land, making this ancient canyon like nowhere else on earth. </p><p class="fr-tag" style="text-align: justify;">Wadi Rum is famed as the historical stomping ground of Lawrence of Arabia, and hailed as one of the finest eco tourist destinations in all of Jordan. Accordingly, visitors flock here to glimpse the crumbling remains of what is thought to be the old colonel’s former home in the desert, or to scale the various limestone ridges under the tutelage of local Wadi Rum tour guides. Others simply come to marvel at the gravity-defying geological formations that abound throughout the region, from the legendary Seven Pillars of Wisdom, to the great Umm Fruth Rock Bridge and the Khaz''ali Canyon, complete with its wealth of ancient Nabataean cave paintings.</p>', 1, 0, 107, '29.58', '35.42', 'wadi-rum', 0, 1),
 (7489, 1686, 'Ranthambore National Park', '', '', 1, 0, 100, '26.02', '76.5', 'ranthambore-national-park', 0, 1),
 (7490, 2473, 'Katavi National Park', '', '', 1, 0, 217, '-6.83', '31.25', 'katavi-national-park', 0, 1),
 (7491, 1102, 'Prince Imperial Monument', '', '', 1, 0, 234, '-28.12', '30.78', 'prince-imperial-monument', 0, 1),
@@ -7771,7 +7803,8 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (7564, 2494, 'Apuseni Mountains', '', '', 1, 0, 181, '46.5', '23', 'apuseni-mountains', 0, 1),
 (7565, 2498, 'Transylvania', '', '', 1, 0, 181, '46.77', '23.58', 'transylvania', 0, 1),
 (7566, 1686, 'Mount Abu', '', '', 1, 0, 100, '24.59', '72.81', 'mount-abu', 0, 1),
-(7567, 2499, 'Bwindi Impenetrable National Park', '', '', 1, 0, 219, '-1.03', '29.43', 'bwindi-impenetrable-national-park', 0, 1),
+(7567, 2499, 'Bwindi Impenetrable National Park', '', '', 1, 0, 219, '-1.03', '29.43', 'bwindi-impenetrable-national-park', 0, 1);
+INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
 (7568, 2500, 'Kibale National Park', '', '', 1, 0, 219, '.3', '30.24', 'kibale-national-park', 0, 1),
 (7569, 2501, 'Kidepo Valley National Park', '', '', 1, 0, 219, '3.54', '33.51', 'kidepo-valley-national-park', 0, 1),
 (7570, 2344, 'Lake Mburo National Park', '', '', 1, 0, 219, '-.36', '30.57', 'lake-mburo-national-park', 0, 1),
@@ -7821,7 +7854,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (7614, 1962, 'Fjallabak Nature Reserve', '', '', 1, 0, 103, '63.58', '-19.03', 'fjallabak-nature-reserve', 0, 1),
 (7615, 1157, 'Tortuguero', '', '', 1, 0, 47, '10.54', '-83.5', 'tortuguero', 0, 1),
 (7616, 1157, 'Guápiles', 'Guapiles', '', 1, 0, 47, '10.21', '-83.79', 'gupiles', 0, 1),
-(7617, 2213, 'Cape Agulhas', ' L\'Agulhas', '', 1, 0, 234, '-34.83', '20', 'cape-agulhas', 0, 1),
+(7617, 2213, 'Cape Agulhas', ' L''Agulhas', '', 1, 0, 234, '-34.83', '20', 'cape-agulhas', 0, 1),
 (7618, 1803, 'Socorro', '', '', 1, 0, 46, '6.53', '73.2', 'socorro', 0, 1),
 (7619, 1631, 'Sopot', '', '', 1, 0, 172, '54.45', '18.57', 'sopot', 0, 1),
 (7620, 2512, 'Taba', '', '', 1, 0, 62, '29.5', '34.88', 'taba', 0, 1),
@@ -7857,8 +7890,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (7650, 221, 'Piripiri', '', '', 1, 0, 29, '-4.27', '-41.78', 'piripiri', 0, 1),
 (7651, 1847, 'Kyaukme', '', '', 1, 0, 139, '22.54', '97.02', 'kyaukme', 0, 1),
 (7652, 1476, 'Kiruna', '', '', 1, 0, 189, '67.51', '20.13', 'kiruna', 0, 1),
-(7653, 1322, 'El Nido', '', '', 1, 0, 170, '11.33', '119.68', 'el-nido', 0, 1);
-INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `status`, `region_id`, `country_id`, `latitude`, `longitude`, `alias`, `lic_required`, `base_credit`) VALUES
+(7653, 1322, 'El Nido', '', '', 1, 0, 170, '11.33', '119.68', 'el-nido', 0, 1),
 (7654, 1322, 'Palawan', '', '', 1, 0, 170, '10', '118.83', 'palawan', 0, 1),
 (7655, 114, 'Torremolinos', '', '', 1, 0, 65, '36.62', '-4.5', 'torremolinos', 0, 1),
 (7656, 489, 'Golden', '', '', 1, 0, 220, '39.75', '-105.2', 'golden', 0, 1),
@@ -8106,7 +8138,7 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 (7899, 800, 'Kauaʻi', 'Kauai', '', 1, 0, 220, '22.05', '-159.30', 'kauai', 0, 1),
 (7900, 1020, 'Wayanad', '', '', 1, 0, 100, '11.6', '76.08', 'wayanad', 0, 1),
 (7901, 814, 'Huichapan', '', '', 1, 0, 150, '20.22', '-99.39', 'huichapan', 0, 1),
-(7902, 2438, 'Murang\'a', '', '', 1, 0, 109, '-.72', '37.15', 'muranga', 0, 1),
+(7902, 2438, 'Murang''a', '', '', 1, 0, 109, '-.72', '37.15', 'muranga', 0, 1),
 (7903, 909, 'Karimun Java', '', '', 1, 0, 96, '-5.5', '110.2', 'karimun-java', 0, 1),
 (7904, 1710, 'Kajiado', '', '', 1, 0, 109, '-1.85', '36.78', 'kajiado', 0, 1),
 (7905, 1301, 'Pynursla', '', '', 1, 0, 100, '25.19', '91.5', 'pynursla', 0, 1),
@@ -8140,8 +8172,8 @@ INSERT INTO `cities` (`id`, `state_id`, `city_name`, `name_varient`, `text`, `st
 -- Table structure for table `country`
 --
 
-CREATE TABLE `country` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `country` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `country_name` varchar(255) DEFAULT NULL,
   `country_code` varchar(255) DEFAULT NULL,
   `isd_code` varchar(6) DEFAULT NULL,
@@ -8149,8 +8181,10 @@ CREATE TABLE `country` (
   `status` tinyint(2) NOT NULL DEFAULT '0',
   `alias` text NOT NULL,
   `lic_required` tinyint(2) NOT NULL DEFAULT '0',
-  `base_credit` int(11) NOT NULL DEFAULT '1'
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+  `base_credit` int(11) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`),
+  KEY `country_name` (`country_name`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=237 ;
 
 --
 -- Dumping data for table `country`
@@ -8403,16 +8437,25 @@ INSERT INTO `country` (`id`, `country_name`, `country_code`, `isd_code`, `text`,
 -- Table structure for table `coupons`
 --
 
-CREATE TABLE `coupons` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `coupons` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `target_hotel` varchar(50) NOT NULL,
   `coupon_code` varchar(50) NOT NULL,
   `start_date` datetime NOT NULL,
   `finish_date` datetime NOT NULL,
   `discount` float(5,2) NOT NULL,
   `comments` text NOT NULL,
-  `active` enum('0','1') NOT NULL COMMENT '0->inactive,1->active'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `active` enum('0','1') NOT NULL COMMENT '0->inactive,1->active',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
+
+--
+-- Dumping data for table `coupons`
+--
+
+INSERT INTO `coupons` (`id`, `target_hotel`, `coupon_code`, `start_date`, `finish_date`, `discount`, `comments`, `active`) VALUES
+(1, '0', 'TMI001', '2016-09-30 00:00:00', '2016-10-07 00:00:00', 2.00, '', '1'),
+(2, '0', 'TMI002', '2016-09-25 00:00:00', '2016-10-05 00:00:00', 2.50, '', '1');
 
 -- --------------------------------------------------------
 
@@ -8420,12 +8463,13 @@ CREATE TABLE `coupons` (
 -- Table structure for table `currencies`
 --
 
-CREATE TABLE `currencies` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `currencies` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `code` varchar(10) NOT NULL,
   `name` varchar(50) NOT NULL,
-  `currency_usd _rate` decimal(10,2) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `currency_usd _rate` decimal(10,2) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
 
 --
 -- Dumping data for table `currencies`
@@ -8438,14 +8482,38 @@ INSERT INTO `currencies` (`id`, `code`, `name`, `currency_usd _rate`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `customers`
+--
+
+CREATE TABLE IF NOT EXISTS `customers` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `phone` varchar(20) NOT NULL,
+  `address` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=7 ;
+
+--
+-- Dumping data for table `customers`
+--
+
+INSERT INTO `customers` (`id`, `name`, `email`, `phone`, `address`) VALUES
+(4, 'Abdul', 'abdul.quadir@tisindiasupport.com', '9999999999', ''),
+(6, 'Abdul', 'abdul.quadir@tisindiasupport.com', '9999999999', '');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `designation`
 --
 
-CREATE TABLE `designation` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `designation` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `designation` varchar(255) NOT NULL,
-  `status` enum('0','1') NOT NULL COMMENT '0->inactive,1->active'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` enum('0','1') NOT NULL COMMENT '0->inactive,1->active',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
 
 --
 -- Dumping data for table `designation`
@@ -8461,11 +8529,12 @@ INSERT INTO `designation` (`id`, `designation`, `status`) VALUES
 -- Table structure for table `groups`
 --
 
-CREATE TABLE `groups` (
-  `id` mediumint(8) UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `groups` (
+  `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(20) NOT NULL,
-  `description` varchar(100) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `description` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
 
 --
 -- Dumping data for table `groups`
@@ -8483,8 +8552,8 @@ INSERT INTO `groups` (`id`, `name`, `description`) VALUES
 -- Table structure for table `hotel`
 --
 
-CREATE TABLE `hotel` (
-  `hotel_id` bigint(20) NOT NULL,
+CREATE TABLE IF NOT EXISTS `hotel` (
+  `hotel_id` bigint(20) NOT NULL AUTO_INCREMENT,
   `hotel_name` varchar(255) NOT NULL,
   `slug` varchar(255) NOT NULL,
   `hotel_chain` int(11) NOT NULL,
@@ -8510,16 +8579,18 @@ CREATE TABLE `hotel` (
   `contact_phone` varchar(20) NOT NULL,
   `meta_title` varchar(255) NOT NULL,
   `meta_description` text NOT NULL,
-  `hotel_status` enum('0','1') NOT NULL DEFAULT '0' COMMENT '0->inactive,1->active'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `hotel_status` enum('0','1') NOT NULL DEFAULT '0' COMMENT '0->inactive,1->active',
+  PRIMARY KEY (`hotel_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=6 ;
 
 --
 -- Dumping data for table `hotel`
 --
 
 INSERT INTO `hotel` (`hotel_id`, `hotel_name`, `slug`, `hotel_chain`, `hotel_type`, `hotel_category`, `star_rating`, `base_currency`, `no_of_rooms`, `tmi_rooms`, `country`, `state`, `city`, `hotel_phone`, `hotel_mobile`, `email_list`, `checkin_time`, `checkout_time`, `hotel_amenities`, `owner_commision`, `contact_type`, `contact_name`, `contact_email`, `contact_phone`, `meta_title`, `meta_description`, `hotel_status`) VALUES
-(2, 'Hotel The JK', 'hotel-the-jk', 3, '1', '3,6', 3, 'INR', 20, 10, '100', '549', '1593', '1234567890', '9999999999', 'abdul.quadir@tisindiasupport.com,abdul@gmail.com', '11:00 AM', '1:00 PM', '9,10,11', '0.00', 'sales', 'amarendra', 'amar@gmail.com', '9999999999', 'satyam hotel', 'djkfkdl kgjfhg', '0'),
-(5, 'Satyam', 'satyam', 0, '2', '0', 4, 'INR', 20, 10, '100', '549', '1593', '1234567890', '9999999999', 'asa@gmail.com,ssas@gmail.com', '11:00 AM', '1:00 PM', '1,2', '6.50', '', '', '', '', 'satyam hotel', 'fdf sdfdsf fgf', '1');
+(2, 'Hotel The JK', 'hotel-the-jk', 0, '1', '1,4', 3, 'INR', 20, 10, '100', '549', '1593', '1234567890', '9999999999', 'abdul.quadir@tisindiasupport.com,abdul@gmail.com', '11:00 AM', '1:00 PM', '9,10,11', '0.00', 'sales', 'amarendra', 'amar@gmail.com', '9999999999', 'Hotel The JK', 'djksfh sgdhjsgdh jagdh', '1'),
+(3, 'Hotel Atithi', 'hotel-atithi', 0, '1', '0', 4, 'INR', 20, 15, '100', '2130', '6266', '1234567890', '9999999999', 'abc@gmail.com,sdsd@gmail.com', '11:00 AM', '4:00 PM', '9,10,11', '7.50', 'sales', 'amarendra', 'amar@gmail.com', '9999999999', 'hotel atithi', 'This modern hotel with marble inlay work is 2.3 km from the Taj Mahal, 3.2 km from Agra Fort and 4.5 km from the Agra Cantonment Railway Station.', '1'),
+(4, 'Hotel Taj Palace', 'hotel-taj-palace', 1, '1', '0', 5, 'INR', 20, 10, '', '', '', '1234567890', '9999999999', 'abc@gmail.com,ss@gmail.com', '11:00 AM', '3:00 PM', '9,10,11', '7.50', '', '', '', '', '', '', '1');
 
 -- --------------------------------------------------------
 
@@ -8527,21 +8598,22 @@ INSERT INTO `hotel` (`hotel_id`, `hotel_name`, `slug`, `hotel_chain`, `hotel_typ
 -- Table structure for table `hotel_categories`
 --
 
-CREATE TABLE `hotel_categories` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `hotel_categories` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `hotel_category` varchar(50) NOT NULL,
-  `status` enum('0','1') NOT NULL COMMENT '0->inactive,1->active'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` enum('0','1') NOT NULL COMMENT '0->inactive,1->active',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=6 ;
 
 --
 -- Dumping data for table `hotel_categories`
 --
 
 INSERT INTO `hotel_categories` (`id`, `hotel_category`, `status`) VALUES
-(3, 'Business Hotel', '1'),
-(4, 'Spa Hotel', '1'),
-(6, 'Suit Hotel', '1'),
-(7, 'Heritage Hotel', '1');
+(1, 'Business Hotel', '1'),
+(2, 'Spa Hotel', '1'),
+(4, 'Suit Hotel', '1'),
+(5, 'Heritage Hotel', '1');
 
 -- --------------------------------------------------------
 
@@ -8549,11 +8621,12 @@ INSERT INTO `hotel_categories` (`id`, `hotel_category`, `status`) VALUES
 -- Table structure for table `hotel_chain`
 --
 
-CREATE TABLE `hotel_chain` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `hotel_chain` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
-  `status` enum('0','1') NOT NULL COMMENT '0->inactive,1->active'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` enum('0','1') NOT NULL COMMENT '0->inactive,1->active',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
 
 --
 -- Dumping data for table `hotel_chain`
@@ -8561,10 +8634,9 @@ CREATE TABLE `hotel_chain` (
 
 INSERT INTO `hotel_chain` (`id`, `name`, `status`) VALUES
 (1, 'Taj Hotels Resorts & Places', '1'),
+(2, 'Spree Hotels', '0'),
 (3, 'Star Group of Hotels', '1'),
-(4, 'ITC', '1'),
-(5, 'The Park', '1'),
-(6, 'Spree Hotels', '0');
+(4, 'ITC', '1');
 
 -- --------------------------------------------------------
 
@@ -8572,24 +8644,27 @@ INSERT INTO `hotel_chain` (`id`, `name`, `status`) VALUES
 -- Table structure for table `hotel_contact_details`
 --
 
-CREATE TABLE `hotel_contact_details` (
-  `id` bigint(20) NOT NULL,
+CREATE TABLE IF NOT EXISTS `hotel_contact_details` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `hotel_id` bigint(20) NOT NULL,
   `designation` int(11) NOT NULL,
   `name` varchar(50) DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
   `phone` varchar(20) DEFAULT NULL,
-  `created_on` datetime NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `created_on` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=16 ;
 
 --
 -- Dumping data for table `hotel_contact_details`
 --
 
 INSERT INTO `hotel_contact_details` (`id`, `hotel_id`, `designation`, `name`, `email`, `phone`, `created_on`) VALUES
-(21, 2, 1, 'Abdul', 'abdul@gmail.com', '9999999999', '0000-00-00 00:00:00'),
-(22, 2, 2, 'Amar', 'amar@gmail.com', '9999999999', '0000-00-00 00:00:00'),
-(23, 2, 1, 'Jeevan', 'jeevan@gmail.com', '9999999999', '0000-00-00 00:00:00');
+(9, 5, 1, 'Abdul', 'abdul@gmail.com', '9999999999', '0000-00-00 00:00:00'),
+(10, 4, 1, 'Abdul', 'abdul@gmail.com', '9999999999', '0000-00-00 00:00:00'),
+(11, 4, 2, 'Amar', 'amar@gmail.com', '9999999999', '0000-00-00 00:00:00'),
+(14, 2, 1, 'Abdul', 'abdul@gmail.com', '9999999999', '0000-00-00 00:00:00'),
+(15, 2, 2, 'Amar', 'amar@gmail.com', '9999999999', '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -8597,21 +8672,23 @@ INSERT INTO `hotel_contact_details` (`id`, `hotel_id`, `designation`, `name`, `e
 -- Table structure for table `hotel_gallery`
 --
 
-CREATE TABLE `hotel_gallery` (
-  `id` bigint(20) NOT NULL,
+CREATE TABLE IF NOT EXISTS `hotel_gallery` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `hotel_id` bigint(20) NOT NULL,
   `primary_image` varchar(255) DEFAULT NULL,
   `images` varchar(255) DEFAULT NULL,
-  `created_date` datetime NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `created_date` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
 
 --
 -- Dumping data for table `hotel_gallery`
 --
 
 INSERT INTO `hotel_gallery` (`id`, `hotel_id`, `primary_image`, `images`, `created_date`) VALUES
-(4, 5, 'hotel3.jpeg', 'hotel3.jpeg,hotel2.jpeg,hotel1.jpeg', '0000-00-00 00:00:00'),
-(5, 6, 'hotel31.jpeg', 'hotel31.jpeg,hotel21.jpeg,hotel11.jpeg', '0000-00-00 00:00:00');
+(1, 3, 'hotelatithiagra2.jpg', 'hotelatithiagra2.jpg,hotelatithiagra1.jpg', '0000-00-00 00:00:00'),
+(2, 4, 'hotel3.jpeg', 'hotel3.jpeg,hotel2.jpeg,hotel1.jpeg', '0000-00-00 00:00:00'),
+(3, 5, '', NULL, '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -8619,8 +8696,8 @@ INSERT INTO `hotel_gallery` (`id`, `hotel_id`, `primary_image`, `images`, `creat
 -- Table structure for table `hotel_location`
 --
 
-CREATE TABLE `hotel_location` (
-  `loc_id` bigint(20) NOT NULL,
+CREATE TABLE IF NOT EXISTS `hotel_location` (
+  `loc_id` bigint(20) NOT NULL AUTO_INCREMENT,
   `hotel_id` bigint(20) NOT NULL,
   `latitude` varchar(50) NOT NULL,
   `longitude` varchar(50) NOT NULL,
@@ -8630,16 +8707,19 @@ CREATE TABLE `hotel_location` (
   `locality` varchar(255) NOT NULL,
   `landmarks` text NOT NULL,
   `zipcode` varchar(50) NOT NULL,
-  `address` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `address` text NOT NULL,
+  PRIMARY KEY (`loc_id`),
+  KEY `hotel_location_ibfk_1` (`hotel_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
 
 --
 -- Dumping data for table `hotel_location`
 --
 
 INSERT INTO `hotel_location` (`loc_id`, `hotel_id`, `latitude`, `longitude`, `loc_country`, `loc_state`, `loc_city`, `locality`, `landmarks`, `zipcode`, `address`) VALUES
-(1, 2, '28.644800', '77.216721', '100', '549', '1593', 'Canuaght Place', 'india gate,CP', '110003', 'C-547,Canuagt Place,New Delhi'),
-(4, 5, '28.644800', '77.216721', '100', '549', '1593', 'Canuaght Place', 'Canuaght Place', '110003', 'dfd dfdsfds');
+(1, 2, '28.644800', '77.216721', '100', '549', '1593', 'Connaught Place, New Delhi, Delhi, India', 'Le Meridien New Delhi, New Delhi, Delhi, India', '110003', 'C-547,Canuagt Place,New Delhi'),
+(2, 3, '27.178836518126978', '78.0117706673584', '100', '2130', '6266', 'Agra, Uttar Pradesh, India', 'city center,Fatehabad road', '28001', 'Tourist Complex Area, Fatehabad Road, Agra, Uttar Pradesh 282001'),
+(3, 4, '28.626268232812787', '77.21388858728028', '100', '549', '1593', 'Police Colony, New Delhi, Delhi, India', 'Jantar Mantar Food Point, Janpath, New Delhi, Delhi, India', '110003', 'defds dfds');
 
 -- --------------------------------------------------------
 
@@ -8647,13 +8727,16 @@ INSERT INTO `hotel_location` (`loc_id`, `hotel_id`, `latitude`, `longitude`, `lo
 -- Table structure for table `hotel_services`
 --
 
-CREATE TABLE `hotel_services` (
-  `id` bigint(20) NOT NULL,
+CREATE TABLE IF NOT EXISTS `hotel_services` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `hotel_id` bigint(20) NOT NULL,
   `service_id` int(11) NOT NULL,
   `important_services` text NOT NULL,
-  `addon_services` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `addon_services` text NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_services` (`service_id`) USING BTREE,
+  KEY `hotel_services_ibfk_1` (`hotel_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -8661,11 +8744,12 @@ CREATE TABLE `hotel_services` (
 -- Table structure for table `hotel_type`
 --
 
-CREATE TABLE `hotel_type` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `hotel_type` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `hotel_type` varchar(50) NOT NULL,
-  `status` enum('0','1') NOT NULL COMMENT '0->inactive,1->active'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` enum('0','1') NOT NULL COMMENT '0->inactive,1->active',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=6 ;
 
 --
 -- Dumping data for table `hotel_type`
@@ -8683,12 +8767,13 @@ INSERT INTO `hotel_type` (`id`, `hotel_type`, `status`) VALUES
 -- Table structure for table `login_attempts`
 --
 
-CREATE TABLE `login_attempts` (
-  `id` int(11) UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `login_attempts` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `ip_address` varchar(15) NOT NULL,
   `login` varchar(100) NOT NULL,
-  `time` int(11) UNSIGNED DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `time` int(11) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -8696,12 +8781,13 @@ CREATE TABLE `login_attempts` (
 -- Table structure for table `rate_categories`
 --
 
-CREATE TABLE `rate_categories` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `rate_categories` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `category_type` varchar(255) NOT NULL,
   `meal_plan` varchar(10) NOT NULL,
-  `status` enum('0','1') NOT NULL COMMENT '0->inactive,1->active'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` enum('0','1') NOT NULL COMMENT '0->inactive,1->active',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=7 ;
 
 --
 -- Dumping data for table `rate_categories`
@@ -8720,28 +8806,63 @@ INSERT INTO `rate_categories` (`id`, `category_type`, `meal_plan`, `status`) VAL
 -- Table structure for table `reservation`
 --
 
-CREATE TABLE `reservation` (
-  `id` bigint(20) NOT NULL,
+CREATE TABLE IF NOT EXISTS `reservation` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
+  `hotel_id` int(11) NOT NULL,
   `room_type` int(11) NOT NULL,
   `booked_rooms` int(11) NOT NULL,
   `blocked_rooms` int(11) NOT NULL,
   `from_date` date NOT NULL,
   `to_date` date NOT NULL,
-  `reserve_type` enum('0','1') NOT NULL COMMENT '0->not available,1->blocked by admin'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `reserve_type` enum('0','1','2') NOT NULL COMMENT '0->not available,1->blocked by admin,3->online',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=13 ;
 
 --
 -- Dumping data for table `reservation`
 --
 
-INSERT INTO `reservation` (`id`, `user_id`, `room_type`, `booked_rooms`, `blocked_rooms`, `from_date`, `to_date`, `reserve_type`) VALUES
-(1, 1, 3, 2, 0, '2016-09-01', '2016-09-01', '0'),
-(2, 1, 3, 0, 0, '2016-09-23', '2016-09-23', '0'),
-(3, 1, 1, 0, 0, '2016-09-22', '2016-09-30', '1'),
-(4, 1, 1, 0, 0, '2016-09-01', '2016-09-01', '0'),
-(5, 1, 3, 0, 4, '2016-09-22', '2016-09-30', '1'),
-(6, 1, 3, 0, 0, '2016-09-28', '2016-09-30', '1');
+INSERT INTO `reservation` (`id`, `user_id`, `hotel_id`, `room_type`, `booked_rooms`, `blocked_rooms`, `from_date`, `to_date`, `reserve_type`) VALUES
+(1, 1, 2, 1, 2, 0, '2016-09-01', '2016-09-01', '0'),
+(2, 1, 2, 1, 0, 4, '2016-09-22', '2016-09-30', '1'),
+(3, 1, 2, 1, 0, 3, '2016-09-23', '2016-09-30', '1'),
+(5, 1, 2, 1, 0, 0, '2016-09-28', '2016-09-30', '1'),
+(6, 1, 2, 1, 0, 3, '2016-10-01', '2016-10-02', '1'),
+(10, 0, 2, 1, 3, 0, '2016-09-29', '2016-09-30', '2'),
+(12, 0, 2, 5, 3, 0, '2016-09-30', '2016-10-01', '2');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `reservation_details`
+--
+
+CREATE TABLE IF NOT EXISTS `reservation_details` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `booking_number` varchar(50) NOT NULL,
+  `reservation_id` bigint(20) NOT NULL,
+  `customer_id` int(11) NOT NULL,
+  `adult` int(11) NOT NULL,
+  `children` int(11) NOT NULL,
+  `extra_bed` int(11) NOT NULL,
+  `booked_by` varchar(50) NOT NULL,
+  `booked_by_user_id` int(11) NOT NULL,
+  `coupon_id` int(11) NOT NULL,
+  `campaign_id` int(11) NOT NULL,
+  `total_amount` decimal(7,2) NOT NULL,
+  `status` int(11) NOT NULL COMMENT '0->unpaid,1->paid',
+  `booking_date` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
+
+--
+-- Dumping data for table `reservation_details`
+--
+
+INSERT INTO `reservation_details` (`id`, `booking_number`, `reservation_id`, `customer_id`, `adult`, `children`, `extra_bed`, `booked_by`, `booked_by_user_id`, `coupon_id`, `campaign_id`, `total_amount`, `status`, `booking_date`) VALUES
+(1, '9220125710', 10, 4, 3, 0, 1, 'admin', 1, 0, 0, '4800.00', 0, '2016-09-29 13:49:52'),
+(3, '9220236512', 12, 6, 4, 2, 1, 'admin', 1, 1, 1, '6178.90', 0, '2016-09-30 12:17:26');
 
 -- --------------------------------------------------------
 
@@ -8749,8 +8870,8 @@ INSERT INTO `reservation` (`id`, `user_id`, `room_type`, `booked_rooms`, `blocke
 -- Table structure for table `room_gallery`
 --
 
-CREATE TABLE `room_gallery` (
-  `id` bigint(20) NOT NULL,
+CREATE TABLE IF NOT EXISTS `room_gallery` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `hotel_id` bigint(20) NOT NULL,
   `room_id` bigint(20) NOT NULL,
   `lobby_primary_image` varchar(255) DEFAULT NULL,
@@ -8759,16 +8880,21 @@ CREATE TABLE `room_gallery` (
   `lounge_images` text,
   `reception_primary_image` varchar(255) DEFAULT NULL,
   `reception_images` text,
-  `created_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `created_date` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=14 ;
 
 --
 -- Dumping data for table `room_gallery`
 --
 
 INSERT INTO `room_gallery` (`id`, `hotel_id`, `room_id`, `lobby_primary_image`, `lobby_images`, `lounge_primary_image`, `lounge_images`, `reception_primary_image`, `reception_images`, `created_date`) VALUES
-(10, 2, 1, 'DublinHotelRoomMaple.jpg', 'DublinHotelRoomMaple.jpg,DoubleTree-SFO-Brisbane-Hotel-Guest-Room-King-2-300x200.jpg,1666196.jpg', '', '', '', '', '0000-00-00 00:00:00'),
-(12, 5, 3, 'lobby1.jpg', 'lobby1.jpg,lobby2.jpg', 'lounge4.jpg', 'lounge4.jpg,lounge3.jpg', 'reception1.jpg', 'reception1.jpg,reception2.jpg', '0000-00-00 00:00:00');
+(6, 2, 1, 'DublinHotelRoomMaple.jpg', 'DublinHotelRoomMaple.jpg,DoubleTree-SFO-Brisbane-Hotel-Guest-Room-King-2-300x200.jpg,1666196.jpg', '', '', '', '', '2016-09-08 16:41:35'),
+(7, 2, 5, 'pune-weekend-tour-min11.jpg', 'pune-weekend-tour-min11.jpg', '', '', '', '', '0000-00-00 00:00:00'),
+(10, 3, 7, 'atithi_room2.jpg', 'atithi_room2.jpg,atithi_room1.jpg', 'lounge2.jpg', 'lounge2.jpg,lounge1.jpg', 'reception2.jpg', 'reception2.jpg,reception1.jpg', '0000-00-00 00:00:00'),
+(11, 4, 8, 'lobby2.jpg', 'lobby2.jpg,lobby1.jpg', 'lounge4.jpg', 'lounge4.jpg,lounge3.jpg', 'reception21.jpg', 'reception21.jpg,reception11.jpg', '0000-00-00 00:00:00'),
+(12, 5, 10, '', NULL, '', NULL, '', NULL, '0000-00-00 00:00:00'),
+(13, 4, 11, '', NULL, '', NULL, '', NULL, '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -8776,14 +8902,14 @@ INSERT INTO `room_gallery` (`id`, `hotel_id`, `room_id`, `lobby_primary_image`, 
 -- Table structure for table `room_info`
 --
 
-CREATE TABLE `room_info` (
-  `type_id` bigint(20) NOT NULL,
+CREATE TABLE IF NOT EXISTS `room_info` (
+  `type_id` bigint(20) NOT NULL AUTO_INCREMENT,
   `hotel_id` bigint(20) NOT NULL,
   `room_type` int(11) NOT NULL,
   `adults` varchar(20) NOT NULL,
   `children` varchar(20) NOT NULL,
   `extra_beds` varchar(20) NOT NULL,
-  `no_of_rooms` int(11) NOT NULL,
+  `no_of_rooms` int(11) NOT NULL DEFAULT '1',
   `tmi_rooms` int(11) NOT NULL,
   `beds` varchar(10) NOT NULL,
   `rate_category` int(11) NOT NULL,
@@ -8794,16 +8920,21 @@ CREATE TABLE `room_info` (
   `cancellation_type` varchar(255) NOT NULL,
   `room_amenities` text NOT NULL,
   `cancellation_rule` int(11) NOT NULL,
-  `status` enum('0','1') NOT NULL COMMENT '0->inactive,1->active'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` enum('0','1') NOT NULL COMMENT '0->inactive,1->active',
+  PRIMARY KEY (`type_id`),
+  KEY `room_type_ibfk_1` (`hotel_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=12 ;
 
 --
 -- Dumping data for table `room_info`
 --
 
 INSERT INTO `room_info` (`type_id`, `hotel_id`, `room_type`, `adults`, `children`, `extra_beds`, `no_of_rooms`, `tmi_rooms`, `beds`, `rate_category`, `price`, `period_from`, `period_to`, `extra_bed_charge`, `cancellation_type`, `room_amenities`, `cancellation_rule`, `status`) VALUES
-(1, 2, 1, '2', '1', '1', 10, 5, '2', 2, 1500, '1970-01-01', '1970-01-01', 300, '', '4,7', 1, '1'),
-(3, 5, 2, '2', '1', '1', 10, 5, '3', 2, 2000, '2016-09-16', '2016-10-31', 500, '', '3,4,7', 2, '1');
+(1, 2, 1, '2', '1', '1', 10, 5, '2', 2, 1500, '2016-09-16', '2016-09-30', 300, '', '4,7', 1, '1'),
+(5, 2, 2, '2', '1', '1', 10, 5, '2', 3, 2000, '0000-00-00', '0000-00-00', 500, '', '4,7,8', 0, '1'),
+(7, 3, 3, '3', '1', '1', 15, 5, '4', 2, 4000, '2016-09-16', '2016-10-31', 500, '', '3,4,7', 1, '1'),
+(8, 4, 3, '3', '1', '1', 20, 5, '4', 2, 2000, '2016-09-20', '2016-10-31', 500, '', '3,4,7', 1, '1'),
+(11, 4, 4, '3', '1', '1', 20, 5, '2', 3, 4000, '2016-09-20', '2016-10-31', 100, '', '3,4,7', 2, '1');
 
 -- --------------------------------------------------------
 
@@ -8811,11 +8942,12 @@ INSERT INTO `room_info` (`type_id`, `hotel_id`, `room_type`, `adults`, `children
 -- Table structure for table `room_type`
 --
 
-CREATE TABLE `room_type` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `room_type` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `room_type` varchar(50) NOT NULL,
-  `status` enum('0','1') NOT NULL COMMENT '0->inactive,1->active'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` enum('0','1') NOT NULL COMMENT '0->inactive,1->active',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=6 ;
 
 --
 -- Dumping data for table `room_type`
@@ -8833,14 +8965,15 @@ INSERT INTO `room_type` (`id`, `room_type`, `status`) VALUES
 -- Table structure for table `services`
 --
 
-CREATE TABLE `services` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `services` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `parent_id` int(11) NOT NULL,
   `service_name` varchar(255) NOT NULL,
   `type` tinyint(4) NOT NULL COMMENT '1->hotel amenities,2->room ameneties',
   `amenity_icon` varchar(255) DEFAULT NULL,
-  `complimentary` enum('0','1') NOT NULL COMMENT '0->no,1->yes'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `complimentary` enum('0','1') NOT NULL COMMENT '0->no,1->yes',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=17 ;
 
 --
 -- Dumping data for table `services`
@@ -8857,13 +8990,9 @@ INSERT INTO `services` (`id`, `parent_id`, `service_name`, `type`, `amenity_icon
 (11, 2, 'Internet Access-surcharge', 1, NULL, '0'),
 (12, 2, 'Internet/Fax(Reception area only)', 1, NULL, '0'),
 (13, 0, 'Room Services', 2, NULL, '0'),
-(14, 0, 'Wine/Dine', 1, NULL, '1'),
-(15, 14, 'Specially Restaurent', 1, NULL, '1'),
-(16, 14, 'Multicuisine Restaurent', 1, NULL, '1'),
-(17, 14, 'Multicuisine Restaurent', 1, 'restaurant-cutlery-circular-symbol-of-a-spoon-and-a-fork-in-a-circle.svg', '1'),
-(18, 0, 'Wine/Dine', 1, 'food.svg', '1'),
-(19, 13, 'TV', 2, NULL, '0'),
-(20, 14, 'Multicuisine Restaurent', 1, NULL, '1');
+(14, 0, 'Wine/Dine', 1, 'food1.svg', '1'),
+(15, 14, 'Multicuisine Restaurent', 1, NULL, '1'),
+(16, 14, 'Multicuisine Restaurent', 1, 'restaurant-cutlery-circular-symbol-of-a-spoon-and-a-fork-in-a-circle1.svg', '1');
 
 -- --------------------------------------------------------
 
@@ -8871,15 +9000,18 @@ INSERT INTO `services` (`id`, `parent_id`, `service_name`, `type`, `amenity_icon
 -- Table structure for table `state`
 --
 
-CREATE TABLE `state` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `state` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `country_id` int(11) DEFAULT NULL,
   `state_name` varchar(255) DEFAULT NULL,
   `status` tinyint(2) NOT NULL DEFAULT '0',
   `region_id` int(11) NOT NULL DEFAULT '0',
   `lic_required` tinyint(2) NOT NULL DEFAULT '0',
-  `base_credit` int(11) NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `base_credit` int(11) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`),
+  KEY `country_id` (`country_id`),
+  KEY `state_name` (`state_name`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2307 ;
 
 --
 -- Dumping data for table `state`
@@ -11199,8 +11331,8 @@ INSERT INTO `state` (`id`, `country_id`, `state_name`, `status`, `region_id`, `l
 -- Table structure for table `users`
 --
 
-CREATE TABLE `users` (
-  `id` int(11) UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `users` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `ip_address` varchar(45) NOT NULL,
   `username` varchar(100) DEFAULT NULL,
   `password` varchar(255) NOT NULL,
@@ -11208,24 +11340,25 @@ CREATE TABLE `users` (
   `email` varchar(100) NOT NULL,
   `activation_code` varchar(40) DEFAULT NULL,
   `forgotten_password_code` varchar(40) DEFAULT NULL,
-  `forgotten_password_time` int(11) UNSIGNED DEFAULT NULL,
+  `forgotten_password_time` int(11) unsigned DEFAULT NULL,
   `remember_code` varchar(40) DEFAULT NULL,
-  `created_on` int(11) UNSIGNED NOT NULL,
-  `last_login` int(11) UNSIGNED DEFAULT NULL,
-  `active` tinyint(1) UNSIGNED DEFAULT NULL,
+  `created_on` int(11) unsigned NOT NULL,
+  `last_login` int(11) unsigned DEFAULT NULL,
+  `active` tinyint(1) unsigned DEFAULT NULL,
   `first_name` varchar(50) DEFAULT NULL,
   `last_name` varchar(50) DEFAULT NULL,
   `company` varchar(100) DEFAULT NULL,
-  `phone` varchar(20) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `phone` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
 
 --
 -- Dumping data for table `users`
 --
 
 INSERT INTO `users` (`id`, `ip_address`, `username`, `password`, `salt`, `email`, `activation_code`, `forgotten_password_code`, `forgotten_password_time`, `remember_code`, `created_on`, `last_login`, `active`, `first_name`, `last_name`, `company`, `phone`) VALUES
-(1, '127.0.0.1', 'administrator', '$2a$07$SeBknntpZror9uyftVopmu61qg0ms8Qv1yV6FG.kQOSM.9QhmTo36', '', 'admin@admin.com', NULL, NULL, NULL, 'YZJrf87e5EGe4AWLiEo9Q.', 1268889823, 1474982061, 1, 'Admin', 'istrator', 'ADMIN', '0'),
-(2, '127.0.0.1', NULL, '$2y$08$/vn14L5Ou23OWMe.hXUM1umg5Gpl7cca5zUCItVhCWhwjh7lRNkr6', NULL, 'mark@gmail.com', NULL, NULL, NULL, 'YCB0isWVkyAKh2C6nHQFoe', 1474963689, 1474982790, 1, 'Mark', 'Ramos', 'Mark Company', '9999999999');
+(1, '127.0.0.1', 'administrator', '$2a$07$SeBknntpZror9uyftVopmu61qg0ms8Qv1yV6FG.kQOSM.9QhmTo36', '', 'admin@admin.com', NULL, NULL, NULL, 'nFOcI9VxB5N3EP0eGIpJKu', 1268889823, 1475238627, 1, 'Admin', 'istrator', 'ADMIN', '0'),
+(3, '1.22.119.204', NULL, '$2y$08$FHewStWTG7evvRUGoXZ7suVbaaw66RV/IjoiVpv3LVcItMf6omOUa', NULL, 'mark@gmail.com', NULL, NULL, NULL, '7gYkENbxTDpqY9cMP4sM8.', 1474982395, 1475238345, 1, 'Mark', 'Ramos', 'Mark Company', '9999999999');
 
 -- --------------------------------------------------------
 
@@ -11233,11 +11366,15 @@ INSERT INTO `users` (`id`, `ip_address`, `username`, `password`, `salt`, `email`
 -- Table structure for table `users_groups`
 --
 
-CREATE TABLE `users_groups` (
-  `id` int(11) UNSIGNED NOT NULL,
-  `user_id` int(11) UNSIGNED NOT NULL,
-  `group_id` mediumint(8) UNSIGNED NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `users_groups` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) unsigned NOT NULL,
+  `group_id` mediumint(8) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uc_users_groups` (`user_id`,`group_id`),
+  KEY `fk_users_groups_users1_idx` (`user_id`),
+  KEY `fk_users_groups_groups1_idx` (`group_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
 
 --
 -- Dumping data for table `users_groups`
@@ -11246,369 +11383,8 @@ CREATE TABLE `users_groups` (
 INSERT INTO `users_groups` (`id`, `user_id`, `group_id`) VALUES
 (1, 1, 1),
 (2, 1, 2),
-(3, 1, 3),
-(4, 2, 3);
+(5, 3, 3);
 
---
--- Indexes for dumped tables
---
-
---
--- Indexes for table `access_levels`
---
-ALTER TABLE `access_levels`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `access_levels_acl`
---
-ALTER TABLE `access_levels_acl`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `access_level_id` (`access_level_id`),
-  ADD KEY `acl_sys_controller_id` (`acl_sys_controller_id`);
-
---
--- Indexes for table `acl_system_controllers`
---
-ALTER TABLE `acl_system_controllers`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `class_name` (`class_name`);
-
---
--- Indexes for table `acl_system_controller_methods`
---
-ALTER TABLE `acl_system_controller_methods`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `acl_controller_id` (`acl_controller_id`),
-  ADD KEY `class_method_name` (`class_method_name`);
-
---
--- Indexes for table `campaigns`
---
-ALTER TABLE `campaigns`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `cancellation_rules`
---
-ALTER TABLE `cancellation_rules`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `cities`
---
-ALTER TABLE `cities`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `state_id` (`state_id`),
-  ADD KEY `country_id` (`country_id`),
-  ADD KEY `city_name` (`city_name`),
-  ADD KEY `name_varient` (`name_varient`),
-  ADD KEY `longitude` (`longitude`),
-  ADD KEY `latitude` (`latitude`),
-  ADD KEY `id` (`id`);
-
---
--- Indexes for table `country`
---
-ALTER TABLE `country`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `country_name` (`country_name`);
-
---
--- Indexes for table `coupons`
---
-ALTER TABLE `coupons`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `currencies`
---
-ALTER TABLE `currencies`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `designation`
---
-ALTER TABLE `designation`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `groups`
---
-ALTER TABLE `groups`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `hotel`
---
-ALTER TABLE `hotel`
-  ADD PRIMARY KEY (`hotel_id`);
-
---
--- Indexes for table `hotel_categories`
---
-ALTER TABLE `hotel_categories`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `hotel_chain`
---
-ALTER TABLE `hotel_chain`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `hotel_contact_details`
---
-ALTER TABLE `hotel_contact_details`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `hotel_gallery`
---
-ALTER TABLE `hotel_gallery`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `hotel_location`
---
-ALTER TABLE `hotel_location`
-  ADD PRIMARY KEY (`loc_id`),
-  ADD KEY `hotel_location_ibfk_1` (`hotel_id`);
-
---
--- Indexes for table `hotel_services`
---
-ALTER TABLE `hotel_services`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_services` (`service_id`) USING BTREE,
-  ADD KEY `hotel_services_ibfk_1` (`hotel_id`);
-
---
--- Indexes for table `hotel_type`
---
-ALTER TABLE `hotel_type`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `login_attempts`
---
-ALTER TABLE `login_attempts`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `rate_categories`
---
-ALTER TABLE `rate_categories`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `reservation`
---
-ALTER TABLE `reservation`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `room_gallery`
---
-ALTER TABLE `room_gallery`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `room_info`
---
-ALTER TABLE `room_info`
-  ADD PRIMARY KEY (`type_id`),
-  ADD KEY `room_type_ibfk_1` (`hotel_id`);
-
---
--- Indexes for table `room_type`
---
-ALTER TABLE `room_type`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `services`
---
-ALTER TABLE `services`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `state`
---
-ALTER TABLE `state`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `country_id` (`country_id`),
-  ADD KEY `state_name` (`state_name`);
-
---
--- Indexes for table `users`
---
-ALTER TABLE `users`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `users_groups`
---
-ALTER TABLE `users_groups`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `uc_users_groups` (`user_id`,`group_id`),
-  ADD KEY `fk_users_groups_users1_idx` (`user_id`),
-  ADD KEY `fk_users_groups_groups1_idx` (`group_id`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `access_levels`
---
-ALTER TABLE `access_levels`
-  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'access level id  used  for defining access restriction, used as foreign key  in tables access_levels_acl ,user_authorization and role';
---
--- AUTO_INCREMENT for table `access_levels_acl`
---
-ALTER TABLE `access_levels_acl`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'auto incremented record id of the table.', AUTO_INCREMENT=35;
---
--- AUTO_INCREMENT for table `acl_system_controllers`
---
-ALTER TABLE `acl_system_controllers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'unique record number, used in  access_levels_acl table  to define the access for a section', AUTO_INCREMENT=4;
---
--- AUTO_INCREMENT for table `acl_system_controller_methods`
---
-ALTER TABLE `acl_system_controller_methods`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'this field value is auto incremented and it should be unique, and used in  access_level_acl  table ', AUTO_INCREMENT=15;
---
--- AUTO_INCREMENT for table `campaigns`
---
-ALTER TABLE `campaigns`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `cancellation_rules`
---
-ALTER TABLE `cancellation_rules`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
---
--- AUTO_INCREMENT for table `cities`
---
-ALTER TABLE `cities`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7929;
---
--- AUTO_INCREMENT for table `country`
---
-ALTER TABLE `country`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=237;
---
--- AUTO_INCREMENT for table `coupons`
---
-ALTER TABLE `coupons`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `currencies`
---
-ALTER TABLE `currencies`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
---
--- AUTO_INCREMENT for table `designation`
---
-ALTER TABLE `designation`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
---
--- AUTO_INCREMENT for table `groups`
---
-ALTER TABLE `groups`
-  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
---
--- AUTO_INCREMENT for table `hotel`
---
-ALTER TABLE `hotel`
-  MODIFY `hotel_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
---
--- AUTO_INCREMENT for table `hotel_categories`
---
-ALTER TABLE `hotel_categories`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
---
--- AUTO_INCREMENT for table `hotel_chain`
---
-ALTER TABLE `hotel_chain`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
---
--- AUTO_INCREMENT for table `hotel_contact_details`
---
-ALTER TABLE `hotel_contact_details`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
---
--- AUTO_INCREMENT for table `hotel_gallery`
---
-ALTER TABLE `hotel_gallery`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
---
--- AUTO_INCREMENT for table `hotel_location`
---
-ALTER TABLE `hotel_location`
-  MODIFY `loc_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
---
--- AUTO_INCREMENT for table `hotel_services`
---
-ALTER TABLE `hotel_services`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `hotel_type`
---
-ALTER TABLE `hotel_type`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
---
--- AUTO_INCREMENT for table `login_attempts`
---
-ALTER TABLE `login_attempts`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `rate_categories`
---
-ALTER TABLE `rate_categories`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
---
--- AUTO_INCREMENT for table `reservation`
---
-ALTER TABLE `reservation`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
---
--- AUTO_INCREMENT for table `room_gallery`
---
-ALTER TABLE `room_gallery`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
---
--- AUTO_INCREMENT for table `room_info`
---
-ALTER TABLE `room_info`
-  MODIFY `type_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
---
--- AUTO_INCREMENT for table `room_type`
---
-ALTER TABLE `room_type`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
---
--- AUTO_INCREMENT for table `services`
---
-ALTER TABLE `services`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
---
--- AUTO_INCREMENT for table `state`
---
-ALTER TABLE `state`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2307;
---
--- AUTO_INCREMENT for table `users`
---
-ALTER TABLE `users`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
---
--- AUTO_INCREMENT for table `users_groups`
---
-ALTER TABLE `users_groups`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 --
 -- Constraints for dumped tables
 --

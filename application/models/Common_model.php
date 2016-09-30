@@ -150,7 +150,7 @@ Class Common_model extends CI_Model {
 
 	function getRoomDetailsByHotel($hotel_id)
 	{
-		$this->db->select('r.type_id,r.price,rc.meal_plan,rc.category_type,rt.room_type');
+		$this->db->select('r.*,rc.meal_plan,rc.category_type,rt.room_type as room_type_name');
 		$this->db->join('room_type as rt','r.room_type=rt.id');
 		$this->db->join('rate_categories as rc','r.rate_category=rc.id');
 		$this->db->where('r.hotel_id',$hotel_id);
@@ -172,6 +172,12 @@ Class Common_model extends CI_Model {
 		return $result;
 	}
 
+	/**
+	 * @Method		-: getRoomDetailsById()
+	 * @Description	-: This function is used to fetch room details
+	 * @Created on	-: 20-09-2016
+	 * @Return 		-: array()
+	 */
 	function getRoomDetailsById($hotel_id,$id)
 	{
 		$this->db->select('r.*,rt.room_type');
@@ -182,6 +188,12 @@ Class Common_model extends CI_Model {
 		return $result;
 	}
 
+	/**
+	 * @Method		-: getReservedRoom()
+	 * @Description	-: This function is used to fetch reserved room
+	 * @Created on	-: 26-09-2016
+	 * @Return 		-: array()
+	 */
 	function getReservedRoom($id,$fromDate,$toDate){
 		$query = $this->db->query("select sum(booked_rooms) as booked_rooms,sum(blocked_rooms) as blocked_rooms 
 									from reservation where
@@ -194,6 +206,56 @@ Class Common_model extends CI_Model {
 		
 		$result = $query->row_array();
 		//echo $this->db->last_query();
+		return $result;
+	}
+
+	/**
+	 * @Method		-: getHotelsByLocality()
+	 * @Description	-: This function is used to fetch hotels by locality
+	 * @Created on	-: 28-09-2016
+	 * @Return 		-: array()
+	 */
+	function getHotelsByLocality($location){
+		$this->db->select('h.*');
+		$this->db->join('hotel_location as hl','hl.hotel_id=h.hotel_id');
+		$this->db->like('hl.locality',$location);
+		$result  = $this->db->get('hotel as h')->result_array();
+		return $result;
+	}
+
+	/**
+	 * @Method		-: getActiveCoupons()
+	 * @Description	-: This function is used to fetch active coupons
+	 * @Created on	-: 30-09-2016
+	 * @Return 		-: array()
+	 */
+	function getActiveCoupons(){
+		$this->db->where('active','1');
+		$this->db->where('date(finish_date)>=',date('Y-m-d'));
+		$result  = $this->db->get('coupons')->result_array();
+		return $result;
+	}
+
+	/**
+	 * @Method		-: getActiveCoupons()
+	 * @Description	-: This function is used to fetch active coupons
+	 * @Created on	-: 30-09-2016
+	 * @Return 		-: array()
+	 */
+	function getActiveCampaigns(){
+		$this->db->where('active','1');
+		$this->db->where('date(finish_date)>=',date('Y-m-d'));
+		$result  = $this->db->get('campaigns')->result_array();
+		return $result;
+	}
+
+	function getCouponById($coupon_id){
+		$result = $this->db->where('id',$coupon_id)->get('coupons')->row_array();
+		return $result;
+	}
+
+	function getCampaignById($campaign_id){
+		$result = $this->db->where('id',$campaign_id)->get('campaigns')->row_array();
 		return $result;
 	}
 }

@@ -292,9 +292,11 @@ Class Hotel_model extends CI_Model {
 		$res = $this->db->get('reservation')->row_array();
 		if(count($res)>0){
 			$this->db->where('id',$res['id']);
-			$result = $this->db->update('reservation',$data);
+			$this->db->update('reservation',$data);
+			$result = $res['id'];
 		}else{
-			$result = $this->db->insert('reservation',$data);
+			$this->db->insert('reservation',$data);
+			$result = $this->db->insert_id();
 		}
 
 		return $result;

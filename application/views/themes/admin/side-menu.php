@@ -55,6 +55,21 @@
             </li>
         </ul>
         <?php }?>
+        <?php if(checkAccess($this->admin->accessLabelId,'booking','view')){ ?>
+        <ul>
+            <li class="<?php echo (!empty($url_seg) && $url_seg=='booking') ? 'open' : '';?>">
+                <a title="Bookings" href="#">
+                    <i class="fa fa-lg fa-fw fa-table"></i>
+                    <span class="menu-item-parent">Manage Bookings</span>
+                </a>
+                <ul style="<?php echo (!empty($url_seg) && $url_seg=='booking') ? 'display:block' : '';?>">
+                    <li class="">
+                        <a title="Bookings" href="<?=base_url('admin/booking')?>">Booking Info</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        <?php }?>
         <?php 
             $seg_setting     = $this->uri->segment(2); 
             $seg_setting_new = $this->uri->segment(3); 

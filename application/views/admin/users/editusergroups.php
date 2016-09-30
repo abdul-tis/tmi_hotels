@@ -139,11 +139,10 @@
                                                                     $cntrolerMethos[$controller->id]['viewcal_chk']=$mchecked;
                                                                 }
                                                             }
-                                                            if($cntrolerMethos[$controller->id]['view_chk']!="" && $cntrolerMethos[$controller->id]['del_chk']!="" && $cntrolerMethos[$controller->id]['edit_chk']!="" && $cntrolerMethos[$controller->id]['add_chk'] !="")
-                                                            {
+                                                            
+                                                            if((!empty($cntrolerMethos[$controller->id]['view_chk'])) && (!empty($cntrolerMethos[$controller->id]['del_chk'])) && (!empty($cntrolerMethos[$controller->id]['edit_chk'])) && (!empty($cntrolerMethos[$controller->id]['add_chk'])) && (!empty($cntrolerMethos[$controller->id]['viewrooms_chk'])) && (!empty($cntrolerMethos[$controller->id]['addroom_chk'])) && (!empty($cntrolerMethos[$controller->id]['editrooms_chk'])) && (!empty($cntrolerMethos[$controller->id]['delrooms_chk'])) && (!empty($cntrolerMethos[$controller->id]['viewcal_chk']))){
                                                                 $mcheckedall= ' checked="checked"';
-                                                            }
-                                                            else{
+                                                            }else{
                                                                 $mcheckedall="";
                                                             }
                                                             
