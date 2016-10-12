@@ -116,21 +116,6 @@
 
         });
 
-        $('#confirm-delete').on('click', '.btn-ok', function (e) {
-            var $modalDiv = $(e.delegateTarget);
-            var id = $(this).data('recordId');
-            var rowId = $(this).data('removeRow');
-            var msg = 'Selected user successfully removed!';
-            window.location.href = "<?php echo base_url('admin/users/deleteUser/')?>"+id;
-        });
-        
-        $('#confirm-delete').on('show.bs.modal', function (e) {
-            var data = $(e.relatedTarget).data();
-            $('.title', this).text(data.recordTitle);
-            $('.btn-ok', this).data('recordId', data.recordId);
-            $('.btn-ok', this).data('removeRow', data.removeRow);
-        });
-
         $('[data-toggle="tooltip"]').tooltip();
     })
 

@@ -128,7 +128,7 @@
             var $modalDiv = $(e.delegateTarget);
             var id = $(this).data('recordId');
             var rowId = $(this).data('removeRow');
-            var msg = 'Selected product successfully removed!';
+            var msg = 'Room type successfully removed!';
             $.post("<?=base_url('admin/settings/deleteRoomType')?>",{'id':id}, function (response){
                 if(response){
                     bootstrap_alert.success(msg);

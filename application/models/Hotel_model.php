@@ -125,7 +125,7 @@ Class Hotel_model extends CI_Model {
 		$this->db->where('r.hotel_id',$hotel_id);
 		if(!empty($start)){
 			$start		= ($start=='P') ? 0 : $start;
-			$result 	= $this->db->limit($this->limit,$start)->get('room_info as r')->result_array();;
+			$result 	= $this->db->limit($this->limit,$start)->get('room_info as r')->result_array();
 		}
 		else{
 			$result = $this->db->get('room_info as r')->num_rows();
@@ -286,18 +286,8 @@ Class Hotel_model extends CI_Model {
 	 * @Created on	-: 17-09-2016
 	 */
 	function saveBookingData($data){
-		$this->db->where('from_date',$data['from_date']);
-		$this->db->where('to_date',$data['to_date']);
-		$this->db->where('room_type',$data['room_type']);
-		$res = $this->db->get('reservation')->row_array();
-		if(count($res)>0){
-			$this->db->where('id',$res['id']);
-			$this->db->update('reservation',$data);
-			$result = $res['id'];
-		}else{
-			$this->db->insert('reservation',$data);
-			$result = $this->db->insert_id();
-		}
+		$this->db->insert('reservation',$data);
+		$result = $this->db->insert_id();
 
 		return $result;
 	}

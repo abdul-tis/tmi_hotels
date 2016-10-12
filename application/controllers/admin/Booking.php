@@ -113,6 +113,7 @@ class Booking extends CI_Controller {
 				$extra_bed_charge   = 0;
 				$coupon_dis 		= 0;
 				$campaign_dis 		= 0;
+				$total_discount     = 0;
 				$reservation 				= array();
 				$booking_info 				= array();
 				$customer 					= array();
@@ -146,6 +147,8 @@ class Booking extends CI_Controller {
 				$booking_info['coupon_id']  = $postData['coupon_id'];
 				$booking_info['campaign_id']  = $postData['campaign_id'];
 				$booking_info['booked_by_user_id'] 	= $this->ion_auth->get_user_id();
+				$booking_info['payment_type'] 		= $postData['payment_type'];
+				$booking_info['payment_comment'] 	= $postData['payment_comment'];
 				$booking_info['status'] 			= '0'; 
 				$booking_info['booking_date'] 		= date('Y-m-d H:i:s'); 
 
@@ -170,7 +173,7 @@ class Booking extends CI_Controller {
 						$coupon 	= $this->Common_model->getCouponById($booking_info['coupon_id']);
 						if($coupon){
 							$coupon_dis  = ($total_price*$coupon['discount'])/100;
-							$total_price = $total_price - $coupon_dis;
+							//$total_price = $total_price - $coupon_dis;
 						}
 					}
 
@@ -178,9 +181,12 @@ class Booking extends CI_Controller {
 						$campaign 	= $this->Common_model->getCampaignById($booking_info['campaign_id']);
 						if($campaign){
 							$campaign_dis  = ($total_price*$campaign['discount'])/100;
-							$total_price = $total_price - $campaign_dis;
+							//$total_price = $total_price - $campaign_dis;
 						}
 					}
+
+					$total_discount 	= $coupon_dis+$campaign_dis;
+					$total_price 		= $total_price-$total_discount;
 
 					
 					$booking_info['total_amount'] = $total_price; 
@@ -209,6 +215,12 @@ class Booking extends CI_Controller {
 
     	$data['coupons'] 	= $this->Common_model->getActiveCoupons();
     	$data['campaigns'] 	= $this->Common_model->getActiveCampaigns();
+    	if($this->ion_auth->is_admin()){
+    		$data['users'] 		= $this->ion_auth->users()->result_array();
+    	}else{
+    		$data['users'] 		= $this->ion_auth->user()->result_array();
+    	}
+
     	$this->template->load('admin/base', 'admin/bookings/makebooking', $data);
 	}
 
@@ -322,16 +334,20 @@ class Booking extends CI_Controller {
 		$extra_beds 		= $this->input->post('extra_beds');
 		$coupon_id 			= $this->input->post('coupon_id');
 		$campaign_id 			= $this->input->post('campaign_id');
+		$data 				= array();
 		$total_price 		= 0;
 		$extra_bed_charge   = 0;
 		$coupon_dis 		= 0;
 		$campaign_dis 		= 0;
+		$rooms_price 		= 0; 
+		$total_amount 		= 0;
+		$total_discount 	= 0;
 		if(!empty($hotel_id) && !empty($room_type)){
 			$room  			= $this->Common_model->getRoomDetailsById($hotel_id,$room_type);
 
 			if(!empty($room)){
-				$total_price = $no_of_rooms*$room['price'];
-
+				$rooms_price = $no_of_rooms*$room['price'];
+				$total_price = $rooms_price;
 				if($extra_beds > 0){
 					$extra_bed_charge = $extra_beds*$room['extra_bed_charge'];
 					$total_price += $extra_bed_charge; 
@@ -341,7 +357,7 @@ class Booking extends CI_Controller {
 					$coupon 	= $this->Common_model->getCouponById($coupon_id);
 					if($coupon){
 						$coupon_dis  = ($total_price*$coupon['discount'])/100;
-						$total_price = $total_price - $coupon_dis;
+						//$total_price = $total_price - $coupon_dis;
 					}
 				}
 
@@ -349,20 +365,35 @@ class Booking extends CI_Controller {
 					$campaign 	= $this->Common_model->getCampaignById($campaign_id);
 					if($campaign){
 						$campaign_dis  = ($total_price*$campaign['discount'])/100;
-						$total_price = $total_price - $campaign_dis;
+						//$total_price = $total_price - $campaign_dis;
 					}
 				}
 
+				$total_amount = $rooms_price+$extra_bed_charge;
+				$total_discount = $coupon_dis + $campaign_dis;
+				$total_price    = $total_price - $total_discount;
 			}else{
 				$total_price = "Price not available!";	
 			}
 			
-			echo $total_price;
-			exit;
+			$data['payable_amount'] 	= $total_price;
+			$data['rooms_price']   		= $rooms_price;
+			$data['extra_bed_charge']   = $extra_bed_charge;
+			$data['coupon_discount']    = $coupon_dis;
+			$data['campaign_discount']  = $campaign_dis;
+			$data['total_amount'] 		= $total_amount;
+			$data['total_discount'] 	= $total_discount;
 		}else{
-			echo "Rooms Unavailable";
-			exit;
+			$data['payable_amount'] 	= "Rooms Unavailable";
+			$data['rooms_price']   		= $rooms_price;
+			$data['extra_bed_charge']   = $extra_bed_charge;
+			$data['coupon_discount']    = $coupon_dis;
+			$data['campaign_discount']  = $campaign_dis;
+			$data['total_amount'] 		= $total_amount;
+			$data['total_discount'] 	= $total_discount;
 		}
+		echo json_encode($data);
+		exit;
 	}
 
 	public function checkRoomAvailability(){
@@ -375,6 +406,12 @@ class Booking extends CI_Controller {
 		$to_date  			= date('Y-m-d',strtotime($to_date));
 
 		$total_price 		= 0;
+		$extra_bed_charge   = 0;
+		$coupon_dis 		= 0;
+		$campaign_dis 		= 0;
+		$rooms_price 		= 0; 
+		$total_amount 		= 0;
+		$total_discount 	= 0;
 		$data  				= array();
 		if(!empty($hotel_id) && !empty($room_type)){
 			$room  			= $this->Common_model->getRoomDetailsById($hotel_id,$room_type);
@@ -402,23 +439,136 @@ class Booking extends CI_Controller {
 							$children .= '<option value="'.$j.'">'.$j.'</option>';
 						}
 					}
-					$total_price 				= $no_of_rooms*$room['price'];
+					$rooms_price 				= $no_of_rooms*$room['price'];
+					$total_price 				= $rooms_price;
+
 					$data['adult_html']  		= $adult;
 					$data['children_html']  	= $children;
-					$data['price'] 				= $total_price;
 					$data['status'] 			= '1';
+					$data['payable_amount'] 	= $total_price;
+					$data['rooms_price']   		= $total_price;
+					$data['extra_bed_charge']   = $extra_bed_charge;
+					$data['coupon_discount']    = $coupon_dis;
+					$data['campaign_discount']  = $campaign_dis;
+					$data['total_amount'] 		= $total_price;
+					$data['total_discount'] 	= $total_discount;
 					
 				}else{
 					$data['status'] 			= '0';
+					$data['payable_amount'] 	= $total_price;
+					$data['rooms_price']   		= $total_price;
+					$data['extra_bed_charge']   = $extra_bed_charge;
+					$data['coupon_discount']    = $coupon_dis;
+					$data['campaign_discount']  = $campaign_dis;
+					$data['total_amount'] 		= $total_price;
+					$data['total_discount'] 	= $total_discount;
 				}
 			}else{
 				$data['status'] 			= '2';
+				$data['payable_amount'] 	= $total_price;
+				$data['rooms_price']   		= $total_price;
+				$data['extra_bed_charge']   = $extra_bed_charge;
+				$data['coupon_discount']    = $coupon_dis;
+				$data['campaign_discount']  = $campaign_dis;
+				$data['total_amount'] 		= $total_price;
+				$data['total_discount'] 	= $total_discount;
 			}
 			echo json_encode($data);
 			exit;
 		}
 
 
+	}
+
+	/**
+	 * @Method		-: deleteBooking()
+	 * @Description	-: This function used to remove booking
+	 * @Created		-: 01-10-2016
+	 */ 
+	public function deleteBooking()
+	{
+		if(!checkAccess($this->admin->accessLabelId,'booking','delete'))	
+		{
+			log_message('error','You have not a permission to remove booking'.$ex->getMessage());
+    		echo "FALSE";
+    		exit;
+		}
+		$id 	= $this->input->post('id');
+		try{
+			$delete = $this->Booking_model->deleteBooking($id); 
+			if($delete)
+			{
+				echo "TRUE";
+			}
+
+		}catch(Exception $ex){
+			log_message('error','Booking did not remove'.$ex->getMessage());
+			echo "FALSE";
+		}
+	}
+
+	public function searchBookingByAjax(){
+		$data['booking_number'] 	= $this->input->post('booking_number');
+		$data['hotel_name'] 		= $this->input->post('hotel_name');
+		$data['from_date'] 			= $this->input->post('from_date');
+		$data['to_date'] 			= $this->input->post('to_date');
+		$html 	= '';
+		if(!empty($data)){
+			$bookings 	 			=  $this->Common_model->searchBooking($data);
+			
+			if(!empty($bookings)){
+				foreach($bookings as $booking){
+					$room_type  = getRoomTypeById($booking['room_type']);
+					$status 	= (!empty($booking['status']) && $booking['status'] == '1') ? "Paid" : "Unpaid";
+					$html 	   .='<tr id="'.$booking['id'].'">
+								<form class="editForm'.$booking['id'].'" enctype="multipart/form-data">
+                                <td>
+									<span class="view_mode'.$booking['id'].'">#'.$booking['booking_number'].'</span>
+                                </td>
+                                <td>
+									<span class="view_mode'.$booking['id'].'">'.date('d M,Y',strtotime($booking['from_date'])).' - '.date('d M,Y',strtotime($booking['to_date'])).'</span>
+								</td>
+                                <td>
+                                    <span class="view_mode'.$booking['id'].'">'.$booking['hotel_name'].'</span>
+                                </td>
+								<td>
+									<span class="view_mode'.$booking['id'].'">'.$room_type.'</span>
+								</td>
+								<td>
+									<span class="view_mode'.$booking['id'].'">'.$booking['name'].'</span>
+								</td>
+                                <td>
+                                    <span class="view_mode'.$booking['id'].'"><strong>Rooms : </strong>'.$booking['booked_rooms']."<br/><strong>Adults : </strong>".$booking['adult']."<br/><strong>Children : </strong>".$booking['children']."<br/><strong>Extra Bed : </strong>".$booking['extra_bed'].'</span>
+                                </td>
+                                <td>
+                                    <span class="view_mode'.$booking['id'].'">'.$booking['total_amount'].'</span>
+                                </td>
+                                <td>
+                                    <span class="view_mode'.$booking['id'].'">'.$status.'</span>
+                                </td>
+								<td>
+									<a class="delete btn btn-sm btn-danger" data-target="#confirm-delete" data-toggle="modal" data-record-title="'.$booking['booking_number'].'" data-type="delete" data-record-id="'.$booking['id'].'" data-remove-row="booking_'.$booking['id'].'" href="javascript:void(0)" >Delete</a>
+								</td>
+								</form>
+                            </tr>';
+				}
+			}else{
+				$html .= '<tr>
+                            <td colspan="9" align="center">
+                                <span>No Records Found</span>
+                            </td>
+                        </tr>';
+			}
+		}else{
+			$html .= '<tr>
+						 <td colspan="9" align="center">
+                                <span>No Records Found</span>
+                            </td>
+                        </tr>';
+		}
+
+		echo $html;
+		exit;
 	}
 
 }

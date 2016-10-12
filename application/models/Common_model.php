@@ -237,8 +237,8 @@ Class Common_model extends CI_Model {
 	}
 
 	/**
-	 * @Method		-: getActiveCoupons()
-	 * @Description	-: This function is used to fetch active coupons
+	 * @Method		-: getActiveCampaigns()
+	 * @Description	-: This function is used to fetch active campaigns
 	 * @Created on	-: 30-09-2016
 	 * @Return 		-: array()
 	 */
@@ -249,13 +249,52 @@ Class Common_model extends CI_Model {
 		return $result;
 	}
 
+	/**
+	 * @Method		-: getCouponById()
+	 * @Description	-: This function is used to get coupon by id
+	 * @Created on	-: 30-09-2016
+	 * @Return 		-: array()
+	 */
 	function getCouponById($coupon_id){
 		$result = $this->db->where('id',$coupon_id)->get('coupons')->row_array();
 		return $result;
 	}
 
+	/**
+	 * @Method		-: getCampaignById()
+	 * @Description	-: This function is used to get campaign by id
+	 * @Created on	-: 30-09-2016
+	 * @Return 		-: array()
+	 */
 	function getCampaignById($campaign_id){
 		$result = $this->db->where('id',$campaign_id)->get('campaigns')->row_array();
+		return $result;
+	}
+
+	/**
+	 * @Method		-: searchBooking()
+	 * @Description	-: This function is used to search bookings
+	 * @Created on	-: 01-10-2016
+	 * @Return 		-: array()
+	 */
+	function searchBooking($data){
+		$this->db->select('rd.*,r.hotel_id,r.room_type,r.from_date,r.to_date,r.booked_rooms,c.name,c.email,c.phone,h.hotel_name');
+		$this->db->join('reservation as r','r.id=rd.reservation_id');
+		$this->db->join('customers as c','c.id=rd.customer_id');
+		$this->db->join('hotel as h','h.hotel_id=r.hotel_id');
+		if(!empty($data['booking_number'])){
+			$this->db->where('rd.booking_number',$data['booking_number']);
+		}
+		if(!empty($data['hotel_name'])){
+			$this->db->like('h.hotel_name',$data['hotel_name']);
+		}
+
+		if(!empty($data['from_date']) && !empty($data['to_date'])){
+			$this->db->where('r.from_date >=',$data['from_date']);
+			$this->db->where('r.to_date <=',$data['to_date']);
+		}
+		$result 	= $this->db->get('reservation_details as rd')->result_array();
+
 		return $result;
 	}
 }

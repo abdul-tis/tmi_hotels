@@ -183,7 +183,7 @@
             var $modalDiv = $(e.delegateTarget);
             var id = $(this).data('recordId');
             var rowId = $(this).data('removeRow');
-            var msg = 'Selected product successfully removed!';
+            var msg = 'Hotel room successfully removed!';
             $.post("<?=base_url('admin/hotels/deleteHotelRoom')?>",{'room_id':id}, function (response){
                 if(response == 'TRUE'){
                     bootstrap_alert.success(msg);

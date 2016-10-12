@@ -37,24 +37,17 @@
 
                             <!-- widget content -->
                             <div class="widget-body no-padding">
-                                <!-- <div id="hotel-serach-form">
-                                    <select name="hotel_type" id="hotel_type">
-                                        <option value="">Select Hotel Type</option>
-                                        <?php 
-                                            if(!empty($hotel_types)){
-                                                foreach($hotel_types as $hotel_type){
-
-                                        ?>
-                                            <option value="<?php echo $hotel_type['id']?>"><?php echo $hotel_type['hotel_type'];?></option>
-                                        <?php }}?>    
-                                    </select>
-                                    <input type="text" name="location" id="location" placeholder="Location" value="">
-                                    <div style="float:right">
-                                        <input type="text" id="hotel_name" name="hotel_name" placeholder="Hotel Name" class="">
-                                        <input type="button" class="btn btn-primary" id="search_hotel" value="Search" name="search">
-                                    </div>
-                                    
-                                </div> -->
+                                <div id="booking-serach-form">
+                                    Filter by : 
+                                    <span>Booking #:</span><input type="text" placeholder="Booking no" name="booking_number" id="booking_number" value="">
+                                    <input type="text" placeholder="Hotel Name" name="hotel_name" id="hotel_name" value="">
+                                    <input id="from_date" name="from_date" type="text" placeholder="Checkin">
+                                    <span><i class="fa fa-calendar"></i></span>
+                                    <input id="to_date" name="to_date" type="text" placeholder="Checkout">
+                                    <span><i class="fa fa-calendar"></i></span>
+                                        
+                                    <input type="button" class="btn btn-primary" id="search_booking" class="form-control" value="Search" name="search_booking">                
+                                </div> 
                                 <table class="table table-striped table-bordered table-hover editable-seller-info" width="100%">
                                     <thead>
 											<tr>
@@ -66,15 +59,31 @@
                                                 <th>Rooms</th>
                                                 <th>Payment (Rs)</th>
                                                 <th>Status</th>
-                                                <!-- <th class="sorting">Action</th> -->
+                                                <th class="sorting">Action</th>
 											</tr>
                                     </thead>
-                                    <tbody id="hotels_html">
+                                    <tbody id="booking_html">
 										<?php
                                           if (!empty($bookings)) {
                                              foreach ($bookings as $booking) {
                                                 $hotel_name = getHotelNameById($booking['hotel_id']);
                                                 $room_type  = getRoomTypeById($booking['room_type']);
+                                                if($booking['status'] == '0'){
+                                                    $status     = 'Pending';
+                                                }elseif($booking['status'] == '1'){
+                                                    $status     = 'Reserved';
+                                                }elseif($booking['status'] == '2'){
+                                                    $status     = 'Completed(paid)';
+                                                }elseif($booking['status'] == '3'){
+                                                    $status     = 'Cancelled';
+                                                }elseif($booking['status'] == '4'){
+                                                    $status     = 'Refunded';
+                                                }elseif($booking['status'] == '5'){
+                                                    $status     = 'Payment Error';
+                                                }else{
+                                                    $status     = 'N/A';
+                                                }
+
 										?>
                                         <tr id="<?php echo $booking['id'];?>" >
 											<form class="editForm<?php echo $booking['id'];?>" enctype="multipart/form-data">
@@ -100,12 +109,12 @@
                                                 <span class="view_mode<?php echo $booking['id'];?>"><?php echo (!empty($booking['total_amount'])) ?$booking['total_amount'] : "N/A";?></span>
                                             </td>
                                             <td>
-                                                <span class="view_mode<?php echo $booking['id'];?>"><?php echo (!empty($booking['status']) && $booking['status'] == '1') ? "Paid" : "Unpaid";?></span>
+                                                <span class="view_mode<?php echo $booking['id'];?>"><?php echo $status;?></span>
                                             </td>
-											<!-- <td>
-												<a class="btn btn-success commonBtn" data-type ="edit" data-row-id="<?php echo 'booking_'.$booking['id'];?>" data-id="<?php echo $booking['id'];?>" href="<?php echo base_url('admin/booking/editBooking/'.$booking['id'])?>">Edit</a>
+											<td>
+												<!-- <a class="btn btn-success commonBtn" data-type ="edit" data-row-id="<?php echo 'booking_'.$booking['id'];?>" data-id="<?php echo $booking['id'];?>" href="<?php echo base_url('admin/booking/editBooking/'.$booking['id'])?>">Edit</a> -->
 												<a class="delete btn btn-sm btn-danger" data-target="#confirm-delete" data-toggle="modal" data-record-title="<?php echo $booking['booking_number'];?>" data-type="delete" data-record-id="<?php echo $booking['id'];?>" data-remove-row="<?php echo 'booking_'.$booking['id'];?>" href="javascript:void(0)" >Delete</a>
-											</td> -->
+											</td>
 											</form>
                                         </tr>
                                         <?php } } else {?>
@@ -163,7 +172,7 @@
                 <h4 class="modal-title" id="myModalLabel">Confirm Delete</h4>
             </div>
             <div class="modal-body">
-                <p>You are about to delete <b><i class="title"></i></b> record, this procedure is irreversible.</p>
+                <p>You are about to delete booking  <b>#<i class="title"></i></b>, this procedure is irreversible.</p>
                 <p>Do you want to proceed?</p>
             </div>
             <div class="modal-footer">
@@ -194,12 +203,39 @@
 
         });
 */
+        // Date Range Picker
+        $("#from_date").datepicker({
+            //defaultDate: "+1w",
+            minDate: '',
+            changeMonth: true,
+            numberOfMonths: 1,
+            prevText: '<i class="fa fa-chevron-left"></i>',
+            nextText: '<i class="fa fa-chevron-right"></i>',
+            dateFormat  : 'yy-mm-dd',
+            onClose: function (selectedDate) {
+                $("#to_date").datepicker("option", "minDate", selectedDate);
+            }
+
+        });
+        $("#to_date").datepicker({
+            //defaultDate: "+1w",
+            changeMonth: true,
+            numberOfMonths: 1,
+            
+            prevText: '<i class="fa fa-chevron-left"></i>',
+            nextText: '<i class="fa fa-chevron-right"></i>',
+            dateFormat  : 'yy-mm-dd',
+            onClose: function (selectedDate) {
+                $("#from_date").datepicker("option", "maxDate", selectedDate);
+            }
+        });
+
         $('#confirm-delete').on('click', '.btn-ok', function (e) {
             var $modalDiv = $(e.delegateTarget);
             var id = $(this).data('recordId');
             var rowId = $(this).data('removeRow');
-            var msg = 'Selected product successfully removed!';
-            $.post("<?=base_url('admin/hotels/deleteHotel')?>",{'hotel_id':id}, function (response){
+            var msg = 'Booking successfully removed!';
+            $.post("<?=base_url('admin/booking/deleteBooking')?>",{'id':id}, function (response){
                 if(response == 'TRUE'){
                     bootstrap_alert.success(msg);
                     $('#confirm-delete').modal('hide');
@@ -220,6 +256,45 @@
         });
 
         $('[data-toggle="tooltip"]').tooltip();
+
+        $('#search_booking').click(function(){
+            var booking_number  = $('#booking_number').val();
+            var hotel_name      = $('#hotel_name').val();
+            var from_date       = $('#from_date').val();
+            var to_date         = $('#to_date').val();
+
+            if(booking_number == '' && hotel_name == '' && from_date == '' && to_date == ''){
+                alert("Please enter atleast one option!");
+                return false;
+            }
+            if(from_date != '' && to_date == ''){
+                alert("Please select checkout date!");
+                return false;
+
+            }
+            if(from_date == '' && to_date != ''){
+                alert("Please select checkin date");
+                return false;
+
+            }else{
+                $("#booking_html").html('<tr><td colspan="9" align="center"><span><img src="<?php echo base_url(); ?>assets/admin/img/ajax-loader-image.gif" align="center"></span></td></tr>');
+                $.ajax({
+                    url: '<?php echo base_url("admin/booking/searchBookingByAjax");?>',
+                    type : 'post',
+                    data: {
+                        booking_number: booking_number,
+                        hotel_name    : hotel_name,
+                        from_date     : from_date,
+                        to_date       : to_date
+                    },
+                    success: function(data){
+                        $('#booking_html').html(data);
+                        $('#dt_basic_info').html('');
+                        $('#dt_basic_paginate').html('');
+                    }
+                });
+            }
+        });
     })
 
 </script>

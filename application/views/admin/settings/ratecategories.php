@@ -132,7 +132,7 @@
             var $modalDiv = $(e.delegateTarget);
             var id = $(this).data('recordId');
             var rowId = $(this).data('removeRow');
-            var msg = 'Selected product successfully removed!';
+            var msg = 'Rate category successfully removed!';
             $.post("<?=base_url('admin/settings/deleteRateCategory')?>",{'id':id}, function (response){
                 if(response){
                     bootstrap_alert.success(msg);

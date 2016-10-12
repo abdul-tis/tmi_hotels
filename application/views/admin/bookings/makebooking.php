@@ -33,24 +33,6 @@
                                             <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12 sortable-grid ui-sortable">
                                                     <div class="col-lg-6 col-sm-6">
                                                         <fieldset>
-                                                            <section>
-                                                                <label class="label">Name</label>
-                                                                <label class="input"> 
-                                                                    <input type="text" placeholder="Name" required="" id="name" name="name" value="<?php echo set_value('name')?>">
-                                                                </label>
-                                                            </section>
-                                                            <section>
-                                                                <label class="label">Email</label>
-                                                                <label class="input"> 
-                                                                    <input type="text" placeholder="Email" required="" id="email" name="email" value="<?php echo set_value('email')?>">
-                                                                </label>
-                                                            </section>
-                                                            <section>
-                                                                <label class="label">Phone</label>
-                                                                <label class="input"> 
-                                                                    <input type="text" placeholder="Phone" required="" id="phone" name="phone" value="<?php echo set_value('phone')?>">
-                                                                </label>
-                                                            </section>
                                                             <div class="row">
                                                             <section>
                                                                 <div class="input">
@@ -152,35 +134,6 @@
                                                             <section>
                                                                 <div class="row price_div"></div>
                                                             </section>
-                                                            </fieldset>
-                                                        </div>
-                                                        <div class="col-lg-6 col-sm-6">
-                                                            <fieldset>
-                                                            <section>
-                                                                <div class="row price_div"></div>
-                                                            </section>
-                                                            
-                                                            <section>
-                                                                <label class="label">Booked By</label>
-                                                                <label class="select"> 
-                                                                    <select class="input-sm" name="booked_by" id="booked_by">
-                                                                        <option value="online">Online</option>
-                                                                        <option value="admin">Admin</option>
-                                                                    </select> <i></i>
-                                                                </label>
-                                                            </section>
-                                                            <!-- <section>
-                                                                <label class="label">Coupon</label>
-                                                                <label class="input"> 
-                                                                    <input type="text" placeholder="Coupon Code" id="coupon_code" name="coupon_code" value="<?php echo set_value('coupon_code')?>">
-                                                                </label>
-                                                            </section> 
-                                                            <section>
-                                                                <label class="label">Discount</label>
-                                                                <label class="input"> 
-                                                                    <input type="text" placeholder="Discount" id="campaign_discount" name="campaign_discount" value="<?php echo set_value('campaign_discount')?>">
-                                                                </label>
-                                                            </section>-->
                                                             <?php 
                                                                 if(!empty($coupons)){
                                                                     echo '<label class="label">Coupons</label>';
@@ -201,13 +154,84 @@
                                                                     foreach($campaigns as $campaign){
 
                                                             ?>
-                                                                <section>
+                                                            <section>
                                                                 <label class="radio state-error">
                                                                     <input type="radio" class="campaign" value="<?php echo $campaign['id'];?>" name="campaign_id" data-parsley-multiple="status" data-parsley-id="1815">
                                                                     <i></i>Avail offer and get discount of <strong><?php echo $campaign['discount'];?>%</strong> on booking.
                                                                 </label>
                                                             </section>
-                                                            <?php }}?>                                
+                                                            <?php }}?>
+                                                            <section>
+                                                                <div id="price_details" style="display:none">
+                                                                <label class="label">Price Details</label>
+                                                                
+                                                                    Total Room Price:<span class="pull-right" id="room_price">Rs.0</span><br/><hr/>
+                                                                    Extra Bed Charge: <span class="pull-right" id="extra_bed_charge">Rs.0</span><br/><hr/><br/>
+                                                                    Total Amount: <span class="pull-right" id="total_amount">Rs.0</span><br/><hr/><br/>
+                                                                    Coupon Discount:<span class="pull-right" id="coupon_discount">Rs.0</span><br/><hr/>
+                                                                    Campaign Discount: <span class="pull-right" id="campaign_discount">Rs.0</span><br/><hr/><br/>
+                                                                    Total Discount: <span class="pull-right" id="total_discount">Rs.0</span><br/><hr/><br/>
+                                                                    Payable Amount:<span class="pull-right" id="payable_amount">Rs.0</span><br/>
+                                                                </div>
+                                                            </section>
+                                                            </fieldset>
+                                                        </div>
+                                                        <div class="col-lg-6 col-sm-6">
+                                                            <fieldset>
+                                                            <section>
+                                                                <h3><div class="row price_div pull-right"></div></h3>
+                                                            </section>
+                                                            
+                                                            <section>
+                                                                <label class="label">Booked By</label>
+                                                                <label class="select"> 
+                                                                    <select class="input-sm" required="" name="booked_by" id="booked_by">
+                                                                        <option value="">Select booked by</option>
+                                                                        <?php 
+                                                                            if(!empty($users)){
+                                                                                foreach($users as $user){
+                                                                                    echo '<option value="'.$user['id'].'">'.$user['first_name'].' '.$user['last_name'].'</option>';
+                                                                                }
+                                                                            }
+                                                                        ?>
+                                                                    </select> <i></i>
+                                                                </label>
+                                                            </section>
+                                                            <section>
+                                                                <label class="label">Payment Type</label>
+                                                                <label class="select"> 
+                                                                    <select class="input-sm" name="payment_type" id="payment_type">
+                                                                        <option value="">Select Payment Type</option>
+                                                                        <option value="1">Pay on Arrival</option>
+                                                                        <option value="2">Credit Card</option>
+                                                                        <option value="3">Debit Card</option>
+                                                                    </select> <i></i>
+                                                                </label>
+                                                            </section>
+                                                            <section>
+                                                                <label class="label">Payment Comment</label>
+                                                                <label class="textarea">
+                                                                    <textarea class="custom-scroll" rows="5" name="payment_comment" id="payment_comment"><?php echo set_value('payment_comment');?></textarea>
+                                                                </label>
+                                                            </section>
+                                                            <section>
+                                                                <label class="label">Name</label>
+                                                                <label class="input"> 
+                                                                    <input type="text" placeholder="Name" required="" id="name" name="name" value="<?php echo set_value('name')?>">
+                                                                </label>
+                                                            </section>
+                                                            <section>
+                                                                <label class="label">Email</label>
+                                                                <label class="input"> 
+                                                                    <input type="text" placeholder="Email" required="" id="email" name="email" value="<?php echo set_value('email')?>">
+                                                                </label>
+                                                            </section>
+                                                            <section>
+                                                                <label class="label">Phone</label>
+                                                                <label class="input"> 
+                                                                    <input type="text" placeholder="Phone" required="" id="phone" name="phone" value="<?php echo set_value('phone')?>">
+                                                                </label>
+                                                            </section>                              
                                                         </fieldset>
                                                     </div>
                                                     
@@ -385,8 +409,16 @@
                                 $('#room_details').html(html);
                                 $('.adults').html(newData.adult_html);
                                 $('.children').html(newData.children_html);
-                                $('.price_div').html('<strong>Price : Rs. </strong><span>'+newData.price+'</span>');
+                                $('.price_div').html('<strong>Price : Rs. </strong><span>'+newData.payable_amount+'</span>');
                                 $('#extra_beds').val("0");
+                                $('#room_price').html('Rs.'+newData.rooms_price);
+                                $('#extra_bed_charge').html('Rs.'+newData.extra_bed_charge);
+                                $('#total_amount').html('Rs.'+newData.total_amount);
+                                $('#coupon_discount').html('Rs.'+newData.coupon_discount);
+                                $('#campaign_discount').html('Rs.'+newData.campaign_discount);
+                                $('#total_discount').html('Rs.'+newData.total_discount);
+                                $('#payable_amount').html('<strong>Rs.'+newData.payable_amount+'</strong>');
+                                $('#price_details').show();
                                 $('.coupon_code').prop('checked',false);
                                 $('.campaign').prop('checked',false);
                             }else if(newData.status == '0'){
@@ -395,6 +427,14 @@
                                 $('.price_div').html("<strong>Rooms Unavailable</strong>");
                                 $('#no_of_rooms').val("");
                                 $('#extra_beds').val("0");
+                                $('#room_price').html('Rs.'+newData.rooms_price);
+                                $('#extra_bed_charge').html('Rs.'+newData.extra_bed_charge);
+                                $('#total_amount').html('Rs.'+newData.total_amount);
+                                $('#coupon_discount').html('Rs.'+newData.coupon_discount);
+                                $('#campaign_discount').html('Rs.'+newData.campaign_discount);
+                                $('#total_discount').html('Rs.'+newData.total_discount);
+                                $('#payable_amount').html('<strong>Rs.'+newData.payable_amount+'</strong>');
+                                $('#price_details').hide();
                                 $('.coupon_code').prop('checked',false);
                                 $('.campaign').prop('checked',false);
                             }else if(newData.status == '2'){
@@ -403,12 +443,28 @@
                                 $('.price_div').html("<strong>Rooms Unavailable</strong>");
                                 $('#no_of_rooms').val('<option value="">No room available</option>');
                                 $('#extra_beds').val("");
+                                $('#room_price').html('Rs.'+newData.rooms_price);
+                                $('#extra_bed_charge').html('Rs.'+newData.extra_bed_charge);
+                                $('#total_amount').html('Rs.'+newData.total_amount);
+                                $('#coupon_discount').html('Rs.'+newData.coupon_discount);
+                                $('#campaign_discount').html('Rs.'+newData.campaign_discount);
+                                $('#total_discount').html('Rs.'+newData.total_discount);
+                                $('#payable_amount').html('<strong>Rs.'+newData.payable_amount+'</strong>');
+                                $('#price_details').hide();
                                 $('.coupon_code').prop('checked',false);
                                 $('.campaign').prop('checked',false);
                             }else{
                                 $('#room_details').html("");
                                 $('.price_div').html("<strong>Rooms Unavailable</strong>");
                                 $('#extra_beds').val("0");
+                                $('#room_price').html('Rs.'+newData.rooms_price);
+                                $('#extra_bed_charge').html('Rs.'+newData.extra_bed_charge);
+                                $('#total_amount').html('Rs.'+newData.total_amount);
+                                $('#coupon_discount').html('Rs.'+newData.coupon_discount);
+                                $('#campaign_discount').html('Rs.'+newData.campaign_discount);
+                                $('#total_discount').html('Rs.'+newData.total_discount);
+                                $('#payable_amount').html('<strong>Rs.'+newData.payable_amount+'</strong>');
+                                $('#price_details').hide();
                                 $('.coupon_code').prop('checked',false);
                                 $('.campaign').prop('checked',false);
                             }
@@ -486,7 +542,21 @@
                 type:'post',
                 data:{'hotel_id':hotel_id,'room_type':room_type,'no_of_rooms':no_of_rooms,'extra_beds':extra_beds,'coupon_id':coupon_id,'campaign_id':campaign_id},
                 success:function(data){
-                    $('.price_div').html('<strong>Price : Rs. </strong><span>'+data+'</span>');
+                    if(data!=''){
+                        newData         = $.parseJSON(data);
+                        $('.price_div').html('<strong>Price : Rs. <span>'+newData.payable_amount+'</span></strong>');
+                        $('#room_price').html('Rs.'+newData.rooms_price);
+                        $('#extra_bed_charge').html('Rs.'+newData.extra_bed_charge);
+                        $('#total_amount').html('Rs.'+newData.total_amount);
+                        $('#coupon_discount').html('Rs.'+newData.coupon_discount);
+                        $('#campaign_discount').html('Rs.'+newData.campaign_discount);
+                        $('#total_discount').html('Rs.'+newData.total_discount);
+                        $('#payable_amount').html('<strong>Rs.'+newData.payable_amount+'</strong>');
+                        $('#price_details').show();
+                    }else{
+                        $('.price_div').html('');
+                    }
+                    
                 }
            });
             

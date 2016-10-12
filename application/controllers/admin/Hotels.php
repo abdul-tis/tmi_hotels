@@ -1339,11 +1339,28 @@ class Hotels extends CI_Controller {
         		$booked_rooms 	 = 0;
         		$blocked_rooms 	 = 0;
         	}
+
+        	$fast_filling 		 = ($room['no_of_rooms']*80)/100;
+
+
             $temp['title']       = $room['room_type']."\n"."Booked Rooms: ".(int)$booked_rooms."\n"."Blocked Rooms: ".(int)$blocked_rooms;
             $temp['start']       = $year.','.$month.','.$i;
             $temp['end']         = $year.','.$month.','.$i;
             $temp['allDay']      = true;
             $temp['description'] = '<b>Available</b> - '.$available;
+            if($available == $room['no_of_rooms'] || $total_booked <= $fast_filling){
+            	$temp['textColor'] 		 	 = '#FFFFFF';
+            	$temp['backgroundColor'] 	 = '#008000';
+            }
+            if($total_booked >= $fast_filling && $available != '0'){
+            	$temp['textColor'] 		 	 = '#FFFFFF';
+            	$temp['backgroundColor'] 	 = '#FFD700';
+            }
+            if($available == '0'){
+            	$temp['textColor'] 		 	 = '#FFFFFF';
+            	$temp['backgroundColor']  	 = '#FF0000';
+            }
+            
             
 
             array_push($details,$temp);
@@ -1366,21 +1383,28 @@ class Hotels extends CI_Controller {
 				$reserved 			 = $this->Common_model->getReservedRoom($id,$from_date,$to_date);
 				if(!empty($reserved)){
 					$admin_availability  = $room['no_of_rooms']-$reserved['booked_rooms'];
-					$total_available  = $room['no_of_rooms']-$reserved['booked_rooms']-$reserved['blocked_rooms'];
+					$total_available     = $room['no_of_rooms']-$reserved['booked_rooms']-$reserved['blocked_rooms'];
 				}else{
 					$admin_availability = $room['no_of_rooms'];
-					$total_available  = $room['no_of_rooms'];
+					$total_available    = $room['no_of_rooms'];
 				}
 
-				if($no_of_rooms <= $admin_availability){
-					$data['blocked_rooms'] = $admin_availability - $no_of_rooms;
-					$data['room_type']    = $id;
+				if($no_of_rooms <= $total_available){
+					$data['blocked_rooms'] = $total_available - $no_of_rooms;
+					$data['hotel_id']      = $hotel_id;
+					$data['room_type']     = $id;
 					$data['from_date'] 	   = $from_date;
 					$data['to_date'] 	   = $to_date;
 					$data['user_id'] 	   = $this->ion_auth->get_user_id();
-					$result 	= $this->Hotel_model->saveBookingData($data);
-					if($result){
-						echo json_encode(array('status'=>'success','rooms'=>$no_of_rooms));
+					
+					if($total_available!='0' && $no_of_rooms != '0'){
+						$result 	= $this->Hotel_model->saveBookingData($data);
+						if($result){
+							echo json_encode(array('status'=>'success','rooms'=>$no_of_rooms));
+							exit;
+						}
+					}else{
+						echo json_encode(array('status'=>'failed','rooms'=>$total_available,'capacity'=>$admin_availability));
 						exit;
 					}
 				}else{
@@ -1412,6 +1436,7 @@ class Hotels extends CI_Controller {
 					
 					if($no_of_rooms <= $total_available){
 						$data['blocked_rooms'] = $no_of_rooms;
+						$data['hotel_id']      = $hotel_id;
 						$data['room_type']     = $id;
 						$data['from_date'] 	   = $from_date;
 						$data['to_date'] 	   = $to_date;

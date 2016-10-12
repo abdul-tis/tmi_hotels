@@ -72,12 +72,35 @@
                                             <a href="javascript:void(0)" class="btn btn-default btn-xs" id="btn-next"><i class="fa fa-chevron-right"></i></a>
                                         </div>
                                     </div>
+                                    
                                 </div>
                                 
                                 <div id="calendar"></div>
 
                                 <footer>
                                     <hr class="simple">
+                                    <div>
+                                    <table>
+                                        <tr>
+                                            <td colspan="3">
+                                                <div style="width:16px;height:15px;float:left;margin:1px;background-color:#008000;"></div>
+                                                - All Available
+                                            </td>
+                                        <tr>
+                                        <tr>
+                                            <td colspan="3">
+                                                <div style="width:16px;height:15px;float:left;margin:1px;background-color:#FFD700;"></div>
+                                                - Partially Available
+                                            </td>
+                                        <tr>
+                                        <tr>
+                                            <td colspan="3">
+                                                <div style="width:16px;height:15px;float:left;margin:1px;background-color:#FF0000;"></div>
+                                                - Not Available
+                                            </td>
+                                        <tr>
+                                    </table>
+                                </div>
                                     <a class="btn btn-success pull-right commonBtn" data-type ="back" href="<?php echo base_url('admin/hotels/hotelRooms/'.$this->uri->segment(4))?>">Back</a>
                                 </footer>
                                 <!-- end content -->
@@ -243,6 +266,8 @@
                                                 end: r.end,
                                                 allDay:r.allDay,
                                                 description:r.description,
+                                                textColor : r.textColor,
+                                                backgroundColor:r.backgroundColor,
                                                 
                                             });
                                         });
@@ -265,7 +290,9 @@
                         var end = event.end.format("YYYY-MM-DD");
                         
                        var description = prompt('Room Available:', event.description.split(' - ')[1], { buttons: { Ok: true, Cancel: false} });
+                      
                        description     = parseInt(description);
+
                        if (!isNaN(description)){
                        
                            $.ajax({

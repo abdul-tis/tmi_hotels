@@ -31,8 +31,17 @@ Class Booking_model extends CI_Model {
 	 * @Return 		-: array()
 	 */
 	function saveCustomer($data){
-		$this->db->insert('customers',$data);
-		$result = $this->db->insert_id();
+		$this->db->where('email',$data['email']);
+		$row  = $this->db->get('customers')->row_array();
+		if(count($row) > 0){
+			$this->db->where('id',$row['id']);
+			$this->db->update('customers',$data);
+			$result = $row['id'];
+		}else{
+			$this->db->insert('customers',$data);
+			$result = $this->db->insert_id();
+		}
+		
 		return $result;
 	}
 
@@ -46,6 +55,20 @@ Class Booking_model extends CI_Model {
 		$this->db->insert('reservation_details',$data);
 		$result = $this->db->insert_id();
 		return $result;
+	}
+
+	/**
+	 * @Method		-: deleteBooking()
+	 * @Description	-: This function is used to remove booking
+	 * @Created on	-: 01-10-2016
+	 * @Return 		-: array()
+	 */
+	function deleteBooking($id){
+		if(!empty($id)){
+			$this->db->where('id',$id);
+			$result   = $this->db->delete('reservation_details');
+			return $result;
+		}
 	}
 
 

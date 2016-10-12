@@ -70,6 +70,21 @@
             </li>
         </ul>
         <?php }?>
+        <?php if(checkAccess($this->admin->accessLabelId,'reporting','view')){ ?>
+        <ul>
+            <li class="<?php echo (!empty($url_seg) && $url_seg=='reporting') ? 'open' : '';?>">
+                <a title="Reporting" href="#">
+                    <i class="fa fa-lg fa-fw fa-table"></i>
+                    <span class="menu-item-parent">Reporting</span>
+                </a>
+                <ul style="<?php echo (!empty($url_seg) && $url_seg=='reporting') ? 'display:block' : '';?>">
+                    <li class="">
+                        <a title="Bookings" href="<?=base_url('admin/reporting')?>">Reporting</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        <?php }?>
         <?php 
             $seg_setting     = $this->uri->segment(2); 
             $seg_setting_new = $this->uri->segment(3); 

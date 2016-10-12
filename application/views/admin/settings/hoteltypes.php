@@ -128,7 +128,7 @@
             var $modalDiv = $(e.delegateTarget);
             var id = $(this).data('recordId');
             var rowId = $(this).data('removeRow');
-            var msg = 'Selected product successfully removed!';
+            var msg = 'Hotel type successfully removed!';
             $.post("<?=base_url('admin/settings/deleteHotelType')?>",{'id':id}, function (response){
                 if(response){
                     bootstrap_alert.success(msg);
